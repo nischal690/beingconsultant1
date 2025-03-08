@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import SimpleTour, { TOUR_STATUS } from "@/app/components/SimpleTour"
 import {
   SidebarProvider,
   Sidebar,
@@ -29,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ThemeToggle } from "@/components/theme-provider"
 import {
   Bell,
   BookOpen,
@@ -51,11 +53,127 @@ import {
   Lightbulb,
   Headphones,
   FileSpreadsheet,
+  HelpCircle,
 } from "lucide-react"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
+  const [runTour, setRunTour] = useState(true)
+
+  // Define the tour steps
+  const steps = [
+    {
+      target: "body",
+      content: "Welcome to BeingConsultant Dashboard! Let's take a quick tour to help you navigate the platform.",
+      placement: "center" as const,
+      disableBeacon: true,
+    },
+    {
+      target: ".sidebar-nav",
+      content: "This is your navigation menu. Access different sections of the platform from here.",
+      placement: "right" as const,
+    },
+    {
+      target: ".coaching-section",
+      content: "Find all your coaching programs here, including consulting offers, unlimited coaching, group coaching, and 1:1 sessions.",
+      placement: "right" as const,
+    },
+    {
+      target: ".ai-coach-section",
+      content: "Try our AI Coach feature for instant guidance and support.",
+      placement: "right" as const,
+    },
+    {
+      target: ".resources-section",
+      content: "Access valuable resources like personality assessments, cheatsheets, meditation guides, and CV/CL templates.",
+      placement: "right" as const,
+    },
+    {
+      target: ".learning-section",
+      content: "Explore our learning materials including case interviews, frameworks, and industry insights.",
+      placement: "right" as const,
+    },
+    {
+      target: ".community-section",
+      content: "Connect with other consultants, join events, and participate in discussions.",
+      placement: "right" as const,
+    },
+    {
+      target: ".profile-dropdown",
+      content: "Access your profile settings, notifications, and account options here.",
+      placement: "bottom" as const,
+    },
+    {
+      target: ".main-content",
+      content: "This is your main dashboard area where you'll see personalized content based on the section you're viewing.",
+      placement: "left" as const,
+    },
+    {
+      target: "body",
+      content: "You're all set! Remember you can take this tour again anytime by clicking the 'Tour Guide' button at the bottom right.",
+      placement: "center" as const,
+    }
+  ];
+
+  const handleJoyrideCallback = (data: any) => {
+    const { status, step } = data;
+    
+    // Handle scrolling for specific steps
+    if (status === TOUR_STATUS.RUNNING) {
+      // Use setTimeout to ensure DOM is ready after the step change
+      setTimeout(() => {
+        // Scroll to the appropriate section based on the current step
+        switch (step) {
+          case 2: // Coaching section
+            scrollToSection('.coaching-section');
+            break;
+          case 3: // AI Coach section
+            scrollToSection('.ai-coach-section');
+            break;
+          case 4: // Resources section
+            scrollToSection('.resources-section');
+            break;
+          case 5: // Learning section
+            scrollToSection('.learning-section');
+            break;
+          case 6: // Community section
+            scrollToSection('.community-section');
+            break;
+          default:
+            break;
+        }
+      }, 100);
+    }
+    
+    if (status === TOUR_STATUS.FINISHED || status === TOUR_STATUS.SKIPPED) {
+      setRunTour(false);
+    }
+  };
+  
+  // Helper function to scroll to a section in the sidebar
+  const scrollToSection = (selector: string) => {
+    try {
+      // Find the target element
+      const targetElement = document.querySelector(selector);
+      
+      if (!targetElement) {
+        console.warn(`Target element not found: ${selector}`);
+        return;
+      }
+      
+      // Use the browser's built-in scrollIntoView method
+      // This will work regardless of which container is scrollable
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+      
+      console.log(`Scrolling to ${selector} using scrollIntoView`);
+    } catch (error) {
+      console.error('Error scrolling to section:', error);
+    }
+  };
 
   useEffect(() => {
     setIsMounted(true)
@@ -67,12 +185,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
         <DashboardSidebar pathname={pathname} />
         <div className="flex flex-1 flex-col">
           <DashboardHeader />
-          <main className="flex-1 p-6">{children}</main>
+          <main className="flex-1 p-6 main-content animate-fade-in">{children}</main>
         </div>
+        
+        {pathname === '/dashboard' && (
+          <Button 
+            className="tour-button fixed right-4 bottom-4 z-50 bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-600 flex items-center gap-2 shadow-lg transition-all duration-200"
+            onClick={() => setRunTour(true)}
+          >
+            <HelpCircle size={16} />
+            <span>Tour Guide</span>
+          </Button>
+        )}
+        
+        <SimpleTour
+          steps={steps}
+          run={runTour}
+          continuous={true}
+          showSkipButton={true}
+          showProgress={true}
+          styles={{
+            options: {
+              primaryColor: '#245D66',
+              backgroundColor: '#ffffff',
+              textColor: '#245D66',
+              arrowColor: '#ffffff',
+              overlayColor: 'rgba(0, 0, 0, 0.65)',
+            }
+          }}
+          callback={handleJoyrideCallback}
+        />
       </div>
     </SidebarProvider>
   )
@@ -80,21 +226,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 function DashboardSidebar({ pathname }: { pathname: string }) {
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b">
-        <Link href="/dashboard" className="flex items-center gap-2 p-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-            <span className="text-lg font-bold text-primary-foreground">CC</span>
+    <Sidebar className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-purple-500 shadow-lg">
+            <span className="text-lg font-bold text-primary-foreground">BC</span>
           </div>
-          <span className="text-lg font-bold">ConsultCoach</span>
+          <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">BeingConsultant</span>
         </Link>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="px-2 py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
-              <Link href="/dashboard">
-                <Home />
+            <SidebarMenuButton asChild isActive={pathname === "/dashboard"} className="hover-lift">
+              <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <Home className="h-5 w-5" />
                 <span>Dashboard</span>
               </Link>
             </SidebarMenuButton>
@@ -102,45 +248,47 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
         </SidebarMenu>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Coaching</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+            Coaching
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="coaching-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/land-consulting"}>
-                  <Link href="/dashboard/coaching/land-consulting">
-                    <Briefcase />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/land-consulting"} className="hover-lift">
+                  <Link href="/dashboard/coaching/land-consulting" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Briefcase className="h-5 w-5" />
                     <span>Land Consulting Offer</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/unlimited"}>
-                  <Link href="/dashboard/coaching/unlimited">
-                    <Sparkles />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/unlimited"} className="hover-lift">
+                  <Link href="/dashboard/coaching/unlimited" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Sparkles className="h-5 w-5" />
                     <span>Unlimited Coaching</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/group"}>
-                  <Link href="/dashboard/coaching/group">
-                    <Users />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/group"} className="hover-lift">
+                  <Link href="/dashboard/coaching/group" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Users className="h-5 w-5" />
                     <span>Group Coaching</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/one-on-one"}>
-                  <Link href="/dashboard/coaching/one-on-one">
-                    <MessageSquare />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/one-on-one"} className="hover-lift">
+                  <Link href="/dashboard/coaching/one-on-one" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <MessageSquare className="h-5 w-5" />
                     <span>1:1 Coaching</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/star-consultant"}>
-                  <Link href="/dashboard/coaching/star-consultant">
-                    <Star />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/star-consultant"} className="hover-lift">
+                  <Link href="/dashboard/coaching/star-consultant" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Star className="h-5 w-5" />
                     <span>Be a Star Consultant</span>
                   </Link>
                 </SidebarMenuButton>
@@ -150,13 +298,15 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>AI Coach</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+            AI Coach
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="ai-coach-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach"}>
-                  <Link href="/dashboard/ai-coach">
-                    <Brain />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach"} className="hover-lift">
+                  <Link href="/dashboard/ai-coach" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Brain className="h-5 w-5" />
                     <span>Try Free Demo</span>
                   </Link>
                 </SidebarMenuButton>
@@ -166,93 +316,115 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Resources</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+            Resources
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="resources-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/personality-assessment"}>
-                  <Link href="/dashboard/resources/personality-assessment">
-                    <User />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/personality-assessment"} className="hover-lift">
+                  <Link href="/dashboard/resources/personality-assessment" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <User className="h-5 w-5" />
                     <span>Personality Assessment</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/cheatsheet"}>
-                  <Link href="/dashboard/resources/cheatsheet">
-                    <FileText />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/cheatsheet"} className="hover-lift">
+                  <Link href="/dashboard/resources/cheatsheet" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <FileText className="h-5 w-5" />
                     <span>Cheatsheet</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/meditation"}>
-                  <Link href="/dashboard/resources/meditation">
-                    <Heart />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/meditation"} className="hover-lift">
+                  <Link href="/dashboard/resources/meditation" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Heart className="h-5 w-5" />
                     <span>Meditation</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/cv-cl-guide"}>
-                  <Link href="/dashboard/resources/cv-cl-guide">
-                    <FileCheck />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/cv-cl-guide"} className="hover-lift">
+                  <Link href="/dashboard/resources/cv-cl-guide" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <FileCheck className="h-5 w-5" />
                     <span>CV & CL Guide</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/business-essentials"}>
-                  <Link href="/dashboard/resources/business-essentials">
-                    <BookOpen />
-                    <span>Business Essentials Handbook</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton>
-                      <BookOpenCheck />
-                      <span>Masterclasses</span>
-                      <ChevronDown className="ml-auto h-4 w-4" />
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start" className="w-56">
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard/resources/masterclasses/case-cracking">
-                        <Lightbulb className="mr-2 h-4 w-4" />
-                        <span>Case Cracking</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard/resources/masterclasses/consulting-cv">
-                        <FileSpreadsheet className="mr-2 h-4 w-4" />
-                        <span>Consulting CV</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard/resources/masterclasses/fit-interview">
-                        <Headphones className="mr-2 h-4 w-4" />
-                        <span>Fit Interview</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Success Stories</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+            Learning
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="learning-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/success-stories"}>
-                  <Link href="/dashboard/success-stories">
-                    <Award />
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/case-interviews"} className="hover-lift">
+                  <Link href="/dashboard/learning/case-interviews" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <BookOpen className="h-5 w-5" />
+                    <span>Case Interviews</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/frameworks"} className="hover-lift">
+                  <Link href="/dashboard/learning/frameworks" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <BookOpenCheck className="h-5 w-5" />
+                    <span>Frameworks</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/industry-insights"} className="hover-lift">
+                  <Link href="/dashboard/learning/industry-insights" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Lightbulb className="h-5 w-5" />
+                    <span>Industry Insights</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/webinars"} className="hover-lift">
+                  <Link href="/dashboard/learning/webinars" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Headphones className="h-5 w-5" />
+                    <span>Webinars</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+            Community
+          </SidebarGroupLabel>
+          <SidebarGroupContent className="community-section space-y-1">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/community/events"} className="hover-lift">
+                  <Link href="/dashboard/community/events" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Award className="h-5 w-5" />
+                    <span>Events</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/community/forum"} className="hover-lift">
+                  <Link href="/dashboard/community/forum" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <MessageSquare className="h-5 w-5" />
+                    <span>Forum</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/community/success-stories"} className="hover-lift">
+                  <Link href="/dashboard/community/success-stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <FileSpreadsheet className="h-5 w-5" />
                     <span>Success Stories</span>
                   </Link>
                 </SidebarMenuButton>
@@ -261,47 +433,16 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t p-2">
-        <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-1 flex-col">
-            <span className="text-sm font-medium">John Doe</span>
-            <span className="text-xs text-muted-foreground">john.doe@example.com</span>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ChevronDown className="h-4 w-4" />
-                <span className="sr-only">User menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/profile">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/settings">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+      <SidebarFooter className="border-t border-sidebar-border p-4">
+        <div className="flex flex-col space-y-4">
+          <Button variant="outline" className="w-full justify-start gap-2 hover-lift">
+            <Settings className="h-4 w-4" />
+            <span>Settings</span>
+          </Button>
+          <Button variant="outline" className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift">
+            <LogOut className="h-4 w-4" />
+            <span>Log Out</span>
+          </Button>
         </div>
       </SidebarFooter>
     </Sidebar>
@@ -310,18 +451,48 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
 
 function DashboardHeader() {
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/70 px-6 backdrop-blur-md">
       <SidebarTrigger />
-      <div className="flex-1">
-        <h1 className="text-lg font-semibold">Dashboard</h1>
-      </div>
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" className="rounded-full">
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Notifications</span>
+      <div className="ml-auto flex items-center gap-4">
+        <ThemeToggle className="hover:bg-primary/10" />
+        
+        <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-200">
+          <Bell className="h-5 w-5" />
         </Button>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="profile-dropdown rounded-full hover:bg-primary/10 transition-all duration-200">
+              <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/50 transition-all duration-200">
+                <AvatarImage src="/avatar.png" alt="User" />
+                <AvatarFallback className="bg-gradient-to-tr from-primary to-purple-500 text-primary-foreground">BC</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 shadow-xl border border-border/40 bg-background/90 backdrop-blur-md">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <span className="text-lg font-medium">John Consultant</span>
+                <p className="text-xs text-muted-foreground">john@example.com</p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex items-center gap-2">
+              <LogOut className="h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )
 }
-
