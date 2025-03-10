@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     },
     {
       target: ".coaching-section",
-      content: "Find all your coaching programs here, including consulting offers, unlimited coaching, group coaching, and 1:1 sessions.",
+      content: "Find all your coaching programs here.",
       placement: "right" as const,
     },
     {
@@ -254,42 +254,10 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="coaching-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/land-consulting"} className="hover-lift">
-                  <Link href="/dashboard/coaching/land-consulting" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/coaching")} className="hover-lift">
+                  <Link href="/dashboard/coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Briefcase className="h-5 w-5" />
-                    <span>Land Consulting Offer</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/unlimited"} className="hover-lift">
-                  <Link href="/dashboard/coaching/unlimited" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Sparkles className="h-5 w-5" />
-                    <span>Unlimited Coaching</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/group"} className="hover-lift">
-                  <Link href="/dashboard/coaching/group" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Users className="h-5 w-5" />
-                    <span>Group Coaching</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/one-on-one"} className="hover-lift">
-                  <Link href="/dashboard/coaching/one-on-one" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <MessageSquare className="h-5 w-5" />
-                    <span>1:1 Coaching</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/star-consultant"} className="hover-lift">
-                  <Link href="/dashboard/coaching/star-consultant" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Star className="h-5 w-5" />
-                    <span>Be a Star Consultant</span>
+                    <span>Programs</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -307,7 +275,7 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
                 <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach"} className="hover-lift">
                   <Link href="/dashboard/ai-coach" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Brain className="h-5 w-5" />
-                    <span>Try Free Demo</span>
+                    <span>Try Demo</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -322,34 +290,10 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="resources-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/personality-assessment"} className="hover-lift">
-                  <Link href="/dashboard/resources/personality-assessment" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <User className="h-5 w-5" />
-                    <span>Personality Assessment</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/cheatsheet"} className="hover-lift">
-                  <Link href="/dashboard/resources/cheatsheet" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/resources")} className="hover-lift">
+                  <Link href="/dashboard/resources" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <FileText className="h-5 w-5" />
-                    <span>Cheatsheet</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/meditation"} className="hover-lift">
-                  <Link href="/dashboard/resources/meditation" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Heart className="h-5 w-5" />
-                    <span>Meditation</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/resources/cv-cl-guide"} className="hover-lift">
-                  <Link href="/dashboard/resources/cv-cl-guide" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <FileCheck className="h-5 w-5" />
-                    <span>CV & CL Guide</span>
+                    <span>Materials</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -364,34 +308,10 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="learning-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/case-interviews"} className="hover-lift">
-                  <Link href="/dashboard/learning/case-interviews" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/learning")} className="hover-lift">
+                  <Link href="/dashboard/learning" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <BookOpen className="h-5 w-5" />
-                    <span>Case Interviews</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/frameworks"} className="hover-lift">
-                  <Link href="/dashboard/learning/frameworks" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <BookOpenCheck className="h-5 w-5" />
-                    <span>Frameworks</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/industry-insights"} className="hover-lift">
-                  <Link href="/dashboard/learning/industry-insights" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Lightbulb className="h-5 w-5" />
-                    <span>Industry Insights</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/learning/webinars"} className="hover-lift">
-                  <Link href="/dashboard/learning/webinars" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Headphones className="h-5 w-5" />
-                    <span>Webinars</span>
+                    <span>Courses</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -406,26 +326,10 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="community-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/community/events"} className="hover-lift">
-                  <Link href="/dashboard/community/events" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Award className="h-5 w-5" />
-                    <span>Events</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/community/forum"} className="hover-lift">
-                  <Link href="/dashboard/community/forum" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/community")} className="hover-lift">
+                  <Link href="/dashboard/community" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <MessageSquare className="h-5 w-5" />
-                    <span>Forum</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/community/success-stories"} className="hover-lift">
-                  <Link href="/dashboard/community/success-stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <FileSpreadsheet className="h-5 w-5" />
-                    <span>Success Stories</span>
+                    <span>Connect</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
