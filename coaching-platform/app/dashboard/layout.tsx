@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import SimpleTour, { TOUR_STATUS } from "@/app/components/SimpleTour"
 import {
@@ -194,7 +195,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         {pathname === '/dashboard' && (
           <Button 
-            className="tour-button fixed right-4 bottom-4 z-50 bg-gradient-to-r from-primary to-purple-500 hover:from-primary/90 hover:to-purple-600 flex items-center gap-2 shadow-lg transition-all duration-200"
+            className="tour-button fixed right-4 bottom-4 z-50 bg-primary hover:bg-primary/90 flex items-center gap-2 shadow-lg transition-all duration-200"
             onClick={() => setRunTour(true)}
           >
             <HelpCircle size={16} />
@@ -229,10 +230,13 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
     <Sidebar className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md">
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-tr from-primary to-purple-500 shadow-lg">
-            <span className="text-lg font-bold text-primary-foreground">BC</span>
-          </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">BeingConsultant</span>
+          <Image 
+            src="/being-consultant-logo.svg" 
+            alt="Being Consultant Logo" 
+            width={180} 
+            height={40} 
+            className="h-8 w-auto" 
+          />
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-2 py-4">
@@ -369,7 +373,7 @@ function DashboardHeader() {
             <Button variant="ghost" size="icon" className="profile-dropdown rounded-full hover:bg-primary/10 transition-all duration-200">
               <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/50 transition-all duration-200">
                 <AvatarImage src="/avatar.png" alt="User" />
-                <AvatarFallback className="bg-gradient-to-tr from-primary to-purple-500 text-primary-foreground">BC</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground">JC</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
