@@ -321,7 +321,7 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
                 <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/resources")} className="hover-lift">
                   <Link href="/dashboard/resources" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <FileText className="h-5 w-5" />
-                    <span>Materials</span>
+                    <span>Toolkit</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
