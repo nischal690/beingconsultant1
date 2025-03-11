@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, ShoppingCart, Star, Heart, Sparkles, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 
 // Define the product type
 interface Product {
@@ -95,6 +96,7 @@ const itemVariants = {
 }
 
 export default function ResourcesPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [cart, setCart] = useState<string[]>([])
   const [favorites, setFavorites] = useState<string[]>([])
@@ -179,11 +181,12 @@ export default function ResourcesPage() {
               {featuredProducts.map((product) => (
                 <motion.div
                   key={product.id}
-                  className="relative group"
+                  className="group relative rounded-xl overflow-hidden border border-border/60 bg-background/60 hover:shadow-lg transition-all duration-300"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  onClick={() => product.id === "personality-assessment" ? router.push(`/dashboard/resources/${product.id}`) : null}
+                  style={{ cursor: product.id === "personality-assessment" ? "pointer" : "default" }}
                 >
                   <Card className="overflow-hidden border-0 shadow-lg h-full bg-gradient-to-br from-background to-background/90">
                     <div className="flex flex-col md:flex-row h-full">
@@ -275,77 +278,90 @@ export default function ResourcesPage() {
             initial="hidden"
             animate={isLoaded ? "visible" : "hidden"}
           >
-            {filteredProducts.map((product) => (
-              <motion.div key={product.id} variants={itemVariants}>
-                <Card className="overflow-hidden h-full hover:shadow-xl transition-all duration-300 border-primary/5 bg-gradient-to-b from-background to-background/95">
-                  <div className="relative aspect-[4/3] bg-muted group">
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `/products/dummy-${product.id}.jpg`;
-                      }}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-3 right-3 rounded-full bg-background/20 backdrop-blur-sm hover:bg-background/40"
-                      onClick={() => toggleFavorite(product.id)}
-                    >
-                      <Heart
-                        className={`h-5 w-5 ${
-                          favorites.includes(product.id)
-                            ? "fill-red-500 text-red-500"
-                            : "text-foreground"
-                        }`}
+            {filteredProducts
+              .filter((product) => !product.featured)
+              .map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  className="group relative rounded-xl overflow-hidden border border-border/60 bg-background/60 hover:shadow-lg transition-all duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: 0.1 + index * 0.05,
+                  }}
+                  onClick={() => product.id === "personality-assessment" ? router.push(`/dashboard/resources/${product.id}`) : null}
+                  style={{ cursor: product.id === "personality-assessment" ? "pointer" : "default" }}
+                >
+                  <Card className="overflow-hidden h-full hover:shadow-xl transition-all duration-300 border-primary/5 bg-gradient-to-b from-background to-background/95">
+                    <div className="relative aspect-[4/3] bg-muted group">
+                      <Image
+                        src={product.image}
+                        alt={product.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = `/products/dummy-${product.id}.jpg`;
+                        }}
                       />
-                    </Button>
-                    {product.tag && (
-                      <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
-                        {product.tag}
-                      </Badge>
-                    )}
-                  </div>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{product.title}</CardTitle>
-                      {product.rating && (
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <span className="ml-1 text-sm">{product.rating?.toFixed(1)}</span>
-                        </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-3 right-3 rounded-full bg-background/20 backdrop-blur-sm hover:bg-background/40"
+                        onClick={() => toggleFavorite(product.id)}
+                      >
+                        <Heart
+                          className={`h-5 w-5 ${
+                            favorites.includes(product.id)
+                              ? "fill-red-500 text-red-500"
+                              : "text-foreground"
+                          }`}
+                        />
+                      </Button>
+                      {product.tag && (
+                        <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
+                          {product.tag}
+                        </Badge>
                       )}
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm line-clamp-2">{product.description}</p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center">
-                    <p className="text-xl font-bold">${product.price}</p>
-                    <Button 
-                      className="rounded-full"
-                      onClick={() => addToCart(product.id)}
-                      disabled={cart.includes(product.id)}
-                    >
-                      {cart.includes(product.id) ? (
-                        <span className="flex items-center gap-1">
-                          <ShoppingCart className="h-4 w-4" />
-                          Added
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-1">
-                          <ShoppingCart className="h-4 w-4" />
-                          Add
-                        </span>
-                      )}
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg">{product.title}</CardTitle>
+                        {product.rating && (
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                            <span className="ml-1 text-sm">{product.rating?.toFixed(1)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground text-sm line-clamp-2">{product.description}</p>
+                    </CardContent>
+                    <CardFooter className="flex justify-between items-center">
+                      <p className="text-xl font-bold">${product.price}</p>
+                      <Button 
+                        className="rounded-full"
+                        onClick={() => addToCart(product.id)}
+                        disabled={cart.includes(product.id)}
+                      >
+                        {cart.includes(product.id) ? (
+                          <span className="flex items-center gap-1">
+                            <ShoppingCart className="h-4 w-4" />
+                            Added
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1">
+                            <ShoppingCart className="h-4 w-4" />
+                            Add
+                          </span>
+                        )}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))}
           </motion.div>
 
           {filteredProducts.length === 0 && (
