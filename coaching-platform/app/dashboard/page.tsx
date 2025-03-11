@@ -87,7 +87,7 @@ const DashboardPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Weekly Goal</p>
-                      <p className="text-sm font-semibold">68% Complete</p>
+                      <p className="text-sm font-semibold"></p>
                     </div>
                   </div>
                 </div>
@@ -521,7 +521,9 @@ const DashboardPage = () => {
                   <div className="flex items-center justify-between hover:bg-primary/5 p-2 rounded-lg transition-colors duration-200 hover:translate-x-1 transform">
                     <div className="space-y-1">
                       <p className="text-sm font-medium leading-none">Consulting Industry Insights</p>
-                      <p className="text-xs text-muted-foreground">Webinar • 120 participants</p>
+                      <p className="text-xs text-muted-foreground">
+                        Webinar • 120 participants
+                      </p>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-sm text-muted-foreground">Next Monday, 6:00 PM</div>

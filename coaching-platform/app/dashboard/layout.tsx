@@ -258,10 +258,26 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="coaching-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/coaching")} className="hover-lift">
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching"} className="hover-lift">
                   <Link href="/dashboard/coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Briefcase className="h-5 w-5" />
-                    <span>Programs</span>
+                    <span>Land a job</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/career-excellence"} className="hover-lift">
+                  <Link href="/dashboard/coaching/career-excellence" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Award className="h-5 w-5" />
+                    <span>Career excellence</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/career-transition"} className="hover-lift">
+                  <Link href="/dashboard/coaching/career-transition" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <FileCheck className="h-5 w-5" />
+                    <span>Career transition</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -276,10 +292,18 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="ai-coach-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach"} className="hover-lift">
-                  <Link href="/dashboard/ai-coach" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach/case-interview"} className="hover-lift">
+                  <Link href="/dashboard/ai-coach/case-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Brain className="h-5 w-5" />
-                    <span>Try Demo</span>
+                    <span>Case Interview</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach/fit-interview"} className="hover-lift">
+                  <Link href="/dashboard/ai-coach/fit-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                    <Users className="h-5 w-5" />
+                    <span>FIT Interview</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -325,7 +349,7 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
 
         <SidebarGroup>
           <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-            Community
+            Whatsapp community
           </SidebarGroupLabel>
           <SidebarGroupContent className="community-section space-y-1">
             <SidebarMenu>
@@ -333,7 +357,7 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
                 <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/community")} className="hover-lift">
                   <Link href="/dashboard/community" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <MessageSquare className="h-5 w-5" />
-                    <span>Connect</span>
+                    <span>Join</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
