@@ -28,7 +28,7 @@ const products: Product[] = [
     title: "Personality Assessment",
     description: "Discover your unique strengths and work style with our comprehensive assessment toolkit.",
     price: 99,
-    image: "/products/personality-assessment.jpg",
+    image: "/products/dummy-personality-assessment.jpg",
     rating: 4.8,
     featured: true,
     tag: "Best Seller"
@@ -38,7 +38,7 @@ const products: Product[] = [
     title: "Meditation Guide",
     description: "Master mindfulness techniques to enhance focus and reduce interview stress.",
     price: 29,
-    image: "/products/meditation.jpg",
+    image: "/products/dummy-meditation.jpg",
     rating: 4.6
   },
   {
@@ -46,7 +46,7 @@ const products: Product[] = [
     title: "CV & Cover Letter Guide",
     description: "Stand out with professionally crafted templates and expert writing strategies.",
     price: 29,
-    image: "/products/cv-guide.jpg",
+    image: "/products/dummy-cv-guide.jpg",
     rating: 4.7,
     tag: "Popular"
   },
@@ -55,7 +55,7 @@ const products: Product[] = [
     title: "Business Essential Handbook",
     description: "Your comprehensive guide to key business frameworks and industry knowledge.",
     price: 99,
-    image: "/products/business-handbook.jpg",
+    image: "/products/dummy-business-essentials.jpg",
     rating: 4.9,
     featured: true
   },
@@ -64,7 +64,7 @@ const products: Product[] = [
     title: "Consulting Toolkit",
     description: "Master the essential frameworks and tools used by top consulting firms.",
     price: 99,
-    image: "/products/consulting-toolkit.jpg",
+    image: "/products/dummy-consulting-toolkit.jpg",
     rating: 4.8,
     tag: "Premium"
   }
@@ -195,7 +195,7 @@ export default function ResourcesPage() {
                           className="object-cover transition-transform group-hover:scale-105"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = "https://placehold.co/600x400/1a1a2e/e2e8f0?text=Premium+Resource";
+                            target.src = `/products/dummy-${product.id}.jpg`;
                           }}
                         />
                         {product.tag && (
@@ -286,7 +286,7 @@ export default function ResourcesPage() {
                       className="object-cover transition-transform group-hover:scale-105"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/600x400/1a1a2e/e2e8f0?text=Resource";
+                        target.src = `/products/dummy-${product.id}.jpg`;
                       }}
                     />
                     <Button
