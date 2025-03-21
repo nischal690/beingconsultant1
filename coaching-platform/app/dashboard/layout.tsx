@@ -31,7 +31,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ThemeToggle } from "@/components/theme-provider"
 import {
   Bell,
   BookOpen,
@@ -386,7 +385,6 @@ function DashboardHeader() {
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/70 px-6 backdrop-blur-md">
       <SidebarTrigger />
       <div className="ml-auto flex items-center gap-4">
-        <ThemeToggle className="hover:bg-primary/10" />
         
         <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-200">
           <Bell className="h-5 w-5" />
