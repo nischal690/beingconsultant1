@@ -53,41 +53,50 @@ const DashboardPage = () => {
     <>
       <div className={`space-y-6 opacity-0 transition-opacity duration-500 ${isLoaded ? 'opacity-100' : ''}`}>
         <div className={`relative transform transition-all duration-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          {/* Decorative background elements */}
-          <div className="absolute -top-4 -left-6 w-72 h-72 bg-gradient-to-br from-black/5 to-black/10 rounded-full blur-3xl -z-10 dark:from-white/5 dark:to-white/10"></div>
-          <div className="absolute top-10 right-20 w-36 h-36 bg-gradient-to-br from-black/5 to-gray-500/10 rounded-full blur-3xl -z-10 dark:from-white/5 dark:to-gray-400/10"></div>
+          {/* Decorative background elements with enhanced animations */}
+          <div className="absolute -top-4 -left-6 w-72 h-72 bg-gradient-to-br from-black/10 to-black/5 rounded-full blur-3xl -z-10 dark:from-white/10 dark:to-white/5 animate-pulse-glow"></div>
+          <div className="absolute top-10 right-20 w-36 h-36 bg-gradient-to-br from-black/5 to-gray-500/10 rounded-full blur-3xl -z-10 dark:from-white/5 dark:to-gray-400/10 animate-pulse-glow" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-10 left-20 w-48 h-48 bg-gradient-to-tr from-black/5 to-gray-500/5 rounded-full blur-3xl -z-10 dark:from-white/5 dark:to-gray-400/5 animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
           
-          {/* Modern welcome header */}
-          <div className="relative z-10 p-6 rounded-2xl bg-gradient-to-r from-white/80 to-white/60 dark:from-black/80 dark:to-black/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] overflow-hidden">
-            {/* Decorative accent line */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black via-gray-500 to-black dark:from-white dark:via-gray-500 dark:to-white"></div>
+          {/* Modern welcome header with enhanced styling */}
+          <div className="relative z-10 p-6 rounded-2xl welcome-gradient welcome-shadow welcome-border-gradient overflow-hidden animate-gradient-flow transition-all duration-500">
+            {/* Decorative accent line with animation */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black/50 to-transparent dark:via-white/50 animate-border-shine"></div>
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-black/30 to-transparent dark:via-white/30 animate-border-shine" style={{ animationDelay: '1.5s' }}></div>
+            
+            {/* Subtle light effects */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-white/5 dark:bg-white/10 blur-2xl animate-pulse-glow"></div>
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-white/5 dark:bg-white/10 blur-2xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
             
             <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <div className="mr-3 h-10 w-1 bg-black rounded-full shadow-[0_0_8px_rgba(0,0,0,0.4)] dark:bg-white dark:shadow-[0_0_8px_rgba(255,255,255,0.4)]"></div>
-                  <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-black to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Welcome back, John!</h2>
+                  <div className="mr-3 h-10 w-1 bg-gradient-to-b from-black/80 to-black/40 dark:from-white/80 dark:to-white/40 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.4)] dark:shadow-[0_0_8px_rgba(255,255,255,0.4)] animate-pulse-glow"></div>
+                  <h2 className="text-3xl font-bold tracking-tight welcome-text-gradient animate-gradient-flow">Welcome back, John!</h2>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-base max-w-md">Here's what's happening with your consulting journey today. Your next session is in <span className="font-medium text-black dark:text-white">2 days</span>.</p>
+                <p className="text-gray-600 dark:text-gray-300 text-base max-w-md relative z-10">
+                  Here's what's happening with your consulting journey today. Your next session is in 
+                  <span className="font-medium text-black dark:text-white ml-1 relative inline-block animate-float">2 days</span>.
+                </p>
                 
-                {/* Quick stats summary */}
+                {/* Quick stats summary with enhanced styling */}
                 <div className="flex items-center gap-6 mt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-black/10 to-black/5 dark:from-white/10 dark:to-white/5 shadow-sm">
-                      <Clock className="h-4 w-4 text-black dark:text-white" />
+                  <div className="flex items-center gap-2 group/stat transition-all duration-300">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/5 dark:from-white/20 dark:to-white/5 shadow-sm group-hover:shadow-[0_0_10px_rgba(0,0,0,0.2)] dark:group-hover:shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-all duration-300">
+                      <Clock className="h-4 w-4 text-black dark:text-white transition-transform duration-300" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Upcoming</p>
-                      <p className="text-sm font-semibold">3 Sessions</p>
+                      <p className="text-sm font-semibold welcome-text-gradient animate-gradient-flow">3 Sessions</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-black/10 to-black/5 dark:from-white/10 dark:to-white/5 shadow-sm">
-                      <Star className="h-4 w-4 text-black dark:text-white" />
+                  <div className="flex items-center gap-2 group/stat transition-all duration-300">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/5 dark:from-white/20 dark:to-white/5 shadow-sm group-hover:shadow-[0_0_10px_rgba(0,0,0,0.2)] dark:group-hover:shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-all duration-300">
+                      <Star className="h-4 w-4 text-black dark:text-white transition-transform duration-300" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Weekly Goal</p>
-                      <p className="text-sm font-semibold"></p>
+                      <p className="text-sm font-semibold welcome-text-gradient animate-gradient-flow">70% Complete</p>
                     </div>
                   </div>
                 </div>
@@ -95,12 +104,12 @@ const DashboardPage = () => {
               
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <Button className="relative overflow-hidden group font-medium">
-                  <span className="absolute inset-0 bg-gradient-to-r from-black/80 to-gray-800/80 dark:from-white/80 dark:to-gray-200/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  <Calendar className="mr-2 h-4 w-4 relative z-10" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
+                  <Calendar className="mr-2 h-4 w-4 relative z-10 transition-transform duration-300" />
                   <span className="relative z-10">Book a Session</span>
                 </Button>
                 <Button variant="outline" className="font-medium group hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
-                  <Users className="mr-2 h-4 w-4 text-black dark:text-white group-hover:scale-110 transition-transform duration-300" />
+                  <Users className="mr-2 h-4 w-4 text-black dark:text-white transition-transform duration-300" />
                   <span>Join Group Session</span>
                 </Button>
               </div>
@@ -135,8 +144,8 @@ const DashboardPage = () => {
               </TabsTrigger>
             </TabsList>
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" className="h-8 gap-1 group border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50 hover:bg-black/5 dark:hover:bg-white/5">
-                <Download className="h-3.5 w-3.5 text-black dark:text-white group-hover:scale-110 transition-transform" />
+              <Button variant="outline" size="sm" className="h-8 gap-1 group border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
+                <Download className="h-3.5 w-3.5 text-black dark:text-white transition-transform duration-300 group-hover:translate-x-0.5" />
                 <span>Export</span>
               </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
@@ -152,7 +161,7 @@ const DashboardPage = () => {
           >
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div className={`col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-0 ${animationStage >= 2 ? 'animate-slideInUp opacity-100' : ''}`}>
-                <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none">
+                <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black/30 to-black/80 dark:from-white/30 dark:to-white/80"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
                     <div className="absolute top-1 right-1 w-24 h-24 bg-black/5 dark:bg-white/5 rounded-full blur-2xl -z-10"></div>
@@ -161,7 +170,7 @@ const DashboardPage = () => {
                       <span className="text-xl mt-1">12</span>
                     </CardTitle>
                     <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-black/10 to-black/5 dark:from-white/10 dark:to-white/5 group-hover:from-black/15 group-hover:to-black/10 dark:group-hover:from-white/15 dark:group-hover:to-white/10 transition-all duration-300">
-                      <Clock className="h-5 w-5 text-black dark:text-white group-hover:scale-110 transform" />
+                      <Clock className="h-5 w-5 text-black dark:text-white transition-transform duration-300" />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -175,11 +184,11 @@ const DashboardPage = () => {
                       <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <div className="h-full bg-black/30 rounded-full" style={{ width: '65%' }}></div>
                       </div>
-                      <div className="absolute -right-3 -bottom-3 h-16 w-16 bg-black/5 dark:bg-white/5 rounded-full blur-xl -z-10"></div>
+                      <div className="absolute -right-3 -bottom-3 h-16 w-16 bg-black/5 dark:bg-white/5 rounded-full blur-md -z-10"></div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none">
+                <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black/30 to-black/80 dark:from-white/30 dark:to-white/80"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
                     <div className="absolute top-1 right-1 w-24 h-24 bg-black/5 dark:bg-white/5 rounded-full blur-2xl -z-10"></div>
@@ -188,7 +197,7 @@ const DashboardPage = () => {
                       <span className="text-xl mt-1">5</span>
                     </CardTitle>
                     <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-black/10 to-black/5 dark:from-white/10 dark:to-white/5 group-hover:from-black/15 group-hover:to-black/10 dark:group-hover:from-white/15 dark:group-hover:to-white/10 transition-all duration-300">
-                      <MessageSquare className="h-5 w-5 text-black dark:text-white group-hover:scale-110 transform" />
+                      <MessageSquare className="h-5 w-5 text-black dark:text-white transition-transform duration-300" />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -202,11 +211,11 @@ const DashboardPage = () => {
                       <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <div className="h-full bg-black/30 rounded-full" style={{ width: '40%' }}></div>
                       </div>
-                      <div className="absolute -right-3 -bottom-3 h-16 w-16 bg-black/5 dark:bg-white/5 rounded-full blur-xl -z-10"></div>
+                      <div className="absolute -right-3 -bottom-3 h-16 w-16 bg-black/5 dark:bg-white/5 rounded-full blur-md -z-10"></div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none">
+                <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black/30 to-black/80 dark:from-white/30 dark:to-white/80"></div>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
                     <div className="absolute top-1 right-1 w-24 h-24 bg-black/5 dark:bg-white/5 rounded-full blur-2xl -z-10"></div>
@@ -215,7 +224,7 @@ const DashboardPage = () => {
                       <span className="text-xl mt-1">24</span>
                     </CardTitle>
                     <div className="h-12 w-12 rounded-full flex items-center justify-center bg-gradient-to-br from-black/10 to-black/5 dark:from-white/10 dark:to-white/5 group-hover:from-black/15 group-hover:to-black/10 dark:group-hover:from-white/15 dark:group-hover:to-white/10 transition-all duration-300">
-                      <FileText className="h-5 w-5 text-black dark:text-white group-hover:scale-110 transform" />
+                      <FileText className="h-5 w-5 text-black dark:text-white transition-transform duration-300" />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -229,7 +238,7 @@ const DashboardPage = () => {
                       <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <div className="h-full bg-black/30 rounded-full" style={{ width: '75%' }}></div>
                       </div>
-                      <div className="absolute -right-3 -bottom-3 h-16 w-16 bg-black/5 dark:bg-white/5 rounded-full blur-xl -z-10"></div>
+                      <div className="absolute -right-3 -bottom-3 h-16 w-16 bg-black/5 dark:bg-white/5 rounded-full blur-md -z-10"></div>
                     </div>
                   </CardContent>
                 </Card>
@@ -237,7 +246,7 @@ const DashboardPage = () => {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className={`col-span-4 overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 group transform hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none opacity-0 ${animationStage >= 5 ? 'animate-slideInUp opacity-100' : ''}`}>
+              <Card className={`col-span-4 overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 opacity-0 ${animationStage >= 5 ? 'animate-slideInUp opacity-100' : ''}`}>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black/30 to-black/80 dark:from-white/30 dark:to-white/80"></div>
                 <CardHeader className="relative z-10">
                   <div className="absolute top-0 right-0 -mt-6 -mr-6 w-40 h-40 bg-black/5 dark:bg-white/5 rounded-full blur-3xl -z-10"></div>
@@ -401,7 +410,7 @@ const DashboardPage = () => {
                   </div>
                 </CardContent>
               </Card>
-              <Card className={`col-span-3 overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 opacity-0 ${animationStage >= 5 ? 'animate-slideInRight opacity-100' : ''}`}>
+              <Card className={`col-span-3 overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 opacity-0 ${animationStage >= 5 ? 'animate-slideInRight opacity-100' : ''}`}>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black/30 to-black/80 dark:from-white/30 dark:to-white/80"></div>
                 <CardHeader className="relative">
                   <div className="absolute top-0 right-0 -mt-6 -mr-6 w-40 h-40 bg-black/5 dark:bg-white/5 rounded-full blur-3xl -z-10"></div>
@@ -416,9 +425,9 @@ const DashboardPage = () => {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="group relative p-4 rounded-xl bg-black/5 hover:bg-black/10 transition-colors duration-300 flex items-start space-x-4 cursor-pointer overflow-hidden">
-                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm group-hover:scale-110 transition-transform">
-                        <FileText className="h-5 w-5 text-black" />
+                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm group-hover:shadow-[0_0_10px_rgba(0,0,0,0.2)] dark:group-hover:shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-all duration-300">
+                        <FileText className="h-5 w-5 text-black transition-transform duration-300" />
                       </div>
                       <div className="relative flex-1 overflow-hidden">
                         <h4 className="font-medium text-sm group-hover:text-black transition-colors duration-300 flex items-center">
@@ -437,9 +446,9 @@ const DashboardPage = () => {
                     </div>
                     
                     <div className="group relative p-4 rounded-xl bg-white/50 hover:bg-black/5 transition-colors duration-300 flex items-start space-x-4 cursor-pointer">
-                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm">
-                        <Users className="h-5 w-5 text-black" />
+                        <Users className="h-5 w-5 text-black transition-transform duration-300" />
                       </div>
                       <div className="relative flex-1 overflow-hidden">
                         <h4 className="font-medium text-sm group-hover:text-black transition-colors duration-300">Client Communication Templates</h4>
@@ -455,9 +464,9 @@ const DashboardPage = () => {
                     </div>
                     
                     <div className="group relative p-4 rounded-xl bg-white/50 hover:bg-black/5 transition-colors duration-300 flex items-start space-x-4 cursor-pointer">
-                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm">
-                        <BarChart className="h-5 w-5 text-black" />
+                        <BarChart className="h-5 w-5 text-black transition-transform duration-300" />
                       </div>
                       <div className="relative flex-1 overflow-hidden">
                         <h4 className="font-medium text-sm group-hover:text-black transition-colors duration-300">Business Analysis Tools</h4>
@@ -475,7 +484,7 @@ const DashboardPage = () => {
                 </CardContent>
                 <CardFooter className="border-t border-muted/20 pt-4">
                   <Button variant="outline" className="w-full group hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
-                    <FileText className="mr-2 h-4 w-4 text-black group-hover:scale-110 transition-transform duration-300" />
+                    <FileText className="mr-2 h-4 w-4 text-black group-hover:translate-x-0.5 transition-transform duration-300" />
                     <span>Browse All Resources</span>
                   </Button>
                 </CardFooter>
@@ -487,7 +496,7 @@ const DashboardPage = () => {
             value="upcoming" 
             className="space-y-4 pt-1 data-[state=active]:animate-fadeIn"
           >
-            <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 transform hover:-translate-y-1 animate-slideInUp">
+            <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 transform hover:-translate-y-1 animate-slideInUp">
               <CardHeader>
                 <CardTitle>Upcoming Sessions</CardTitle>
                 <CardDescription>Your scheduled coaching and training sessions</CardDescription>
@@ -541,7 +550,7 @@ const DashboardPage = () => {
             value="resources" 
             className="space-y-4 pt-1 data-[state=active]:animate-fadeIn"
           >
-            <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 transform hover:-translate-y-1 animate-slideInUp">
+            <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 transform hover:-translate-y-1 animate-slideInUp">
               <CardHeader>
                 <CardTitle>Recently Accessed Resources</CardTitle>
                 <CardDescription>Continue where you left off</CardDescription>
@@ -550,7 +559,7 @@ const DashboardPage = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 p-2 rounded-lg hover:bg-black/5 transition-colors duration-200 hover:translate-x-1 transform">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm">
-                      <FileText className="h-6 w-6 text-black" />
+                      <FileText className="h-6 w-6 text-black transition-transform duration-300" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium leading-none">Case Interview Frameworks</p>
@@ -562,7 +571,7 @@ const DashboardPage = () => {
                   </div>
                   <div className="flex items-center gap-4 p-2 rounded-lg hover:bg-black/5 transition-colors duration-200 hover:translate-x-1 transform">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm">
-                      <Users className="h-6 w-6 text-black" />
+                      <Users className="h-6 w-6 text-black transition-transform duration-300" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium leading-none">Networking Strategies</p>
@@ -576,7 +585,7 @@ const DashboardPage = () => {
                   </div>
                   <div className="flex items-center gap-4 p-2 rounded-lg hover:bg-black/5 transition-colors duration-200 hover:translate-x-1 transform">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/30 shadow-sm">
-                      <Star className="h-6 w-6 text-black" />
+                      <Star className="h-6 w-6 text-black transition-transform duration-300" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium leading-none">Personality Assessment</p>
@@ -597,7 +606,7 @@ const DashboardPage = () => {
 
       {/* Welcome modal with motion animation */}
       <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
-        <DialogContent className="sm:max-w-[425px] border-none backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl overflow-hidden animate-slideInUp">
+        <DialogContent className="sm:max-w-[425px] border-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl overflow-hidden animate-slideInUp">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-black via-gray-500 to-black dark:from-white dark:via-gray-500 dark:to-white"></div>
           <div className="absolute -right-20 -top-20 w-40 h-40 bg-black/10 rounded-full blur-3xl -z-10"></div>
           <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-secondary/10 rounded-full blur-3xl -z-10"></div>
@@ -611,7 +620,7 @@ const DashboardPage = () => {
           <div className="flex flex-col space-y-4 py-4">
             <div className="flex items-center space-x-4 rounded-lg p-3 transition-colors bg-black/5 hover:bg-black/10">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/10">
-                <TrendingUp className="h-5 w-5 text-black" />
+                <TrendingUp className="h-5 w-5 text-black transition-transform duration-300" />
               </div>
               <div className="flex-1 space-y-1">
                 <p className="text-sm font-medium">Track your progress</p>
@@ -622,7 +631,7 @@ const DashboardPage = () => {
             </div>
             <div className="flex items-center space-x-4 rounded-lg p-3 transition-colors bg-secondary/5 hover:bg-secondary/10">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-secondary/20 to-secondary/10">
-                <Calendar className="h-5 w-5 text-secondary" />
+                <Calendar className="h-5 w-5 text-secondary transition-transform duration-300" />
               </div>
               <div className="flex-1 space-y-1">
                 <p className="text-sm font-medium">Schedule sessions</p>
@@ -633,7 +642,7 @@ const DashboardPage = () => {
             </div>
             <div className="flex items-center space-x-4 rounded-lg p-3 transition-colors bg-black/5 hover:bg-black/10">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/10">
-                <FileText className="h-5 w-5 text-black" />
+                <FileText className="h-5 w-5 text-black transition-transform duration-300" />
               </div>
               <div className="flex-1 space-y-1">
                 <p className="text-sm font-medium">Access resources</p>

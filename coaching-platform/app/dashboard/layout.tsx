@@ -55,11 +55,15 @@ import {
   FileSpreadsheet,
   HelpCircle,
 } from "lucide-react"
+import { ProtectedRoute } from "@/components/auth/protected-route"
+import { useAuth } from "@/lib/firebase/auth-context"
+import { useRouter } from "next/navigation"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
   const [runTour, setRunTour] = useState(true)
+  const { user, logout } = useAuth()
 
   // Define the tour steps
   const steps = [
@@ -184,47 +188,53 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
-        <DashboardSidebar pathname={pathname} />
-        <div className="flex flex-1 flex-col">
-          <DashboardHeader />
-          <main className="flex-1 p-6 main-content animate-fade-in">{children}</main>
+    <ProtectedRoute>
+      <SidebarProvider>
+        <div className="flex min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
+          <DashboardSidebar pathname={pathname} />
+          <div className="flex flex-1 flex-col">
+            <DashboardHeader />
+            <main className="flex-1 p-6 main-content animate-fade-in">{children}</main>
+          </div>
+          
+          {pathname === '/dashboard' && (
+            <Button 
+              className="tour-button fixed right-4 bottom-4 z-50 bg-primary hover:bg-primary/90 flex items-center gap-2 shadow-lg transition-all duration-200"
+              onClick={() => setRunTour(true)}
+            >
+              <HelpCircle size={16} />
+              <span>Tour Guide</span>
+            </Button>
+          )}
+          
+          {runTour && (
+            <SimpleTour
+              steps={steps}
+              run={runTour}
+              continuous={true}
+              showSkipButton={true}
+              callback={handleJoyrideCallback}
+            />
+          )}
         </div>
-        
-        {pathname === '/dashboard' && (
-          <Button 
-            className="tour-button fixed right-4 bottom-4 z-50 bg-primary hover:bg-primary/90 flex items-center gap-2 shadow-lg transition-all duration-200"
-            onClick={() => setRunTour(true)}
-          >
-            <HelpCircle size={16} />
-            <span>Tour Guide</span>
-          </Button>
-        )}
-        
-        <SimpleTour
-          steps={steps}
-          run={runTour}
-          continuous={true}
-          showSkipButton={true}
-          showProgress={true}
-          styles={{
-            options: {
-              primaryColor: '#245D66',
-              backgroundColor: '#ffffff',
-              textColor: '#245D66',
-              arrowColor: '#ffffff',
-              overlayColor: 'rgba(0, 0, 0, 0.65)',
-            }
-          }}
-          callback={handleJoyrideCallback}
-        />
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </ProtectedRoute>
   )
 }
 
 function DashboardSidebar({ pathname }: { pathname: string }) {
+  const { logout } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/auth/login')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
+  }
+
   return (
     <Sidebar className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md">
       <SidebarHeader className="border-b border-sidebar-border p-4">
@@ -245,6 +255,14 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
               <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                 <Home className="h-5 w-5" />
                 <span>Dashboard</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={pathname === "/dashboard/profile"} className="hover-lift">
+              <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                <User className="h-5 w-5" />
+                <span>Profile</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -366,11 +384,19 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-4">
         <div className="flex flex-col space-y-4">
-          <Button variant="outline" className="w-full justify-start gap-2 hover-lift">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-2 hover-lift"
+            onClick={() => router.push('/dashboard/profile')}
+          >
             <Settings className="h-4 w-4" />
             <span>Settings</span>
           </Button>
-          <Button variant="outline" className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift"
+            onClick={handleLogout}
+          >
             <LogOut className="h-4 w-4" />
             <span>Log Out</span>
           </Button>
@@ -381,6 +407,18 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
 }
 
 function DashboardHeader() {
+  const { user, logout } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/auth/login')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
+  }
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/70 px-6 backdrop-blur-md">
       <SidebarTrigger />
@@ -394,16 +432,18 @@ function DashboardHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="profile-dropdown rounded-full hover:bg-primary/10 transition-all duration-200">
               <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/50 transition-all duration-200">
-                <AvatarImage src="/avatar.png" alt="User" />
-                <AvatarFallback className="bg-primary text-primary-foreground">JC</AvatarFallback>
+                <AvatarImage src={user?.photoURL || ""} alt={user?.displayName || "User"} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {user?.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}
+                </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 shadow-xl border border-border/40 bg-background/90 backdrop-blur-md">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <span className="text-lg font-medium">John Consultant</span>
-                <p className="text-xs text-muted-foreground">john@example.com</p>
+                <span className="text-lg font-medium">{user?.displayName || "User"}</span>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -416,7 +456,7 @@ function DashboardHeader() {
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center gap-2">
+            <DropdownMenuItem className="flex items-center gap-2" onClick={handleLogout}>
               <LogOut className="h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

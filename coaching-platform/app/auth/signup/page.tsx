@@ -10,20 +10,105 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Loader2, Mail, Apple } from "lucide-react"
+import { useAuth } from "@/lib/firebase/auth-context"
+import { createUserProfile } from "@/lib/firebase/firestore"
+import { toast } from "sonner"
+import { auth } from "@/lib/firebase/config"
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  })
+  const [error, setError] = useState("")
   const router = useRouter()
+  const { signUp, signInWithGoogle, signInWithApple } = useAuth()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }))
+    // Clear error when user types
+    if (error) setError("")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+
+    // Validate form
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters")
+      return
+    }
+
     setIsLoading(true)
 
-    // Simulate account creation
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Create user with Firebase
+      await signUp(formData.email, formData.password)
+      
+      // Get the current user directly from Firebase auth
+      const currentUser = auth.currentUser
+      
+      if (currentUser) {
+        // Create user profile in Firestore
+        await createUserProfile(currentUser.uid, {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          displayName: `${formData.firstName} ${formData.lastName}`,
+        })
+      }
+
+      toast.success("Account created successfully!")
       router.push("/dashboard")
-    }, 1500)
+    } catch (error: any) {
+      console.error("Signup error:", error)
+      if (error.code === "auth/email-already-in-use") {
+        setError("Email is already in use")
+      } else {
+        setError(error.message || "Failed to create account")
+      }
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    try {
+      await signInWithGoogle()
+      toast.success("Signed in with Google!")
+      router.push("/dashboard")
+    } catch (error) {
+      console.error("Google sign in error:", error)
+      setError("Failed to sign in with Google")
+      setIsLoading(false)
+    }
+  }
+
+  const handleAppleSignIn = async () => {
+    setIsLoading(true)
+    try {
+      await signInWithApple()
+      toast.success("Signed in with Apple!")
+      router.push("/dashboard")
+    } catch (error) {
+      console.error("Apple sign in error:", error)
+      setError("Failed to sign in with Apple")
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -41,28 +126,64 @@ export default function SignupPage() {
             <p className="text-gray-500 dark:text-gray-400">Enter your information to get started</p>
           </div>
           <div className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="first-name">First name</Label>
-                  <Input id="first-name" placeholder="John" required />
+                  <Label htmlFor="firstName">First name</Label>
+                  <Input 
+                    id="firstName" 
+                    placeholder="John" 
+                    required 
+                    value={formData.firstName}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="last-name">Last name</Label>
-                  <Input id="last-name" placeholder="Doe" required />
+                  <Label htmlFor="lastName">Last name</Label>
+                  <Input 
+                    id="lastName" 
+                    placeholder="Doe" 
+                    required 
+                    value={formData.lastName}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="name@example.com" required type="email" />
+                <Input 
+                  id="email" 
+                  placeholder="name@example.com" 
+                  required 
+                  type="email" 
+                  value={formData.email}
+                  onChange={handleChange}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" required type="password" />
+                <Input 
+                  id="password" 
+                  required 
+                  type="password" 
+                  value={formData.password}
+                  onChange={handleChange}
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input id="confirm-password" required type="password" />
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input 
+                  id="confirmPassword" 
+                  required 
+                  type="password" 
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
@@ -84,11 +205,21 @@ export default function SignupPage() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+              >
                 <Mail className="mr-2 h-4 w-4" />
                 Google
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleAppleSignIn}
+                disabled={isLoading}
+              >
                 <Apple className="mr-2 h-4 w-4" />
                 Apple
               </Button>
@@ -105,4 +236,3 @@ export default function SignupPage() {
     </div>
   )
 }
-

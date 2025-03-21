@@ -11,20 +11,85 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Loader2, Mail, Apple } from "lucide-react"
+import { useAuth } from "@/lib/firebase/auth-context"
+import { toast } from "sonner"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false
+  })
+  const [error, setError] = useState("")
   const router = useRouter()
+  const { signIn, signInWithGoogle, signInWithApple } = useAuth()
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }))
+    // Clear error when user types
+    if (error) setError("")
+  }
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      rememberMe: checked
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
 
-    // Simulate authentication
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      await signIn(formData.email, formData.password)
+      toast.success("Signed in successfully!")
       router.push("/dashboard")
-    }, 1500)
+    } catch (error: any) {
+      console.error("Login error:", error)
+      if (error.code === "auth/invalid-credential") {
+        setError("Invalid email or password")
+      } else if (error.code === "auth/user-not-found") {
+        setError("User not found")
+      } else if (error.code === "auth/wrong-password") {
+        setError("Incorrect password")
+      } else {
+        setError(error.message || "Failed to sign in")
+      }
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true)
+    try {
+      await signInWithGoogle()
+      toast.success("Signed in with Google!")
+      router.push("/dashboard")
+    } catch (error) {
+      console.error("Google sign in error:", error)
+      setError("Failed to sign in with Google")
+      setIsLoading(false)
+    }
+  }
+
+  const handleAppleSignIn = async () => {
+    setIsLoading(true)
+    try {
+      await signInWithApple()
+      toast.success("Signed in with Apple!")
+      router.push("/dashboard")
+    } catch (error) {
+      console.error("Apple sign in error:", error)
+      setError("Failed to sign in with Apple")
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -42,10 +107,22 @@ export default function LoginPage() {
             <p className="text-gray-500 dark:text-gray-400">Enter your credentials to access your account</p>
           </div>
           <div className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="name@example.com" required type="email" />
+                <Input 
+                  id="email" 
+                  placeholder="name@example.com" 
+                  required 
+                  type="email" 
+                  value={formData.email}
+                  onChange={handleChange}
+                />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -54,10 +131,20 @@ export default function LoginPage() {
                     Forgot password?
                   </Link>
                 </div>
-                <Input id="password" required type="password" />
+                <Input 
+                  id="password" 
+                  required 
+                  type="password" 
+                  value={formData.password}
+                  onChange={handleChange}
+                />
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
+                <Checkbox 
+                  id="remember" 
+                  checked={formData.rememberMe}
+                  onCheckedChange={handleCheckboxChange}
+                />
                 <Label htmlFor="remember" className="text-sm font-normal">
                   Remember me
                 </Label>
@@ -82,11 +169,21 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+              >
                 <Mail className="mr-2 h-4 w-4" />
                 Google
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={handleAppleSignIn}
+                disabled={isLoading}
+              >
                 <Apple className="mr-2 h-4 w-4" />
                 Apple
               </Button>
@@ -103,4 +200,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

@@ -93,6 +93,127 @@ body {
     @apply bg-white text-black hover:bg-gray-100;
     box-shadow: 0 4px 15px -3px rgba(255, 255, 255, 0.15);
   }
+  
+  /* Animations for welcome section */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @keyframes pulseGlow {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+  }
+  
+  @keyframes borderShine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @keyframes floatUp {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+  
+  .animate-gradient-flow {
+    animation: gradientFlow 8s ease infinite;
+    background-size: 200% 200%;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 4s ease-in-out infinite;
+  }
+  
+  .animate-border-shine {
+    animation: borderShine 3s linear infinite;
+    background-size: 200% 200%;
+  }
+  
+  .animate-float {
+    animation: floatUp 6s ease-in-out infinite;
+  }
+  
+  .welcome-gradient {
+    @apply bg-gradient-to-br from-white/90 to-white/80 dark:from-black/90 dark:to-black/80;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .welcome-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+    background-size: 200% 200%;
+    z-index: -1;
+  }
+  
+  .dark .welcome-gradient::before {
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+  }
+  
+  .welcome-text-gradient {
+    background: linear-gradient(to right, #000, #333, #000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+  }
+  
+  .dark .welcome-text-gradient {
+    background: linear-gradient(to right, #fff, #aaa, #fff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+  }
+  
+  .welcome-border-gradient {
+    position: relative;
+  }
+  
+  .welcome-border-gradient::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  
+  .dark .welcome-border-gradient::after {
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  }
+  
+  .welcome-shadow {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+  
+  .welcome-shadow:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  .dark .welcome-shadow {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  .dark .welcome-shadow:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  }
 }
 
 @layer base {
