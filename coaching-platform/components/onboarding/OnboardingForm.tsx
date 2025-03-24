@@ -377,6 +377,14 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     onComplete(formData);
   };
   
+  const skipCurrentStep = () => {
+    if (step < totalSteps) {
+      setStep(step + 1);
+    } else {
+      onComplete(formData);
+    }
+  };
+  
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -585,12 +593,13 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
+                  className="relative z-20"
                 >
                   <Button
                     type="button"
                     variant="outline"
                     onClick={addEducationEntry}
-                    className="w-full mt-2 border-dashed border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/30"
+                    className="w-full mt-2 border-dashed border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/30 relative z-20"
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Add Another Education
@@ -763,7 +772,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
               key={step}
               initial={{ 
                 opacity: 0, 
-                x: step > 1 ? -100 : 100
+                x: 100 
               }}
               animate={{ 
                 opacity: 1, 
@@ -771,11 +780,12 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
               }}
               exit={{ 
                 opacity: 0, 
-                x: step > 1 ? 100 : -100,
+                x: -100,
                 position: 'absolute' as const
               }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="relative w-full"
+              style={{ zIndex: 10 }}
             >
               <Card className="w-full bg-black border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden group">
                 {/* Subtle gradient border effect */}
@@ -785,25 +795,27 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                 
                 <CardHeader className="pb-4 relative">
                   <div className="absolute top-2 right-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={skipToEnd}
-                      className="text-white/40 hover:text-white hover:bg-white/5 transition-all duration-300"
-                    >
-                      Skip
-                    </Button>
+                    {step > 3 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={skipCurrentStep}
+                        className="text-white/40 hover:text-white hover:bg-white/5 transition-all duration-300"
+                      >
+                        Skip
+                      </Button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
                   {renderStep()}
                 </CardContent>
-                <CardFooter className="flex justify-between pt-4">
+                <CardFooter className="flex justify-between pt-4 relative z-20">
                   <Button
                     variant="outline"
                     onClick={prevStep}
                     disabled={step === 1}
-                    className="border-white/10 text-white hover:bg-white/5 hover:border-white/20 transition-all duration-300 disabled:opacity-30"
+                    className="border-white/10 text-white hover:bg-white/5 hover:border-white/20 transition-all duration-300 disabled:opacity-30 relative z-20"
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back

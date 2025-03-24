@@ -236,33 +236,53 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
   }
 
   return (
-    <Sidebar className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md">
+    <Sidebar 
+      className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md"
+      collapsible="icon"
+    >
       <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-2 justify-center">
           <Image 
             src="/being-consultant-logo.svg" 
             alt="Being Consultant Logo" 
             width={180} 
             height={40} 
-            className="h-8 w-auto" 
+            className="h-8 w-auto group-data-[collapsible=icon]:hidden" 
+          />
+          <Image 
+            src="/being-consultant-icon.svg" 
+            alt="Being Consultant Icon" 
+            width={32} 
+            height={32} 
+            className="h-8 w-auto hidden group-data-[collapsible=icon]:block" 
           />
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-2 py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === "/dashboard"} className="hover-lift">
+            <SidebarMenuButton 
+              asChild 
+              isActive={pathname === "/dashboard"} 
+              className="hover-lift"
+              tooltip="Dashboard"
+            >
               <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                 <Home className="h-5 w-5" />
-                <span>Dashboard</span>
+                <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === "/dashboard/profile"} className="hover-lift">
+            <SidebarMenuButton 
+              asChild 
+              isActive={pathname === "/dashboard/profile"} 
+              className="hover-lift"
+              tooltip="Profile"
+            >
               <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                 <User className="h-5 w-5" />
-                <span>Profile</span>
+                <span className="group-data-[collapsible=icon]:hidden">Profile</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -275,26 +295,41 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="coaching-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching"} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === "/dashboard/coaching"} 
+                  className="hover-lift"
+                  tooltip="Land a job"
+                >
                   <Link href="/dashboard/coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Briefcase className="h-5 w-5" />
-                    <span>Land a job</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Land a job</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/career-excellence"} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === "/dashboard/coaching/career-excellence"} 
+                  className="hover-lift"
+                  tooltip="Career excellence"
+                >
                   <Link href="/dashboard/coaching/career-excellence" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Award className="h-5 w-5" />
-                    <span>Career excellence</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Career excellence</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/coaching/career-transition"} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === "/dashboard/coaching/career-transition"} 
+                  className="hover-lift"
+                  tooltip="Career transition"
+                >
                   <Link href="/dashboard/coaching/career-transition" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <FileCheck className="h-5 w-5" />
-                    <span>Career transition</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Career transition</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -309,18 +344,28 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="ai-coach-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach/case-interview"} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === "/dashboard/ai-coach/case-interview"} 
+                  className="hover-lift"
+                  tooltip="Case Interview"
+                >
                   <Link href="/dashboard/ai-coach/case-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Brain className="h-5 w-5" />
-                    <span>Case Interview</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Case Interview</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/dashboard/ai-coach/fit-interview"} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === "/dashboard/ai-coach/fit-interview"} 
+                  className="hover-lift"
+                  tooltip="FIT Interview"
+                >
                   <Link href="/dashboard/ai-coach/fit-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <Users className="h-5 w-5" />
-                    <span>FIT Interview</span>
+                    <span className="group-data-[collapsible=icon]:hidden">FIT Interview</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -335,10 +380,15 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="resources-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/resources")} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname.startsWith("/dashboard/resources")} 
+                  className="hover-lift"
+                  tooltip="Toolkit"
+                >
                   <Link href="/dashboard/resources" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <FileText className="h-5 w-5" />
-                    <span>Toolkit</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Toolkit</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -353,10 +403,15 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="learning-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/learning")} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname.startsWith("/dashboard/learning")} 
+                  className="hover-lift"
+                  tooltip="Courses"
+                >
                   <Link href="/dashboard/learning" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <BookOpen className="h-5 w-5" />
-                    <span>Courses</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Courses</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -371,10 +426,15 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
           <SidebarGroupContent className="community-section space-y-1">
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/community")} className="hover-lift">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname.startsWith("/dashboard/community")} 
+                  className="hover-lift"
+                  tooltip="Join Community"
+                >
                   <Link href="/dashboard/community" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                     <MessageSquare className="h-5 w-5" />
-                    <span>Join</span>
+                    <span className="group-data-[collapsible=icon]:hidden">Join</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -386,19 +446,21 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
         <div className="flex flex-col space-y-4">
           <Button 
             variant="outline" 
-            className="w-full justify-start gap-2 hover-lift"
+            className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
             onClick={() => router.push('/dashboard/profile')}
+            title="Settings"
           >
             <Settings className="h-4 w-4" />
-            <span>Settings</span>
+            <span className="group-data-[collapsible=icon]:hidden">Settings</span>
           </Button>
           <Button 
             variant="outline" 
-            className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift"
+            className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"
             onClick={handleLogout}
+            title="Log Out"
           >
             <LogOut className="h-4 w-4" />
-            <span>Log Out</span>
+            <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
           </Button>
         </div>
       </SidebarFooter>
