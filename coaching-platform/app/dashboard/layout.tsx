@@ -190,11 +190,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <ProtectedRoute>
       <SidebarProvider>
-        <div className="flex min-h-screen bg-gradient-to-br from-background via-background to-accent/10">
+        <div className="flex min-h-screen bg-black text-white">
           <DashboardSidebar pathname={pathname} />
           <div className="flex flex-1 flex-col">
             <DashboardHeader />
-            <main className="flex-1 p-6 main-content animate-fade-in">{children}</main>
+            <main className="flex-1 p-8 main-content">{children}</main>
           </div>
           
           {pathname === '/dashboard' && (
@@ -420,26 +420,26 @@ function DashboardHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/70 px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-white/10 bg-black px-8">
       <SidebarTrigger />
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-6">
         
-        <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 transition-all duration-200">
+        <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5 transition-all duration-200">
           <Bell className="h-5 w-5" />
         </Button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="profile-dropdown rounded-full hover:bg-primary/10 transition-all duration-200">
-              <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/50 transition-all duration-200">
+            <Button variant="ghost" size="icon" className="profile-dropdown rounded-full hover:bg-white/5 transition-all duration-200">
+              <Avatar className="h-9 w-9 border border-white/10 hover:border-white/20 transition-all duration-200">
                 <AvatarImage src={user?.photoURL || ""} alt={user?.displayName || "User"} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
+                <AvatarFallback className="bg-white/10 text-white">
                   {user?.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 shadow-xl border border-border/40 bg-background/90 backdrop-blur-md">
+          <DropdownMenuContent align="end" className="w-56 shadow-xl border border-white/10 bg-black">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <span className="text-lg font-medium">{user?.displayName || "User"}</span>

@@ -31,6 +31,24 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { getUserProfile } from "@/lib/firebase/firestore";
 
+// Define universities array at the global scope so it can be accessed by both Step and OnboardingForm
+const universities: string[] = [
+  "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur", 
+  "IIT Roorkee", "IIT Guwahati", "IIT Hyderabad",
+  "IIM Ahmedabad", "IIM Bangalore", "IIM Calcutta", "IIM Lucknow", 
+  "IIM Indore", "IIM Kozhikode",
+  "Delhi University", "Jadavpur University", "Anna University",
+  "Banaras Hindu University", "Jawaharlal Nehru University",
+  "BITS Pilani", "BITS Goa", "BITS Hyderabad",
+  "NIT Trichy", "NIT Warangal", "NIT Surathkal",
+  "Harvard University", "Yale University", "Princeton University",
+  "Columbia University", "Brown University", "Dartmouth College",
+  "University of Pennsylvania", "Cornell University",
+  "Stanford University", "MIT", "Caltech", "Oxford University",
+  "Cambridge University", "ETH Zurich", "Imperial College London",
+  "Other"
+];
+
 interface OnboardingFormProps {
   onComplete: (data: OnboardingData) => void;
 }
@@ -55,6 +73,176 @@ interface OnboardingData {
   previousCompanies: string;
   areasOfExpertise: string;
   interests: string;
+}
+
+interface StepProps {
+  title: string;
+  description: string;
+  fields: {
+    label: string;
+    name: string;
+    value: string;
+    icon: React.ReactNode;
+    autoFocus?: boolean;
+    slider?: boolean;
+    sliderValue?: number;
+    onSliderChange?: (value: number[]) => void;
+    textarea?: boolean;
+  }[];
+  customContent?: React.ReactNode;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+}
+
+function Step({ title, description, fields, customContent, onChange }: StepProps) {
+  // Universities array is now defined at the global scope
+  
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <motion.h3 
+          className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300"
+          initial={{ opacity: 0.8 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {title}
+        </motion.h3>
+        <motion.p 
+          className="mt-2 text-sm text-white/60"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          {description}
+        </motion.p>
+      </div>
+      
+      {customContent ? (
+        customContent
+      ) : (
+        <div className="space-y-5">
+          {fields.map((field) => (
+            <motion.div 
+              key={field.name} 
+              className="space-y-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <label
+                htmlFor={field.name}
+                className="block text-sm font-medium text-white/80"
+              >
+                {field.label}
+              </label>
+              <div className="relative rounded-md group">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-white/50 group-hover:text-white/80 transition-colors duration-300">
+                  {field.icon}
+                </div>
+                
+                {!field.slider && !field.textarea ? (
+                  <Input
+                    type="text"
+                    name={field.name}
+                    id={field.name}
+                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white"
+                    placeholder={`Enter your ${field.label.toLowerCase()}`}
+                    value={field.value}
+                    onChange={onChange}
+                    autoFocus={field.autoFocus}
+                  />
+                ) : field.slider ? (
+                  <div className="pl-10 pt-6 pb-8">
+                    <div className="flex flex-col space-y-6 relative">
+                      <div className="absolute -inset-4 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 z-0"></div>
+                      
+                      <div className="relative z-10">
+                        <Slider
+                          defaultValue={[field.sliderValue || 0]}
+                          max={30}
+                          step={1}
+                          onValueChange={field.onSliderChange}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div className="flex justify-between text-xs text-white/60">
+                        <span>0 years</span>
+                        <span>15 years</span>
+                        <span>30+ years</span>
+                      </div>
+                      
+                      <div className="text-center">
+                        <span className="text-2xl font-bold text-white">
+                          {field.sliderValue} {field.sliderValue === 1 ? 'year' : 'years'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <style jsx global>{`
+                      /* Slider Track Styling */
+                      [data-radix-slider-thumb-wrapper] {
+                        height: 20px;
+                        width: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      }
+                      
+                      [data-radix-slider-thumb] {
+                        display: block;
+                        width: 20px;
+                        height: 20px;
+                        background: white;
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+                        opacity: 0.9;
+                        transition: all 0.2s ease;
+                      }
+                      
+                      [data-radix-slider-thumb]:hover {
+                        opacity: 1;
+                        transform: scale(1.1);
+                        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+                      }
+                      
+                      [data-radix-slider-thumb]:focus {
+                        opacity: 1;
+                        transform: scale(1.1);
+                        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+                      }
+                      
+                      [data-radix-slider-range] {
+                        height: 3px;
+                        background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.9));
+                        border-radius: 9999px;
+                      }
+                      
+                      [data-radix-slider-track] {
+                        height: 3px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 9999px;
+                      }
+                    `}</style>
+                  </div>
+                ) : field.textarea ? (
+                  <Textarea
+                    id={field.name}
+                    name={field.name}
+                    value={field.value}
+                    onChange={onChange}
+                    className="pl-10 min-h-[120px] bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white"
+                    placeholder={`Enter your ${field.label.toLowerCase()}`}
+                    autoFocus={field.autoFocus}
+                  />
+                ) : null}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
@@ -87,13 +275,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const { user } = useAuth();
   
   const totalSteps = 7;
-  
-  useEffect(() => {
-    const inputElement = document.querySelector(`input[name="${Object.keys(formData)[step-1]}"]`) as HTMLInputElement;
-    if (inputElement) {
-      inputElement.focus();
-    }
-  }, [step, formData]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -215,13 +396,15 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                 label: "Phone Number",
                 name: "phone",
                 value: formData.phone,
-                icon: <Phone className="h-5 w-5 text-white/70" />
+                icon: <Phone className="h-5 w-5 text-white/70" />,
+                autoFocus: false
               },
               {
                 label: "Email Address",
                 name: "email",
                 value: formData.email,
-                icon: <Mail className="h-5 w-5 text-white/70" />
+                icon: <Mail className="h-5 w-5 text-white/70" />,
+                autoFocus: false
               }
             ]}
             onChange={handleChange}
@@ -352,22 +535,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                                       No university found.
                                     </CommandEmpty>
                                     <CommandGroup>
-                                      {[
-                                        "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur", 
-                                        "IIT Roorkee", "IIT Guwahati", "IIT Hyderabad",
-                                        "IIM Ahmedabad", "IIM Bangalore", "IIM Calcutta", "IIM Lucknow", 
-                                        "IIM Indore", "IIM Kozhikode",
-                                        "Delhi University", "Jadavpur University", "Anna University",
-                                        "Banaras Hindu University", "Jawaharlal Nehru University",
-                                        "BITS Pilani", "BITS Goa", "BITS Hyderabad",
-                                        "NIT Trichy", "NIT Warangal", "NIT Surathkal",
-                                        "Harvard University", "Yale University", "Princeton University",
-                                        "Columbia University", "Brown University", "Dartmouth College",
-                                        "University of Pennsylvania", "Cornell University",
-                                        "Stanford University", "MIT", "Caltech", "Oxford University",
-                                        "Cambridge University", "ETH Zurich", "Imperial College London",
-                                        "Other"
-                                      ].map(university => (
+                                      {universities.map((university: string) => (
                                         <CommandItem
                                           key={university}
                                           value={university}
@@ -391,7 +559,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                           </div>
                         </div>
                       </div>
-                      
                       {entry.university === "Other" && (
                         <div>
                           <label className="block text-sm font-medium text-white/80 mb-2">
@@ -664,293 +831,6 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
               </Card>
             </motion.div>
           </AnimatePresence>
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface StepProps {
-  title: string;
-  description: string;
-  fields: {
-    label: string;
-    name: string;
-    value: string;
-    icon: React.ReactNode;
-    textarea?: boolean;
-    autoFocus?: boolean;
-    slider?: boolean;
-    sliderValue?: number;
-    onSliderChange?: (value: number[]) => void;
-    universitySelector?: boolean;
-    universitySearchOpen?: boolean;
-    setUniversitySearchOpen?: (open: boolean) => void;
-    universitySearchValue?: string;
-    onUniversitySelect?: (value: string) => void;
-  }[];
-  customContent?: React.ReactNode;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-}
-
-function Step({ title, description, fields, customContent, onChange }: StepProps) {
-  const universities = [
-    "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur", 
-    "IIT Roorkee", "IIT Guwahati", "IIT Hyderabad",
-    "IIM Ahmedabad", "IIM Bangalore", "IIM Calcutta", "IIM Lucknow", 
-    "IIM Indore", "IIM Kozhikode",
-    "Delhi University", "Jadavpur University", "Anna University",
-    "Banaras Hindu University", "Jawaharlal Nehru University",
-    "BITS Pilani", "BITS Goa", "BITS Hyderabad",
-    "NIT Trichy", "NIT Warangal", "NIT Surathkal",
-    "Harvard University", "Yale University", "Princeton University",
-    "Columbia University", "Brown University", "Dartmouth College",
-    "University of Pennsylvania", "Cornell University",
-    "Stanford University", "MIT", "Caltech", "Oxford University",
-    "Cambridge University", "ETH Zurich", "Imperial College London",
-    "Other"
-  ];
-  
-  return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <motion.h3 
-          className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300"
-          initial={{ opacity: 0.8 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-        >
-          {title}
-        </motion.h3>
-        <p className="text-sm text-white/60 mt-1">{description}</p>
-      </div>
-      
-      {customContent ? (
-        customContent
-      ) : (
-        <div className="space-y-5">
-          {fields.map((field) => (
-            <motion.div 
-              key={field.name} 
-              className="space-y-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: fields.indexOf(field) * 0.1 }}
-            >
-              <label
-                htmlFor={field.name}
-                className="block text-sm font-medium text-white/80"
-              >
-                {field.label}
-              </label>
-              <div className="relative rounded-md group">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-white/50 group-hover:text-white/80 transition-colors duration-300">
-                  {field.icon}
-                </div>
-                
-                {field.universitySelector ? (
-                  <div className="pl-10">
-                    <Popover 
-                      open={field.universitySearchOpen} 
-                      onOpenChange={field.setUniversitySearchOpen}
-                    >
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={field.universitySearchOpen}
-                          className="w-full justify-between border-white/10 bg-white/5 text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300"
-                        >
-                          {field.value ? field.value : "Select university..."}
-                          <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0 bg-black/90 border border-white/10 backdrop-blur-xl shadow-2xl">
-                        <Command className="bg-transparent">
-                          <CommandInput 
-                            placeholder="Search university..." 
-                            className="text-white placeholder:text-white/30 h-9 border-b border-white/10"
-                          />
-                          <CommandList className="max-h-[300px] overflow-auto">
-                            <CommandEmpty className="text-white/60 py-6 text-center text-sm">
-                              No university found.
-                            </CommandEmpty>
-                            <CommandGroup>
-                              {universities
-                                .filter(university => {
-                                  const searchTerm = field.universitySearchValue?.toLowerCase() || '';
-                                  if (!searchTerm) return true;
-                                  return university.toLowerCase().includes(searchTerm);
-                                })
-                                .map(university => (
-                                  <CommandItem
-                                    key={university}
-                                    value={university}
-                                    onSelect={() => {
-                                      console.log("Selected university:", university);
-                                      field.onUniversitySelect?.(university);
-                                    }}
-                                    className="text-white hover:bg-white/10 cursor-pointer"
-                                  >
-                                    {university}
-                                    {university === field.value && (
-                                      <CheckCircle className="ml-auto h-4 w-4 text-white/70" />
-                                    )}
-                                  </CommandItem>
-                                ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                ) : field.slider ? (
-                  <div className="pl-10 pt-6 pb-8">
-                    <div className="flex flex-col space-y-6 relative">
-                      <div className="absolute -inset-4 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 z-0"></div>
-                      
-                      <div className="relative z-10">
-                        <Slider
-                          id={field.name}
-                          name={field.name}
-                          value={[field.sliderValue || 0]}
-                          min={0}
-                          max={40}
-                          step={1}
-                          onValueChange={field.onSliderChange}
-                          className="w-full"
-                        />
-                        
-                        {/* Custom track markers */}
-                        <div className="w-full flex justify-between mt-2 px-0.5">
-                          {[0, 10, 20, 30, 40].map((marker) => (
-                            <div 
-                              key={marker} 
-                              className={`h-1 w-0.5 bg-white/30 ${marker <= (field.sliderValue || 0) ? 'bg-white/70' : 'bg-white/20'}`}
-                            ></div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-between items-center">
-                        <div className="text-xs text-white/40 font-light tracking-wider">BEGINNER</div>
-                        <motion.div 
-                          className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-white/80"
-                          initial={{ scale: 0.95, opacity: 0.9 }}
-                          animate={{ 
-                            scale: [0.95, 1.05, 1],
-                            opacity: [0.9, 1, 1]
-                          }}
-                          transition={{ 
-                            duration: 0.5,
-                            times: [0, 0.5, 1],
-                            ease: "easeOut",
-                          }}
-                          key={field.sliderValue || 0}
-                        >
-                          {field.sliderValue || 0} {(field.sliderValue || 0) === 1 ? 'year' : 'years'}
-                        </motion.div>
-                        <div className="text-xs text-white/40 font-light tracking-wider">EXPERT</div>
-                      </div>
-                      
-                      {/* Experience level indicator */}
-                      <div className="w-full pt-2">
-                        <div className="text-xs text-white/60 font-medium mb-1 text-center">
-                          {(field.sliderValue || 0) <= 2 ? 'Entry Level' : 
-                           (field.sliderValue || 0) <= 5 ? 'Junior' :
-                           (field.sliderValue || 0) <= 10 ? 'Mid-Level' :
-                           (field.sliderValue || 0) <= 15 ? 'Senior' :
-                           (field.sliderValue || 0) <= 25 ? 'Expert' : 'Master'}
-                        </div>
-                        <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                          <motion.div 
-                            className="h-full bg-gradient-to-r from-white/60 via-white/80 to-white/60"
-                            initial={{ width: `${((field.sliderValue || 0) / 40) * 100}%` }}
-                            animate={{ width: `${((field.sliderValue || 0) / 40) * 100}%` }}
-                            transition={{ duration: 0.3, ease: "easeOut" }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <style jsx global>{`
-                      /* Slider Track Styling */
-                      [data-radix-slider-thumb-wrapper] {
-                        height: 20px;
-                        width: 20px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                      }
-                      
-                      /* Slider Thumb Styling */
-                      [data-radix-slider-thumb] {
-                        height: 20px !important;
-                        width: 20px !important;
-                        background: black !important;
-                        border: 2px solid rgba(255, 255, 255, 0.8) !important;
-                        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
-                        transition: all 0.2s ease !important;
-                        position: relative;
-                      }
-                      
-                      /* Thumb Hover Effect */
-                      [data-radix-slider-thumb]:hover {
-                        transform: scale(1.2) !important;
-                        border-color: white !important;
-                        box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
-                      }
-                      
-                      /* Thumb Active Effect */
-                      [data-radix-slider-thumb]:active {
-                        transform: scale(1.1) !important;
-                        background: rgba(0, 0, 0, 0.9) !important;
-                        border-color: white !important;
-                      }
-                      
-                      /* Slider Track */
-                      [data-radix-slider-track] {
-                        height: 4px !important;
-                        background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) !important;
-                        border-radius: 2px !important;
-                      }
-                      
-                      /* Slider Range */
-                      [data-radix-slider-range] {
-                        background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7)) !important;
-                        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2) !important;
-                      }
-                      
-                      /* Add a glow effect on hover */
-                      [data-radix-slider-root]:hover [data-radix-slider-range] {
-                        background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8)) !important;
-                        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3) !important;
-                      }
-                    `}</style>
-                  </div>
-                ) : field.textarea ? (
-                  <Textarea
-                    id={field.name}
-                    name={field.name}
-                    value={field.value}
-                    onChange={onChange}
-                    className="block w-full rounded-md border-white/10 bg-white/5 pl-10 text-white placeholder:text-white/30 focus:border-white/30 focus:ring-white/20 hover:border-white/20 transition-all duration-300 [&:not(:placeholder-shown)]:bg-white/5 [&:not(:placeholder-shown)]:text-white"
-                    rows={3}
-                    autoFocus={field.autoFocus}
-                  />
-                ) : (
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.value}
-                    onChange={onChange}
-                    className="block w-full rounded-md border-white/10 bg-white/5 pl-10 text-white placeholder:text-white/30 focus:border-white/30 focus:ring-white/20 hover:border-white/20 transition-all duration-300 [&:not(:placeholder-shown)]:bg-white/5 [&:not(:placeholder-shown)]:text-white"
-                    autoFocus={field.autoFocus}
-                  />
-                )}
-              </div>
-            </motion.div>
-          ))}
         </div>
       )}
     </div>
