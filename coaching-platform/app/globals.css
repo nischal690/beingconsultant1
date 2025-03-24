@@ -124,6 +124,10 @@ body {
     100% { transform: translateY(0); }
   }
   
+  .animate-float {
+    animation: floatUp 6s ease-in-out infinite;
+  }
+  
   .animate-gradient-flow {
     animation: gradientFlow 8s ease infinite;
     background-size: 200% 200%;
@@ -138,8 +142,16 @@ body {
     background-size: 200% 200%;
   }
   
-  .animate-float {
-    animation: floatUp 6s ease-in-out infinite;
+  /* Gradient text animation for onboarding */
+  @keyframes gradientX {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .animate-gradient-x {
+    animation: gradientX 8s ease infinite;
+    background-size: 200% 200%;
   }
   
   .welcome-gradient {

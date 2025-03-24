@@ -25,6 +25,7 @@ export default function SignupPage() {
     confirmPassword: ""
   })
   const [error, setError] = useState("")
+  const [verificationSent, setVerificationSent] = useState(false)
   const router = useRouter()
   const { signUp, signInWithGoogle, signInWithApple } = useAuth()
 
@@ -41,6 +42,7 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setVerificationSent(false)
 
     // Validate form
     if (formData.password !== formData.confirmPassword) {
@@ -56,7 +58,7 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      // Create user with Firebase
+      // Create user with Firebase (this now sends verification email automatically)
       await signUp(formData.email, formData.password)
       
       // Get the current user directly from Firebase auth
@@ -69,11 +71,20 @@ export default function SignupPage() {
           lastName: formData.lastName,
           email: formData.email,
           displayName: `${formData.firstName} ${formData.lastName}`,
+          emailVerified: false
         })
+        
+        // Set verification sent state to true
+        setVerificationSent(true)
+        toast.success("Account created! Please verify your email before proceeding.")
+        
+        // Redirect to verification page after a short delay
+        setTimeout(() => {
+          router.push("/auth/verify")
+        }, 2000)
       }
-
-      toast.success("Account created successfully!")
-      router.push("/dashboard")
+      
+      setIsLoading(false)
     } catch (error: any) {
       console.error("Signup error:", error)
       if (error.code === "auth/email-already-in-use") {
@@ -90,7 +101,7 @@ export default function SignupPage() {
     try {
       await signInWithGoogle()
       toast.success("Signed in with Google!")
-      router.push("/dashboard")
+      router.push("/onboarding")
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google")
@@ -103,7 +114,7 @@ export default function SignupPage() {
     try {
       await signInWithApple()
       toast.success("Signed in with Apple!")
-      router.push("/dashboard")
+      router.push("/onboarding")
     } catch (error) {
       console.error("Apple sign in error:", error)
       setError("Failed to sign in with Apple")
@@ -129,6 +140,12 @@ export default function SignupPage() {
             {error && (
               <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                 {error}
+              </div>
+            )}
+            {verificationSent && (
+              <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                <p className="font-medium">Verification email sent!</p>
+                <p className="text-sm mt-1">Please check your inbox and verify your email address before continuing.</p>
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">

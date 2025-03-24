@@ -11,10 +11,11 @@ import {
   signInWithPopup,
   sendPasswordResetEmail,
   updateProfile,
-  OAuthProvider
+  OAuthProvider,
+  sendEmailVerification
 } from "firebase/auth";
 import { auth } from "./config";
-import { hasCompletedOnboarding } from "./firestore";
+import { hasCompletedOnboarding, createUserProfile, getUserProfile } from "./firestore";
 import { useRouter } from "next/navigation";
 
 interface AuthContextType {
@@ -28,6 +29,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   updateUserProfile: (displayName?: string, photoURL?: string) => Promise<void>;
   checkOnboardingStatus: () => Promise<boolean>;
+  sendVerificationEmail: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,8 +48,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      
+      // If user is logged in and came from a social provider (Google/Apple)
+      if (user && (user.providerData[0]?.providerId === 'google.com' || user.providerData[0]?.providerId === 'apple.com')) {
+        try {
+          // Check if user profile exists
+          const userProfile = await getUserProfile(user.uid);
+          
+          // If user profile doesn't exist or was just created, add name and email
+          if (!userProfile.success || !userProfile.data) {
+            // Extract first and last name from displayName if available
+            let firstName = '';
+            let lastName = '';
+            
+            if (user.displayName) {
+              const nameParts = user.displayName.split(' ');
+              firstName = nameParts[0] || '';
+              lastName = nameParts.slice(1).join(' ') || '';
+            }
+            
+            await createUserProfile(user.uid, {
+              firstName: firstName,
+              lastName: lastName,
+              email: user.email || '',
+              photoURL: user.photoURL || '',
+              providerId: user.providerData[0]?.providerId,
+              displayName: user.displayName || '',
+              emailVerified: user.emailVerified
+            });
+          }
+        } catch (error) {
+          console.error("Error creating/updating user profile:", error);
+        }
+      }
+      
       setLoading(false);
     });
 
@@ -56,7 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Send verification email after successful signup
+      if (userCredential.user) {
+        await sendEmailVerification(userCredential.user);
+      }
     } catch (error) {
       console.error("Error signing up:", error);
       throw error;
@@ -75,7 +115,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Create or update user profile with Google data
+      if (user) {
+        // Extract first and last name from displayName if available
+        let firstName = '';
+        let lastName = '';
+        
+        if (user.displayName) {
+          const nameParts = user.displayName.split(' ');
+          firstName = nameParts[0] || '';
+          lastName = nameParts.slice(1).join(' ') || '';
+        }
+        
+        await createUserProfile(user.uid, {
+          firstName: firstName,
+          lastName: lastName,
+          email: user.email || '',
+          photoURL: user.photoURL || '',
+          providerId: 'google.com',
+          displayName: user.displayName || '',
+          emailVerified: user.emailVerified
+        });
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error);
       throw error;
@@ -85,7 +149,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithApple = async () => {
     try {
       const provider = new OAuthProvider('apple.com');
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Create or update user profile with Apple data
+      if (user) {
+        // Extract first and last name from displayName if available
+        let firstName = '';
+        let lastName = '';
+        
+        if (user.displayName) {
+          const nameParts = user.displayName.split(' ');
+          firstName = nameParts[0] || '';
+          lastName = nameParts.slice(1).join(' ') || '';
+        }
+        
+        await createUserProfile(user.uid, {
+          firstName: firstName,
+          lastName: lastName,
+          email: user.email || '',
+          photoURL: user.photoURL || '',
+          providerId: 'apple.com',
+          displayName: user.displayName || '',
+          emailVerified: user.emailVerified
+        });
+      }
     } catch (error) {
       console.error("Error signing in with Apple:", error);
       throw error;
@@ -131,13 +219,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     try {
       const completed = await hasCompletedOnboarding(user.uid);
-      if (!completed) {
-        router.push('/onboarding');
-      }
       return completed;
     } catch (error) {
       console.error("Error checking onboarding status:", error);
       return false;
+    }
+  };
+
+  const sendVerificationEmail = async () => {
+    if (!auth.currentUser) {
+      throw new Error("No user is currently signed in");
+    }
+    
+    try {
+      await sendEmailVerification(auth.currentUser);
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      throw error;
     }
   };
 
@@ -151,7 +249,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     logout,
     resetPassword,
     updateUserProfile,
-    checkOnboardingStatus
+    checkOnboardingStatus,
+    sendVerificationEmail
   };
 
   useEffect(() => {

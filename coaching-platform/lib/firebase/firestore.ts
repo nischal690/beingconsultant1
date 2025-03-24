@@ -21,11 +21,23 @@ import { db } from "./config";
 export const createUserProfile = async (userId: string, userData: any) => {
   try {
     const userRef = doc(db, "users", userId);
-    await setDoc(userRef, {
-      ...userData,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      // Document exists, update it with new data but preserve existing data
+      const existingData = userSnap.data();
+      await updateDoc(userRef, {
+        ...userData,
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      // Document doesn't exist, create it
+      await setDoc(userRef, {
+        ...userData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
     return { success: true };
   } catch (error) {
     console.error("Error creating user profile:", error);
@@ -63,6 +75,34 @@ export const updateUserProfile = async (userId: string, userData: any) => {
   }
 };
 
+export const updateUserProfileWithOnboarding = async (userId: string, userData: any) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      // Document exists, update it
+      await updateDoc(userRef, {
+        ...userData,
+        onboardingCompleted: true,
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      // Document doesn't exist, create it
+      await setDoc(userRef, {
+        ...userData,
+        onboardingCompleted: true,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating user onboarding data:", error);
+    return { success: false, error };
+  }
+};
+
 // Check if user has completed onboarding
 export const hasCompletedOnboarding = async (userId: string): Promise<boolean> => {
   try {
@@ -71,7 +111,8 @@ export const hasCompletedOnboarding = async (userId: string): Promise<boolean> =
     
     // Required onboarding fields
     const requiredFields = [
-      'fullName',
+      'firstName',
+      'lastName',
       'phone',
       'email',
       'linkedInProfile',
@@ -95,22 +136,6 @@ export const hasCompletedOnboarding = async (userId: string): Promise<boolean> =
   } catch (error) {
     console.error("Error checking onboarding status:", error);
     return false;
-  }
-};
-
-// Update user profile with onboarding data
-export const updateUserOnboarding = async (userId: string, onboardingData: any) => {
-  try {
-    const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, {
-      ...onboardingData,
-      onboardingCompleted: true,
-      updatedAt: serverTimestamp(),
-    });
-    return { success: true };
-  } catch (error) {
-    console.error("Error updating user onboarding data:", error);
-    return { success: false, error };
   }
 };
 

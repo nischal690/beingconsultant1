@@ -50,7 +50,7 @@ export default function LoginPage() {
     try {
       await signIn(formData.email, formData.password)
       toast.success("Signed in successfully!")
-      router.push("/dashboard")
+      router.push("/onboarding")
     } catch (error: any) {
       console.error("Login error:", error)
       if (error.code === "auth/invalid-credential") {
@@ -71,7 +71,7 @@ export default function LoginPage() {
     try {
       await signInWithGoogle()
       toast.success("Signed in with Google!")
-      router.push("/dashboard")
+      router.push("/onboarding")
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google")
@@ -84,7 +84,7 @@ export default function LoginPage() {
     try {
       await signInWithApple()
       toast.success("Signed in with Apple!")
-      router.push("/dashboard")
+      router.push("/onboarding")
     } catch (error) {
       console.error("Apple sign in error:", error)
       setError("Failed to sign in with Apple")
