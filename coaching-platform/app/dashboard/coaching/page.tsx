@@ -57,85 +57,194 @@ export default function CoachingPage() {
 
   return (
     <div className="container mx-auto space-y-10 pb-20">
-      {/* Hero Section - Modern Glassmorphism Style */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/90 via-primary/80 to-purple-600/90 text-white">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.5),transparent)]"></div>
-        <div className="absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 blur-3xl opacity-50 dark:opacity-30">
-          <div className="h-96 w-96 rounded-full bg-purple-500 dark:bg-purple-900"></div>
-        </div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 blur-3xl opacity-50 dark:opacity-30">
-          <div className="h-96 w-96 rounded-full bg-primary dark:bg-primary/80"></div>
+      {/* Hero Section - Ultra-Modern Luxury Design */}
+      <section className="relative overflow-hidden rounded-3xl bg-black text-white">
+        {/* Sophisticated background patterns and effects */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMDIwMjAiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+        
+        {/* Advanced gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-black via-black to-black/80"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_70%)] opacity-40"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.1),transparent_60%)] opacity-30"></div>
+        
+        {/* Animated floating particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div 
+              key={i}
+              className="absolute rounded-full bg-white/5 backdrop-blur-md"
+              style={{
+                width: `${Math.random() * 10 + 5}px`,
+                height: `${Math.random() * 10 + 5}px`,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animation: `floatUp ${Math.random() * 10 + 10}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 5}s`
+              }}
+            ></div>
+          ))}
         </div>
         
-        <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 md:p-12 items-center">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="relative w-14 h-14 bg-white/90 rounded-lg p-1 shadow-lg">
+        {/* Sophisticated light effects */}
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse-glow"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
+        
+        {/* Premium border effects */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+        <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+        <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+        
+        {/* Content wrapper with glass effect */}
+        <div className="relative grid grid-cols-1 lg:grid-cols-5 gap-8 p-10 md:p-16 items-center backdrop-blur-sm">
+          {/* Left content column - takes 3/5 of the space */}
+          <div className="lg:col-span-3 space-y-8">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-3"
+            >
+              <div className="relative w-14 h-14 bg-black rounded-lg p-1 shadow-xl border border-white/10 backdrop-blur-md overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <Image 
                   src="/being-consultant-logo.svg" 
                   alt="Being Consultant Logo" 
                   width={56} 
                   height={56} 
-                  className="object-contain"
+                  className="object-contain relative z-10"
                 />
               </div>
-              <Badge className="px-3 py-1 text-sm bg-white/20 hover:bg-white/30 text-white border-none backdrop-blur-sm">
-                Premium Coaching Programs
+              <Badge className="px-4 py-1.5 text-sm bg-white/5 hover:bg-white/10 text-white border border-white/10 backdrop-blur-md">
+                Premium Coaching
               </Badge>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Elevate Your <span className="text-yellow-300 relative">
-                Consulting Career
-                <span className="absolute bottom-1 left-0 w-full h-1 bg-yellow-300/30 rounded-full"></span>
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight"
+            >
+              <span className="block">Elevate Your</span>
+              <span className="relative inline-block mt-2">
+                <span className="animate-gradient-x bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-white">
+                  Consulting Career
+                </span>
+                <span className="absolute bottom-1 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"></span>
               </span>
-            </h1>
-            <p className="text-xl text-white/80 max-w-xl leading-relaxed">
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-xl md:text-2xl text-white/70 max-w-2xl leading-relaxed font-light"
+            >
               Choose from our premium coaching programs designed to transform your career path and secure your dream consulting role.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-medium shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
-                Browse Programs
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </motion.p>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-wrap gap-5 pt-4"
+            >
+              <Button 
+                size="lg" 
+                className="relative overflow-hidden bg-white text-black hover:bg-white/90 font-medium shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl group hover:-translate-y-[2px] px-8 py-6 h-auto text-lg"
+              >
+                <span className="relative z-10">Browse Programs</span>
+                <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                <span className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20 rounded-xl backdrop-blur-sm">
+              
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border border-white/20 text-white hover:bg-white/10 rounded-xl backdrop-blur-sm hover:-translate-y-[2px] transition-all duration-300 px-8 py-6 h-auto text-lg"
+              >
                 Book a Consultation
               </Button>
-            </div>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-white/90 pt-2">
-              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1">
-                <CheckCircle className="h-4 w-4 text-yellow-300" />
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-4 text-sm md:text-base text-white/90 pt-4"
+            >
+              <div className="flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/10 transition-all duration-300 group">
+                <CheckCircle className="h-5 w-5 text-white opacity-70 group-hover:opacity-100" />
                 <span>Expert Coaches</span>
               </div>
-              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1">
-                <CheckCircle className="h-4 w-4 text-yellow-300" />
+              <div className="flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/10 transition-all duration-300 group">
+                <CheckCircle className="h-5 w-5 text-white opacity-70 group-hover:opacity-100" />
                 <span>1250+ Placements</span>
               </div>
-              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1">
-                <CheckCircle className="h-4 w-4 text-yellow-300" />
+              <div className="flex items-center gap-2 bg-white/5 hover:bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/10 transition-all duration-300 group">
+                <CheckCircle className="h-5 w-5 text-white opacity-70 group-hover:opacity-100" />
                 <span>Money-back Guarantee</span>
               </div>
-            </div>
+            </motion.div>
           </div>
           
-          <div className="hidden lg:flex justify-center">
-            <div className="relative w-full max-w-md aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl group">
-              {/* Placeholder for an image - in a real implementation, you'd use an actual image */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-900/40 to-black/60 z-10 group-hover:opacity-70 transition-opacity duration-300"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
-              <div className="absolute bottom-6 left-6 z-20 space-y-2 transform transition-transform duration-300 group-hover:translate-y-[-5px]">
-                <Badge className="bg-primary text-white border-none shadow-lg">Most Popular</Badge>
-                <h3 className="text-2xl font-bold text-white">Unlimited Coaching</h3>
-                <p className="text-white/80">Support until you land your offer</p>
-              </div>
-              <div className="absolute top-0 right-0 m-4 z-20">
-                <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 text-white text-sm font-medium flex items-center gap-1 shadow-lg">
-                  <Star className="h-4 w-4 text-yellow-300 fill-yellow-300" />
-                  <span>4.9/5</span>
+          {/* Right content column - takes 2/5 of the space */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="hidden lg:flex lg:col-span-2 justify-center items-center"
+          >
+            <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl group perspective">
+              {/* Premium card background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-black to-black/80 z-0"></div>
+              
+              {/* Animated gradient background */}
+              <div className="absolute inset-0 bg-[linear-gradient(40deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:250%_250%] animate-gradient-flow opacity-50"></div>
+              
+              {/* Subtle pattern overlay */}
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+              
+              {/* Glass effect border that appears on hover */}
+              <div className="absolute inset-0 border border-white/10 group-hover:border-white/30 transition-all duration-700 rounded-2xl z-10"></div>
+              
+              {/* Subtle glow effect on hover */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-t from-white/10 via-transparent to-transparent z-10"></div>
+              
+              {/* Content overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+              
+              {/* Premium card content */}
+              <div className="absolute inset-0 flex flex-col justify-between p-8 z-20">
+                <div className="flex justify-between items-start">
+                  <Badge className="bg-black text-white border border-white/20 shadow-lg backdrop-blur-md px-3 py-1.5">Most Popular</Badge>
+                  
+                  <div className="bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 text-white text-sm font-medium flex items-center gap-1 shadow-lg border border-white/10">
+                    <Star className="h-4 w-4 text-white fill-white" />
+                    <span>4.9/5</span>
+                  </div>
+                </div>
+                
+                <div className="transform transition-transform duration-500 group-hover:translate-y-[-5px] space-y-3">
+                  <h3 className="text-3xl font-bold text-white">Unlimited Coaching</h3>
+                  <p className="text-white/80 text-lg">Support until you land your offer</p>
+                  
+                  <div className="pt-4">
+                    <Button 
+                      className="bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-lg backdrop-blur-sm w-full group"
+                    >
+                      <span>View Details</span>
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </div>
                 </div>
               </div>
+              
+              {/* 3D tilt effect on hover */}
+              <div className="absolute inset-0 transform transition-transform duration-500 ease-out group-hover:rotate-y-6 group-hover:rotate-x-6 group-hover:scale-105"></div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
