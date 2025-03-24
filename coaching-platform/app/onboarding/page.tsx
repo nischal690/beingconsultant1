@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-context";
-import { hasCompletedOnboarding, updateUserOnboarding } from "@/lib/firebase/firestore";
+import { hasCompletedOnboarding, updateUserProfileWithOnboarding } from "@/lib/firebase/firestore";
 import OnboardingForm from "@/components/onboarding/OnboardingForm";
 import { Loader2 } from "lucide-react";
 
@@ -40,7 +40,7 @@ export default function OnboardingPage() {
     
     try {
       setLoading(true);
-      await updateUserOnboarding(user.uid, data);
+      await updateUserProfileWithOnboarding(user.uid, data);
       router.push("/dashboard");
     } catch (error) {
       console.error("Error saving onboarding data:", error);
