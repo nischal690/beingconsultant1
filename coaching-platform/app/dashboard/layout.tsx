@@ -54,6 +54,7 @@ import {
   Headphones,
   FileSpreadsheet,
   HelpCircle,
+  Plus,
 } from "lucide-react"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/lib/firebase/auth-context"
@@ -241,21 +242,15 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
       collapsible="icon"
     >
       <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link href="/dashboard" className="flex items-center gap-2 justify-center">
-          <Image 
-            src="/being-consultant-logo.svg" 
-            alt="Being Consultant Logo" 
-            width={180} 
-            height={40} 
-            className="h-8 w-auto group-data-[collapsible=icon]:hidden" 
-          />
-          <Image 
-            src="/being-consultant-icon.svg" 
-            alt="Being Consultant Icon" 
-            width={32} 
-            height={32} 
-            className="h-8 w-auto hidden group-data-[collapsible=icon]:block" 
-          />
+        <Link href="/dashboard" className="flex items-center gap-3">
+          <svg width="45" height="40" viewBox="-1 -1 45 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25.3288 6.18836V30.9281L40.0548 33.2843V20.6199H43V37.113L22.5614 33.5788V4.12672L43 1.18151V17.3801H40.0548V4.12672L25.3288 6.18836Z" fill="#937D7D"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M20.911 33.5788V4.12672L0 0.886993V36.8185L20.911 33.5788ZM17.6712 6.18836L2.94521 4.12672V32.9897L17.6712 30.9281V20.3253H7.36301V17.3801H17.6712V6.18836Z" fill="#937D7D"/>
+          </svg>
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+            <span className="font-semibold text-white uppercase tracking-wide text-sm leading-tight">BEING</span>
+            <span className="font-semibold text-white uppercase tracking-wide text-sm leading-tight">CONSULTANT</span>
+          </div>
         </Link>
       </SidebarHeader>
       <SidebarContent className="px-2 py-4">
@@ -482,10 +477,27 @@ function DashboardHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-white/10 bg-black px-8">
-      <SidebarTrigger />
-      <div className="ml-auto flex items-center gap-6">
-        
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 bg-black px-8">
+      <div className="flex items-center gap-4">
+        <SidebarTrigger />
+      </div>
+      
+      <div className="flex items-center space-x-10">
+        <Link href="/dashboard/coaching" className="text-white hover:text-white/80 transition-colors flex items-center">
+          Coaching <Plus className="h-4 w-4 ml-1" />
+        </Link>
+        <Link href="/dashboard/ai-coach" className="text-white hover:text-white/80 transition-colors">
+          Practice with AI Coach
+        </Link>
+        <Link href="/dashboard/resources" className="text-white hover:text-white/80 transition-colors flex items-center">
+          Resources <FileText className="h-4 w-4 ml-1" />
+        </Link>
+        <Link href="/dashboard/stories" className="text-white hover:text-white/80 transition-colors">
+          Stories
+        </Link>
+      </div>
+
+      <div className="flex items-center gap-6">
         <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/5 transition-all duration-200">
           <Bell className="h-5 w-5" />
         </Button>

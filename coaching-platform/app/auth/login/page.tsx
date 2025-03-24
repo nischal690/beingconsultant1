@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Loader2, Mail, Apple } from "lucide-react"
 import { useAuth } from "@/lib/firebase/auth-context"
 import { toast } from "sonner"
+import { getUserProfile } from "@/lib/firebase/firestore"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -23,7 +24,7 @@ export default function LoginPage() {
   })
   const [error, setError] = useState("")
   const router = useRouter()
-  const { signIn, signInWithGoogle, signInWithApple } = useAuth()
+  const { signIn, signInWithGoogle, signInWithApple, user } = useAuth()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -42,6 +43,28 @@ export default function LoginPage() {
     }))
   }
 
+  // Check if user has completed LinkedIn profile and route accordingly
+  const checkProfileAndRoute = async (userId: string) => {
+    try {
+      const userProfileResult = await getUserProfile(userId)
+      
+      if (userProfileResult.success && 
+          userProfileResult.data && 
+          userProfileResult.data.linkedInProfile && 
+          userProfileResult.data.linkedInProfile.trim() !== '') {
+        // LinkedIn profile exists, route to dashboard
+        router.push("/dashboard")
+      } else {
+        // LinkedIn profile doesn't exist or is empty, route to onboarding
+        router.push("/onboarding")
+      }
+    } catch (error) {
+      console.error("Error checking user profile:", error)
+      // Default to onboarding in case of error
+      router.push("/onboarding")
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -50,7 +73,15 @@ export default function LoginPage() {
     try {
       await signIn(formData.email, formData.password)
       toast.success("Signed in successfully!")
-      router.push("/onboarding")
+      
+      // Wait a moment for the user state to update
+      setTimeout(() => {
+        if (user && user.uid) {
+          checkProfileAndRoute(user.uid)
+        } else {
+          router.push("/onboarding")
+        }
+      }, 500)
     } catch (error: any) {
       console.error("Login error:", error)
       if (error.code === "auth/invalid-credential") {
@@ -71,7 +102,15 @@ export default function LoginPage() {
     try {
       await signInWithGoogle()
       toast.success("Signed in with Google!")
-      router.push("/onboarding")
+      
+      // Wait a moment for the user state to update
+      setTimeout(() => {
+        if (user && user.uid) {
+          checkProfileAndRoute(user.uid)
+        } else {
+          router.push("/onboarding")
+        }
+      }, 500)
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google")
@@ -84,7 +123,15 @@ export default function LoginPage() {
     try {
       await signInWithApple()
       toast.success("Signed in with Apple!")
-      router.push("/onboarding")
+      
+      // Wait a moment for the user state to update
+      setTimeout(() => {
+        if (user && user.uid) {
+          checkProfileAndRoute(user.uid)
+        } else {
+          router.push("/onboarding")
+        }
+      }, 500)
     } catch (error) {
       console.error("Apple sign in error:", error)
       setError("Failed to sign in with Apple")
