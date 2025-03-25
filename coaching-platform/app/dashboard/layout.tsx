@@ -963,6 +963,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown }: { activeDropdown
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/order-history')}>
+                    <FileCheck className="mr-2 h-4 w-4" />
+                    <span>Order History</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
