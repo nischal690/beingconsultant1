@@ -11,8 +11,8 @@ import {
   SidebarProvider,
   Sidebar,
   SidebarContent,
-  SidebarHeader,
   SidebarFooter,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -20,6 +20,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -56,6 +57,38 @@ import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/lib/firebase/auth-context"
 import { useRouter } from "next/navigation"
 
+// Custom component for the sidebar logo that hides text when collapsed
+function SidebarLogo() {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+  
+  return (
+    <Link href="/dashboard" className="flex items-center gap-2 w-full">
+      <div className="flex items-center justify-center w-full">
+        <svg width="30" height="28" viewBox="-1 -1 147 139" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+          <path d="M85.2707 20.2907V113.5L134.797 122.377V74.6627H144.702V136.802L75.9635 123.487V12.5233L144.702 1.42695V62.4568H134.797V12.5233L85.2707 20.2907Z" fill="url(#paint0_linear_12_122)"/>
+          <path fillRule="evenodd" clipRule="evenodd" d="M70.4129 123.487V12.5233L0.0859375 0.317322V135.693L70.4129 123.487ZM59.5171 20.2907L9.99114 12.5233V121.267L59.5171 113.5V73.5531H24.8489V62.4568H59.5171V20.2907Z" fill="url(#paint1_linear_12_122)"/>
+          <defs>
+            <linearGradient id="paint0_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white"/>
+              <stop offset="1" stopColor="#040404"/>
+            </linearGradient>
+            <linearGradient id="paint1_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
+              <stop stopColor="white"/>
+              <stop offset="1" stopColor="#040404"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        {!isCollapsed && (
+          <span className="font-semibold text-white uppercase tracking-wide text-sm leading-tight ml-2">
+            BEING CONSULTANT
+          </span>
+        )}
+      </div>
+    </Link>
+  );
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
@@ -63,6 +96,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout } = useAuth()
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [sidebarState, setSidebarState] = useState<"expanded" | "collapsed">("expanded");
+  const router = useRouter()
+
+  // Define handleLogout function
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/auth/login')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
+  }
 
   // Define the tour steps
   const steps = [
@@ -539,7 +583,238 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex-1 flex">
-            <DashboardSidebar pathname={pathname} />
+            <Sidebar 
+              className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md z-50"
+              collapsible="icon"
+            >
+              <div className="absolute top-4 right-0 translate-x-1/2 z-50">
+                <SidebarTrigger className="text-white hover:text-white transition-colors duration-200 shadow-lg bg-black/80 border border-white/30" />
+              </div>
+              <SidebarHeader className="border-b border-sidebar-border p-4">
+                <div className="flex items-center gap-4">
+                  <SidebarLogo />
+                </div>
+              </SidebarHeader>
+              <SidebarContent className="px-2 py-4">
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={pathname === "/dashboard"} 
+                      className="hover-lift"
+                      tooltip="Dashboard"
+                    >
+                      <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                        <Home className="h-5 w-5" />
+                        <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={pathname === "/dashboard/profile"} 
+                      className="hover-lift"
+                      tooltip="Profile"
+                    >
+                      <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                        <User className="h-5 w-5" />
+                        <span className="group-data-[collapsible=icon]:hidden">Profile</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+
+                <SidebarGroup>
+                  <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+                    Coaching
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent className="coaching-section space-y-1">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname === "/dashboard/coaching"} 
+                          className="hover-lift"
+                          tooltip="Land a job"
+                        >
+                          <Link href="/dashboard/coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Briefcase className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Land a job</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname === "/dashboard/coaching/career-excellence"} 
+                          className="hover-lift"
+                          tooltip="Career excellence"
+                        >
+                          <Link href="/dashboard/coaching/career-excellence" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Award className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Career excellence</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname === "/dashboard/coaching/career-transition"} 
+                          className="hover-lift"
+                          tooltip="Career transition"
+                        >
+                          <Link href="/dashboard/coaching/career-transition" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <FileCheck className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Career transition</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarGroup>
+                  <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+                    AI Coach
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent className="ai-coach-section space-y-1">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname === "/dashboard/ai-coach/case-interview"} 
+                          className="hover-lift"
+                          tooltip="Case Interview"
+                        >
+                          <Link href="/dashboard/ai-coach/case-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Brain className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Case Interview</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname === "/dashboard/ai-coach/fit-interview"} 
+                          className="hover-lift"
+                          tooltip="FIT Interview"
+                        >
+                          <Link href="/dashboard/ai-coach/fit-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Users className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">FIT Interview</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarGroup>
+                  <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+                    Resources
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent className="resources-section space-y-1">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.startsWith("/dashboard/resources")} 
+                          className="hover-lift"
+                          tooltip="Toolkit"
+                        >
+                          <Link href="/dashboard/resources" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <FileText className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Toolkit</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.startsWith("/dashboard/stories")} 
+                          className="hover-lift"
+                          tooltip="Stories"
+                        >
+                          <Link href="/dashboard/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Sparkles className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Stories</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarGroup>
+                  <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+                    Learning
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent className="learning-section space-y-1">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.startsWith("/dashboard/learning")} 
+                          className="hover-lift"
+                          tooltip="Courses"
+                        >
+                          <Link href="/dashboard/learning" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <BookOpen className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Courses</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarGroup>
+                  <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+                    Whatsapp community
+                  </SidebarGroupLabel>
+                  <SidebarGroupContent className="community-section space-y-1">
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.startsWith("/dashboard/community")} 
+                          className="hover-lift"
+                          tooltip="Join Community"
+                        >
+                          <Link href="/dashboard/community" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <MessageSquare className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Join</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+              <SidebarFooter className="border-t border-sidebar-border p-4">
+                <div className="flex flex-col space-y-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
+                    onClick={() => router.push('/dashboard/profile')}
+                    title="Settings"
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span className="group-data-[collapsible=icon]:hidden">Settings</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"
+                    onClick={handleLogout}
+                    title="Log Out"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
+                  </Button>
+                </div>
+              </SidebarFooter>
+            </Sidebar>
             <main className="flex-1 min-h-[calc(100vh-4rem)] p-8">
               {children}
             </main>
@@ -584,253 +859,8 @@ function DashboardSidebar({ pathname }: { pathname: string }) {
   }
 
   return (
-    <Sidebar 
-      className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md"
-      collapsible="icon"
-    >
-      <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <svg width="45" height="42" viewBox="-1 -1 147 139" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M85.2707 20.2907V113.5L134.797 122.377V74.6627H144.702V136.802L75.9635 123.487V12.5233L144.702 1.42695V62.4568H134.797V12.5233L85.2707 20.2907Z" fill="url(#paint0_linear_12_122)"/>
-            <path fillRule="evenodd" clipRule="evenodd" d="M70.4129 123.487V12.5233L0.0859375 0.317322V135.693L70.4129 123.487ZM59.5171 20.2907L9.99114 12.5233V121.267L59.5171 113.5V73.5531H24.8489V62.4568H59.5171V20.2907Z" fill="url(#paint1_linear_12_122)"/>
-            <defs>
-              <linearGradient id="paint0_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
-                <stop stopColor="white"/>
-                <stop offset="1" stopColor="#040404"/>
-              </linearGradient>
-              <linearGradient id="paint1_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
-                <stop stopColor="white"/>
-                <stop offset="1" stopColor="#040404"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-semibold text-white uppercase tracking-wide text-sm leading-tight">BEING</span>
-            <span className="font-semibold text-white uppercase tracking-wide text-sm leading-tight">CONSULTANT</span>
-          </div>
-        </Link>
-      </SidebarHeader>
-      <SidebarContent className="px-2 py-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              asChild 
-              isActive={pathname === "/dashboard"} 
-              className="hover-lift"
-              tooltip="Dashboard"
-            >
-              <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                <Home className="h-5 w-5" />
-                <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              asChild 
-              isActive={pathname === "/dashboard/profile"} 
-              className="hover-lift"
-              tooltip="Profile"
-            >
-              <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                <User className="h-5 w-5" />
-                <span className="group-data-[collapsible=icon]:hidden">Profile</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-            Coaching
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="coaching-section space-y-1">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname === "/dashboard/coaching"} 
-                  className="hover-lift"
-                  tooltip="Land a job"
-                >
-                  <Link href="/dashboard/coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Briefcase className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Land a job</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname === "/dashboard/coaching/career-excellence"} 
-                  className="hover-lift"
-                  tooltip="Career excellence"
-                >
-                  <Link href="/dashboard/coaching/career-excellence" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Award className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Career excellence</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname === "/dashboard/coaching/career-transition"} 
-                  className="hover-lift"
-                  tooltip="Career transition"
-                >
-                  <Link href="/dashboard/coaching/career-transition" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <FileCheck className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Career transition</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-            AI Coach
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="ai-coach-section space-y-1">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname === "/dashboard/ai-coach/case-interview"} 
-                  className="hover-lift"
-                  tooltip="Case Interview"
-                >
-                  <Link href="/dashboard/ai-coach/case-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Brain className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Case Interview</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname === "/dashboard/ai-coach/fit-interview"} 
-                  className="hover-lift"
-                  tooltip="FIT Interview"
-                >
-                  <Link href="/dashboard/ai-coach/fit-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Users className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">FIT Interview</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-            Resources
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="resources-section space-y-1">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname.startsWith("/dashboard/resources")} 
-                  className="hover-lift"
-                  tooltip="Toolkit"
-                >
-                  <Link href="/dashboard/resources" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <FileText className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Toolkit</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname.startsWith("/dashboard/stories")} 
-                  className="hover-lift"
-                  tooltip="Stories"
-                >
-                  <Link href="/dashboard/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <Sparkles className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Stories</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-            Learning
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="learning-section space-y-1">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname.startsWith("/dashboard/learning")} 
-                  className="hover-lift"
-                  tooltip="Courses"
-                >
-                  <Link href="/dashboard/learning" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <BookOpen className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Courses</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-            Whatsapp community
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="community-section space-y-1">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  isActive={pathname.startsWith("/dashboard/community")} 
-                  className="hover-lift"
-                  tooltip="Join Community"
-                >
-                  <Link href="/dashboard/community" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                    <MessageSquare className="h-5 w-5" />
-                    <span className="group-data-[collapsible=icon]:hidden">Join</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border p-4">
-        <div className="flex flex-col space-y-4">
-          <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
-            onClick={() => router.push('/dashboard/profile')}
-            title="Settings"
-          >
-            <Settings className="h-4 w-4" />
-            <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"
-            onClick={handleLogout}
-            title="Log Out"
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
-          </Button>
-        </div>
-      </SidebarFooter>
-    </Sidebar>
-  )
+    <></>
+  );
 }
 
 function DashboardHeader({ activeDropdown, setActiveDropdown }: { activeDropdown: string | null, setActiveDropdown: (dropdown: string | null) => void }) {
@@ -848,15 +878,17 @@ function DashboardHeader({ activeDropdown, setActiveDropdown }: { activeDropdown
   }
 
   return (
-    <header className="sticky top-0 z-30 backdrop-blur-md bg-black/70 border-b border-white/10 transition-all duration-300">
+    <header className="sticky top-0 z-40 backdrop-blur-md bg-black/70 border-b border-white/10 transition-all duration-300">
       <div className="max-w-[1920px] mx-auto">
         {/* Subtle gradient top border */}
         <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         
         <div className="flex h-16 items-center justify-between px-8 relative">
-          {/* Left section with sidebar trigger only */}
+          {/* Left section with logo only */}
           <div className="flex items-center gap-4">
-            <SidebarTrigger className="text-white/80 hover:text-white transition-colors duration-200" />
+            <Link href="/dashboard" className="flex items-center gap-2">
+              {/* Logo and text removed */}
+            </Link>
           </div>
           
           {/* Center navigation with dropdown menus */}
