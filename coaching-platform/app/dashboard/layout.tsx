@@ -56,6 +56,7 @@ import {
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/lib/firebase/auth-context"
 import { useRouter } from "next/navigation"
+import { SettingsDialog } from "@/components/settings/settings-dialog"
 
 // Custom component for the sidebar logo that hides text when collapsed
 function SidebarLogo() {
@@ -800,15 +801,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </SidebarContent>
               <SidebarFooter className="border-t border-sidebar-border p-4">
                 <div className="flex flex-col space-y-4">
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
-                    onClick={() => router.push('/dashboard/profile')}
-                    title="Settings"
-                  >
-                    <Settings className="h-4 w-4" />
-                    <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-                  </Button>
+                  <SettingsDialog 
+                    trigger={
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
+                        title="Settings"
+                      >
+                        <Settings className="h-4 w-4" />
+                        <span className="group-data-[collapsible=icon]:hidden">Settings</span>
+                      </Button>
+                    } 
+                  />
                   <Button 
                     variant="outline" 
                     className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"
@@ -936,6 +940,15 @@ function DashboardHeader({ activeDropdown, setActiveDropdown }: { activeDropdown
               <Bell className="h-4 w-4" />
               <span className="sr-only">Notifications</span>
             </Button>
+            
+            <SettingsDialog 
+              trigger={
+                <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white/20 hover:bg-white/10 hover:border-white/30 transition-colors duration-200">
+                  <Settings className="h-4 w-4" />
+                  <span className="sr-only">Settings</span>
+                </Button>
+              } 
+            />
             
             <div className="profile-dropdown">
               <DropdownMenu>
