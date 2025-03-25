@@ -95,7 +95,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [runTour, setRunTour] = useState(true)
   const { user, logout } = useAuth()
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [sidebarState, setSidebarState] = useState<"expanded" | "collapsed">("expanded");
+  const [sidebarState, setSidebarState] = useState<"expanded" | "collapsed">("collapsed");
   const router = useRouter()
 
   // Define handleLogout function
@@ -235,6 +235,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (sidebarCookie) {
         const state = sidebarCookie.split('=')[1];
         setSidebarState(state === 'true' ? 'expanded' : 'collapsed');
+      } else {
+        // No cookie found, set default to collapsed and create the cookie
+        document.cookie = 'sidebar:state=false; path=/; max-age=31536000'; // 1 year expiry
+        setSidebarState('collapsed');
       }
     };
 
@@ -254,94 +258,94 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <ProtectedRoute>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen bg-black text-white">
           <DashboardHeader activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} />
           
           {/* Dropdown content that pushes content down */}
           <div className={`w-full overflow-hidden transition-all duration-300 ease-in-out ${activeDropdown ? 'max-h-[600px]' : 'max-h-0'}`}>
             {activeDropdown === 'coaching' && (
-              <div className="w-full bg-white shadow-xl border-b border-gray-200">
+              <div className="w-full bg-white shadow-xl border-b border-black/5 animate-in fade-in-5 duration-300 ease-out">
+                {/* Subtle top gradient border with 3D effect */}
+                <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-black/10 to-transparent"></div>
+                
                 <div className={`mx-auto flex ${sidebarState === "collapsed" ? "ml-[4.5rem]" : "ml-[16rem]"}`}>
                   <div className="flex-1 flex flex-col lg:flex-row">
                     <div className="flex-1 p-6">
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
-                        <div className="group/section transition-all duration-300">
-                          <h3 className="text-xs font-semibold text-gray-500 mb-4 group-hover/section:text-blue-600 transition-colors duration-300">TOOLKITS & PRODUCTS</h3>
+                        <div className="group/section transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg rounded-lg p-3 hover:bg-gray-50/50">
+                          <h3 className="text-xs font-semibold text-black/70 mb-4 group-hover/section:text-black transition-colors duration-300 relative inline-block">
+                            CRACK CONSULTING INTERVIEW
+                            <span className="absolute bottom-[-4px] left-0 w-0 h-[1.5px] bg-gradient-to-r from-black/40 to-black/80 group-hover/section:w-full transition-all duration-500 ease-in-out"></span>
+                          </h3>
                           <ul className="space-y-3">
-                            <li><Link href="/dashboard/coaching/personality-assessment" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Personality Assessment
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/break-into-consulting" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">Break into Consulting
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
-                            <li><Link href="/dashboard/coaching/cheatsheet" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Cheatsheet
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/unlimited" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">Unlimited Coaching Program
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
-                            <li><Link href="/dashboard/coaching/meditation" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Meditation
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/one-on-one" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">1:1 Specific Programs
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
-                            <li><Link href="/dashboard/coaching/more" className="text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">more →
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/group" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">Group Coaching Program
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
                           </ul>
                         </div>
-                        <div className="group/section transition-all duration-300">
-                          <h3 className="text-xs font-semibold text-gray-500 mb-4 group-hover/section:text-blue-600 transition-colors duration-300">MASTERCLASSES</h3>
+                        <div className="group/section transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg rounded-lg p-3 hover:bg-gray-50/50">
+                          <h3 className="text-xs font-semibold text-black/70 mb-4 group-hover/section:text-black transition-colors duration-300 relative inline-block">
+                            EXCEL CONSULTING CAREER
+                            <span className="absolute bottom-[-4px] left-0 w-0 h-[1.5px] bg-gradient-to-r from-black/40 to-black/80 group-hover/section:w-full transition-all duration-500 ease-in-out"></span>
+                          </h3>
                           <ul className="space-y-3">
-                            <li><Link href="/dashboard/coaching/case-cracking-bundle" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Case Cracking Bundle
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/star" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">STAR Consultant Mastery
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
-                            <li><Link href="/dashboard/coaching/consulting-cv-masterclass" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Consulting CV Masterclass
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
-                              </span>
-                            </Link></li>
-                            <li><Link href="/dashboard/coaching/fit-interview-masterclass" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">FIT Interview Masterclass
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/one-on-one-specific" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">1:1 Specific Programs
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
                           </ul>
                         </div>
-                        <div className="group/section transition-all duration-300">
-                          <h3 className="text-xs font-semibold text-gray-500 mb-4 group-hover/section:text-blue-600 transition-colors duration-300">ARTICLES & BLOGS</h3>
+                        <div className="group/section transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg rounded-lg p-3 hover:bg-gray-50/50">
+                          <h3 className="text-xs font-semibold text-black/70 mb-4 group-hover/section:text-black transition-colors duration-300 relative inline-block">
+                            CONSULTING TOOLKIT
+                            <span className="absolute bottom-[-4px] left-0 w-0 h-[1.5px] bg-gradient-to-r from-black/40 to-black/80 group-hover/section:w-full transition-all duration-500 ease-in-out"></span>
+                          </h3>
                           <ul className="space-y-3">
-                            <li><Link href="/dashboard/coaching/free-resources" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Free resources
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
-                              </span>
-                            </Link></li>
-                            <li><Link href="/dashboard/coaching/premium-resources" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Premium resources
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/toolkit" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">Consulting Toolkit
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
                           </ul>
                         </div>
-                        <div className="group/section transition-all duration-300">
-                          <h3 className="text-xs font-semibold text-gray-500 mb-4 group-hover/section:text-blue-600 transition-colors duration-300">STORIES</h3>
+                        <div className="group/section transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg rounded-lg p-3 hover:bg-gray-50/50">
+                          <h3 className="text-xs font-semibold text-black/70 mb-4 group-hover/section:text-black transition-colors duration-300 relative inline-block">
+                            CONSULTING MIGRATION
+                            <span className="absolute bottom-[-4px] left-0 w-0 h-[1.5px] bg-gradient-to-r from-black/40 to-black/80 group-hover/section:w-full transition-all duration-500 ease-in-out"></span>
+                          </h3>
                           <ul className="space-y-3">
-                            <li><Link href="/dashboard/coaching/success-stories" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Success Stories
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/exit" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">Exit Planning & Readiness
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
-                            <li><Link href="/dashboard/coaching/testimonials" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Testimonials
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
-                              </span>
-                            </Link></li>
-                            <li><Link href="/dashboard/coaching/case-studies" className="text-sm text-gray-800 hover:text-blue-600 transition-colors duration-200 flex items-center group/item">
-                              <span className="relative">Case Studies
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover/item:w-full transition-all duration-300"></span>
+                            <li><Link href="/dashboard/coaching/transition" className="text-sm text-black/70 hover:text-black transition-all duration-300 flex items-center group/item hover:translate-x-1">
+                              <span className="relative overflow-hidden">Career Transition
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-black/40 to-black/80 group-hover/item:w-full transition-all duration-300 ease-out"></span>
                               </span>
                             </Link></li>
                           </ul>
@@ -349,24 +353,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       </div>
                     </div>
                     <div className="w-full lg:w-[280px] bg-gray-50 p-6 flex items-center justify-center relative overflow-hidden group/image">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-gray-50 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500"></div>
-                      <img 
-                        src="/placeholder.svg?height=180&width=180" 
-                        alt="Coaching Resources" 
-                        className="rounded-lg object-cover shadow-md z-10 transform group-hover/image:scale-105 transition-transform duration-500" 
-                        width={180} 
-                        height={180}
-                      />
+                      <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-100 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500"></div>
+                      <div className="relative z-10 transform transition-all duration-500 group-hover/image:scale-105 group-hover/image:rotate-1 group-hover/image:translate-y-[-5px]">
+                        <img 
+                          src="/placeholder.svg?height=180&width=180" 
+                          alt="Coaching Resources" 
+                          className="rounded-lg object-cover shadow-lg filter saturate-0 transition-all duration-500" 
+                          width={180} 
+                          height={180}
+                        />
+                        <div className="absolute inset-0 rounded-lg shadow-inner"></div>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover/image:opacity-100 transition-all duration-500"></div>
                     </div>
                   </div>
-                  <div className="border-t p-4 bg-gray-50 flex justify-between items-center">
-                    <span className="text-sm text-gray-500">Discover our coaching resources</span>
-                    <span className="text-sm text-blue-600 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
-                  </div>
                 </div>
+                
+                {/* Subtle bottom gradient border with 3D effect */}
+                <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-black/10 to-transparent"></div>
               </div>
             )}
-
             {activeDropdown === 'practice' && (
               <div className="w-full bg-white shadow-xl border-b border-gray-200">
                 <div className={`mx-auto flex ${sidebarState === "collapsed" ? "ml-[4.5rem]" : "ml-[16rem]"}`}>
