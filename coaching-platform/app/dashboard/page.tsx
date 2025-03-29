@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Calendar, Clock, FileText, MessageSquare, Star, TrendingUp, Users, X, Download } from "lucide-react"
+import { BarChart, Calendar, Clock, FileText, MessageSquare, Star, TrendingUp, Users, X, Download, BookOpen } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,17 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
+import { useAuth } from "@/lib/firebase/auth-context"
+import { getUserProfile, getUserCoachingPrograms } from "@/lib/firebase/firestore"
 
 const DashboardPage = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [animationStage, setAnimationStage] = useState(0)
+  const [userName, setUserName] = useState("User")
+  const [coachingPrograms, setCoachingPrograms] = useState([])
+  const [isLoadingCoaching, setIsLoadingCoaching] = useState(true)
+  const { user } = useAuth()
 
   useEffect(() => {
     // Show welcome modal after a delay
@@ -39,14 +45,99 @@ const DashboardPage = () => {
       })
     }, 150)
 
+    // Fetch user profile data
+    const fetchUserProfile = async () => {
+      if (user) {
+        try {
+          const profileResult = await getUserProfile(user.uid)
+          if (profileResult.success && profileResult.data) {
+            const userData = profileResult.data
+            // Use firstName if available, otherwise use displayName or email
+            if (userData.firstName) {
+              setUserName(userData.firstName)
+            } else if (userData.displayName) {
+              // Extract first name from display name
+              const nameParts = userData.displayName.split(' ')
+              setUserName(nameParts[0] || "User")
+            } else if (user.displayName) {
+              // Fallback to Firebase user displayName
+              const nameParts = user.displayName.split(' ')
+              setUserName(nameParts[0] || "User")
+            } else if (user.email) {
+              // Fallback to email username
+              const emailParts = user.email.split('@')
+              setUserName(emailParts[0] || "User")
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error)
+        }
+      }
+    }
+
+    // Fetch user's coaching programs
+    const fetchCoachingPrograms = async () => {
+      if (user) {
+        setIsLoadingCoaching(true)
+        try {
+          const coachingResult = await getUserCoachingPrograms(user.uid)
+          if (coachingResult.success) {
+            setCoachingPrograms(coachingResult.data || [])
+          }
+        } catch (error) {
+          console.error("Error fetching coaching programs:", error)
+        } finally {
+          setIsLoadingCoaching(false)
+        }
+      }
+    }
+
+    fetchUserProfile()
+    fetchCoachingPrograms()
+
     return () => {
       clearTimeout(timer)
       clearInterval(staggerInterval)
     }
-  }, [])
+  }, [user])
 
   const closeWelcomeModal = () => {
     setShowWelcomeModal(false)
+  }
+
+  // Format date for display
+  const formatDate = (date) => {
+    if (!date) return 'N/A'
+    
+    try {
+      if (typeof date === 'string') {
+        date = new Date(date)
+      }
+      
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).format(date)
+    } catch (error) {
+      console.error("Error formatting date:", error)
+      return 'Invalid date'
+    }
+  }
+
+  // Format currency for display
+  const formatCurrency = (amount, currency = 'INR') => {
+    if (amount === undefined || amount === null) return 'N/A'
+    
+    try {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: currency,
+      }).format(amount)
+    } catch (error) {
+      console.error("Error formatting currency:", error)
+      return `${amount} ${currency}`
+    }
   }
 
   return (
@@ -72,7 +163,7 @@ const DashboardPage = () => {
               <div className="space-y-2">
                 <div className="flex items-center">
                   <div className="mr-3 h-10 w-1 bg-gradient-to-b from-black/80 to-black/40 dark:from-white/80 dark:to-white/40 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.4)] dark:shadow-[0_0_8px_rgba(255,255,255,0.4)] animate-pulse-glow"></div>
-                  <h2 className="text-3xl font-bold tracking-tight welcome-text-gradient animate-gradient-flow">Welcome back, John!</h2>
+                  <h2 className="text-3xl font-bold tracking-tight welcome-text-gradient animate-gradient-flow">Welcome back, {userName}!</h2>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 text-base max-w-md relative z-10">
                   Here's what's happening with your consulting journey today. Your next session is in 
@@ -106,7 +197,7 @@ const DashboardPage = () => {
                 <Button className="relative overflow-hidden group font-medium">
                   <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
                   <Calendar className="mr-2 h-4 w-4 relative z-10 transition-transform duration-300" />
-                  <span className="relative z-10">Book a Session</span>
+                  <span>Book a Session</span>
                 </Button>
                 <Button variant="outline" className="font-medium group hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
                   <Users className="mr-2 h-4 w-4 text-black dark:text-white transition-transform duration-300" />
@@ -542,6 +633,72 @@ const DashboardPage = () => {
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Coaching Programs Card */}
+            <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 transform hover:-translate-y-1 animate-slideInUp">
+              <CardHeader>
+                <CardTitle>Your Coaching Programs</CardTitle>
+                <CardDescription>Programs you've enrolled in</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingCoaching ? (
+                  <div className="flex items-center justify-center h-40">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black dark:border-white"></div>
+                  </div>
+                ) : coachingPrograms.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/10 dark:from-white/20 dark:to-white/10 mb-4">
+                      <BookOpen className="h-6 w-6 text-black dark:text-white" />
+                    </div>
+                    <h3 className="text-lg font-medium">No coaching programs yet</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-md mx-auto">
+                      You haven't enrolled in any coaching programs yet. Browse our programs to get started on your consulting journey.
+                    </p>
+                    <Button className="mt-4 relative overflow-hidden group">
+                      <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
+                      <span className="relative z-10">Browse Programs</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {coachingPrograms.map((program) => (
+                      <div key={program.id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 hover:bg-black/5 p-3 rounded-lg transition-colors duration-200">
+                        <div className="space-y-2 mb-3 md:mb-0">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 rounded-full flex items-center justify-center bg-gradient-to-br from-black/20 to-black/10 dark:from-white/20 dark:to-white/10 mr-3">
+                              <BookOpen className="h-5 w-5 text-black dark:text-white" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium leading-none">{program.programName}</p>
+                              <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                <span className="flex items-center">
+                                  <Clock className="mr-1 h-3.5 w-3.5" /> Enrolled: {formatDate(program.enrollmentDate)}
+                                </span>
+                                <span className="mx-2">•</span>
+                                <span>Payment: {formatCurrency(program.amountPaid, program.currency)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          {program.metadata && program.metadata.description && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 pl-13">
+                              {program.metadata.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                            {program.status || 'Active'}
+                          </div>
+                          <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

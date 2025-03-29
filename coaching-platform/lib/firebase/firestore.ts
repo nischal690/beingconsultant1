@@ -697,3 +697,40 @@ export const addCoachingToUserProfile = async (userId: string, coachingData: {
     return { success: false, error };
   }
 };
+
+// Get user's coaching programs
+export const getUserCoachingPrograms = async (userId: string) => {
+  try {
+    // Check if coaching subcollection exists
+    const hasCoaching = await checkSubcollectionExists(userId, "coaching");
+    
+    if (!hasCoaching) {
+      return { success: true, data: [] };
+    }
+    
+    // Get coaching programs
+    const coachingRef = collection(db, "users", userId, "coaching");
+    const querySnapshot = await getDocs(coachingRef);
+    
+    const coachingPrograms: DocumentData[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Convert timestamps to dates for easier handling in the UI
+      const enrollmentDate = data.enrollmentDate ? timestampToDate(data.enrollmentDate) : null;
+      const paymentDate = data.paymentDate ? timestampToDate(data.paymentDate) : null;
+      
+      coachingPrograms.push({
+        id: doc.id,
+        ...data,
+        enrollmentDate,
+        paymentDate
+      });
+    });
+    
+    return { success: true, data: coachingPrograms };
+  } catch (error) {
+    console.error("Error getting user coaching programs:", error);
+    return { success: false, error };
+  }
+};
