@@ -212,6 +212,28 @@ body {
     }
   }
   
+  /* New animations for premium welcome dialog */
+  @keyframes gradient-subtle {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+  }
+  
+  .animate-gradient-subtle {
+    animation: gradient-subtle 15s ease infinite;
+    background-size: 200% 200%;
+  }
+  
+  @keyframes pulse-slow {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 8s ease-in-out infinite;
+  }
+  
   /* Hover animations for cards */
   .hover-reveal-border {
     position: relative;
@@ -316,6 +338,51 @@ body {
   .dark .welcome-shadow:hover {
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
   }
+  
+  /* New animations for AI Coach section */
+  @keyframes pulse-subtle {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
+  }
+  
+  @keyframes border-glow {
+    0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0); }
+    50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+    100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0); }
+  }
+  
+  .dark .animate-border-glow {
+    animation: border-glow 4s ease-in-out infinite;
+  }
+  
+  @keyframes welcome-text-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .welcome-text-gradient {
+    background: linear-gradient(to right, #000, #444, #000);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+    animation: welcome-text-gradient 8s linear infinite;
+  }
+  
+  .dark .welcome-text-gradient {
+    background: linear-gradient(to right, #fff, #aaa, #fff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+    animation: welcome-text-gradient 8s linear infinite;
+  }
 }
 
 @layer base {
@@ -341,6 +408,12 @@ body {
     /* Tertiary: Mid gray */
     --tertiary: 0 0% 90%;
     --tertiary-foreground: 0 0% 0%; /* Black */
+    
+    /* Cyan accent color: #66FCF1 */
+    --cyan: 177 97% 70%;
+    --cyan-light: 177 97% 80%;
+    --cyan-dark: 177 97% 60%;
+    --cyan-foreground: 0 0% 0%; /* Black */
     
     /* Neutral tones */
     --muted: 0 0% 96%;
@@ -402,6 +475,12 @@ body {
     --tertiary: 0 0% 20%;
     --tertiary-foreground: 0 0% 100%; /* White */
     
+    /* Cyan accent color: #66FCF1 */
+    --cyan: 177 97% 70%;
+    --cyan-light: 177 97% 80%;
+    --cyan-dark: 177 97% 60%;
+    --cyan-foreground: 0 0% 0%; /* Black */
+    
     /* Neutral tones for dark mode */
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
@@ -432,6 +511,59 @@ body {
     --sidebar-accent-foreground: 0 0% 100%; /* White */
     --sidebar-border: 0 0% 15%;
   }
+  
+  .hybrid-theme {
+    /* Light mode for content */
+    --background: 0 0% 100%; /* White */
+    --foreground: 0 0% 0%; /* Black */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 0 0% 0%; /* Black */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 0 0% 0%; /* Black */
+    
+    /* Primary: Black */
+    --primary: 0 0% 0%;
+    --primary-light: 0 0% 20%;
+    --primary-dark: 0 0% 0%;
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    /* Secondary: Light gray */
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 0%; /* Black */
+    
+    /* Tertiary: Mid gray */
+    --tertiary: 0 0% 90%;
+    --tertiary-foreground: 0 0% 0%; /* Black */
+    
+    /* Neutral tones */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 95%;
+    --accent-foreground: 0 0% 0%; /* Black */
+    
+    --destructive: 0 0% 0%; /* Black */
+    --destructive-foreground: 0 0% 100%; /* White */
+    
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 0%; /* Black */
+    
+    /* Chart colors - black and grays */
+    --chart-1: 0 0% 0%; /* Black */
+    --chart-2: 0 0% 20%; /* Dark gray */
+    --chart-3: 0 0% 40%; /* Medium gray */
+    --chart-4: 0 0% 60%; /* Light gray */
+    --chart-5: 0 0% 80%; /* Very light gray */
+    
+    /* Dark sidebar styling */
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%; /* White */
+    --sidebar-primary: 0 0% 100%; /* White */
+    --sidebar-primary-foreground: 0 0% 0%; /* Black */
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 100%; /* White */
+    --sidebar-border: 0 0% 15%;
+  }
 }
 
 /* Autofill styling for black and white theme */
@@ -439,8 +571,8 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-text-fill-color: black !important;
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0 30px black inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -450,6 +582,15 @@ input:-webkit-autofill:active {
 .dark input:-webkit-autofill:active {
   -webkit-text-fill-color: white !important;
   -webkit-box-shadow: 0 0 0 30px black inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.light input:-webkit-autofill,
+.light input:-webkit-autofill:hover,
+.light input:-webkit-autofill:focus,
+.light input:-webkit-autofill:active {
+  -webkit-text-fill-color: black !important;
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 

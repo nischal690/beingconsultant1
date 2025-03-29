@@ -215,7 +215,7 @@ export default function UnlimitedCoachingPage() {
             <div>
               <h3 className="text-2xl font-bold">Gaurav Bhosle</h3>
               <p className="text-muted-foreground">Ex-McKinsey Germany</p>
-              <p className="text-muted-foreground">CEO, Being Consultant</p>
+              <p className="text-muted-foreground">CEO</p>
               <p className="text-muted-foreground">10+ Years Consulting Coach</p>
               <p className="text-muted-foreground">HEC Paris</p>
               <p className="font-medium text-primary">The Only 360 consulting coach</p>

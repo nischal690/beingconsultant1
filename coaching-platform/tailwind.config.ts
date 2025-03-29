@@ -87,6 +87,21 @@ const config: Config = {
           700: '#1B4148',
           800: '#173339',
           900: '#12262A',  // Darkest
+        },
+        
+        // Cyan accent color
+        'cyan': {
+          DEFAULT: '#66FCF1', // Bright cyan
+          50: '#E5FFFE',
+          100: '#CCFEFD',
+          200: '#99FDFB',
+          300: '#66FCF1', // Base color
+          400: '#33FBF3',
+          500: '#05F7ED',
+          600: '#04C5BC',
+          700: '#03938C',
+          800: '#02615C',
+          900: '#01302E',
         }
       },
       fontFamily: {

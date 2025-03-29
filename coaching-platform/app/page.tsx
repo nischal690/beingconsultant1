@@ -12,7 +12,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col">
       <header className="flex h-16 items-center border-b px-4 md:px-6 bg-white">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="text-xl font-bold">BEING CONSULTANT</span>
+          {/* Text removed */}
         </Link>
         <nav className="ml-auto flex gap-6">
           {/* Coaching Dropdown */}

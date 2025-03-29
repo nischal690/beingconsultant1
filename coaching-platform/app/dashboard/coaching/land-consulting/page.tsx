@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { motion } from "framer-motion"
 import { ChevronRight, Home, Briefcase, Star, CheckCircle, Award, Users, Gift, Globe, Sparkles, Calendar, FileText, ArrowDown, ArrowRight, ArrowUp, Info, Plus, ArrowUpRight, Zap, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -106,23 +108,179 @@ const LandConsultingOfferPage = () => {
         </span>
       </nav>
 
-      {/* Page Header - Enhanced visual hierarchy and readability */}
-      <header className="mb-8">
-        <div className="relative z-10 p-6 md:p-8 rounded-2xl bg-gradient-to-r from-white/80 to-white/60 dark:from-gray-900/80 dark:to-gray-900/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.2)] overflow-hidden">
-          {/* Decorative accent line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-brand-300 to-secondary"></div>
-          
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center">
-              <div className="mr-3 h-10 w-1 bg-primary rounded-full shadow-[0_0_8px_rgba(36,93,102,0.4)]"></div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Land Consulting Offer</h1>
+      {/* Hero Section - 1:1 Personalized Coaching */}
+      <section className="relative overflow-hidden rounded-3xl text-gray-800 mb-10">
+        {/* Background image with enhanced styling */}
+        <div className="absolute inset-0">
+          <Image 
+            src="/herosection.jpg" 
+            alt="Hero Background" 
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        
+        {/* Animated glow effects */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-teal-500/20 blur-[100px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-72 h-72 rounded-full bg-blue-500/20 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+        
+        {/* Premium border effect */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-800/30 to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-800/30 to-transparent"></div>
+        
+        {/* Content wrapper with increased padding and backdrop blur */}
+        <div className="relative p-10 md:p-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            {/* Left content column - takes 2/3 of the space */}
+            <div className="md:col-span-2 space-y-8">
+              <div
+                className="inline-block"
+              >
+                <span className="px-4 py-1.5 text-sm bg-gray-800/10 backdrop-blur-md rounded-full border border-gray-800/20">
+                  Premium Coaching Experience
+                </span>
+              </div>
+              
+              <h1 
+                className="text-4xl md:text-5xl font-bold tracking-tight leading-tight"
+              >
+                <span className="block">1:1 Personalized Coaching</span>
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-600 via-gray-800 to-blue-600 animate-gradient-x">
+                  To Land Consulting Offers
+                </span>
+              </h1>
+              
+              <p 
+                className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
+              >
+                Our cutting-edge social media marketing tactics will help 
+                you maximize your brand's online visibility and expand your 
+                business exponentially. By leveraging the power of social 
+                media platforms.
+              </p>
+              
+              <div 
+              >
+                <Button 
+                  size="lg" 
+                  className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-teal-500/20"
+                  onClick={() => scrollToSection('pricing')}
+                >
+                  <span className="relative z-10">Buy the Program</span>
+                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-teal-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                </Button>
+              </div>
+              
+              {/* Stats with animated counters */}
+              <div 
+                className="flex flex-wrap gap-6 pt-4"
+              >
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-gray-800">1250+</span>
+                  <span className="text-sm text-gray-600">Successful Placements</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-gray-800">98%</span>
+                  <span className="text-sm text-gray-600">Success Rate</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-gray-800">4.9/5</span>
+                  <span className="text-sm text-gray-600">Client Rating</span>
+                </div>
+              </div>
             </div>
-            <p className="text-muted-foreground text-base max-w-3xl">
-              Our flagship program to help you break into consulting with personalized coaching from ex-MBB consultants.
-            </p>
+            
+            {/* Right content column - coach profiles with enhanced styling */}
+            <div 
+              className="flex justify-center items-center"
+            >
+              <div className="relative">
+                {/* Coach profiles in oval frames with enhanced styling */}
+                <div className="flex flex-wrap justify-center gap-4">
+                  <div 
+                    className="relative"
+                  >
+                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=250&fit=crop" 
+                        alt="Coach" 
+                        width={200}
+                        height={250}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                  <div 
+                    className="relative -mt-10"
+                  >
+                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&h=250&fit=crop" 
+                        alt="Coach" 
+                        width={200}
+                        height={250}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                  <div 
+                    className="relative"
+                  >
+                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200&h=250&fit=crop" 
+                        alt="Coach" 
+                        width={200}
+                        height={250}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Flagship program card with glass morphism effect */}
+          <div
+            className="mt-12 max-w-sm"
+          >
+            <div className="bg-white backdrop-blur-md border border-gray-800/10 rounded-xl overflow-hidden shadow-xl">
+              <div className="p-6 space-y-4">
+                <h3 className="text-xl font-bold text-gray-800">Flagship program</h3>
+                <p className="text-sm text-gray-700">
+                  This program provided clear guidance from start to finish, making it easy for me to succeed.
+                </p>
+                <div className="flex items-center gap-3 mt-4">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-800/20">
+                    <Image 
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=40&h=40&fit=crop" 
+                      alt="Testimonial" 
+                      width={40}
+                      height={40}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <div>
+                    <Link href="#" className="text-sm font-medium text-teal-600 hover:text-teal-700 group flex items-center">
+                      Get More Details
+                      <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
       {/* Quick Navigation Tabs - Enhanced for visual clarity and better hierarchy */}
       <div className="mb-10">
@@ -1113,7 +1271,7 @@ const LandConsultingOfferPage = () => {
           </div>
           
           <div className="mt-10 text-center">
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-muted-foreground mb-4">
               All bonus materials are carefully designed to complement your coaching journey and provide additional support for your consulting career.
             </p>
           </div>

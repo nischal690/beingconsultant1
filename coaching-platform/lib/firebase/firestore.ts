@@ -288,5 +288,412 @@ export const getForumPosts = async (category?: string) => {
 
 // Helper to convert Firestore timestamp to JavaScript Date
 export const timestampToDate = (timestamp: Timestamp) => {
-  return timestamp?.toDate();
+  if (!timestamp) return null;
+  return timestamp.toDate();
+};
+
+// Coupon operations
+export const verifyCoupon = async (code: string, productId?: string) => {
+  try {
+    console.log(`[verifyCoupon] Starting verification for coupon code: "${code}", productId: "${productId || 'none'}"`);
+    
+    const couponsRef = collection(db, "coupon");
+    const q = query(couponsRef, where("code", "==", code));
+    console.log(`[verifyCoupon] Querying Firestore with: collection="coupon", where code="${code}"`);
+    
+    const querySnapshot = await getDocs(q);
+    console.log(`[verifyCoupon] Query result: found ${querySnapshot.size} documents`);
+    
+    if (querySnapshot.empty) {
+      console.log(`[verifyCoupon] ERROR: Coupon "${code}" not found in database`);
+      return { success: false, error: "Coupon not found" };
+    }
+    
+    const couponDoc = querySnapshot.docs[0];
+    const couponData = couponDoc.data();
+    console.log(`[verifyCoupon] Coupon found: ${JSON.stringify(couponData, null, 2)}`);
+    
+    // Get current time
+    const now = new Date();
+    console.log(`[verifyCoupon] Current time: ${now.toISOString()}`);
+    
+    // Check if coupon is valid based on time range
+    const validFrom = timestampToDate(couponData.validFrom);
+    const validTo = timestampToDate(couponData.validTo);
+    
+    console.log(`[verifyCoupon] Validity period: ${validFrom ? validFrom.toISOString() : 'none'} to ${validTo ? validTo.toISOString() : 'none'}`);
+    
+    if (validFrom && now < validFrom) {
+      console.log(`[verifyCoupon] ERROR: Coupon not yet active. Current: ${now.toISOString()}, ValidFrom: ${validFrom.toISOString()}`);
+      return { success: false, error: "Coupon is not yet active" };
+    }
+    
+    if (validTo && now > validTo) {
+      console.log(`[verifyCoupon] ERROR: Coupon expired. Current: ${now.toISOString()}, ValidTo: ${validTo.toISOString()}`);
+      return { success: false, error: "Coupon has expired" };
+    }
+    
+    // Check usage limit
+    console.log(`[verifyCoupon] Usage count: ${couponData.usageCount || 0}/${couponData.usageLimit || 'unlimited'}`);
+    if (couponData.usageLimit !== undefined && couponData.usageCount >= couponData.usageLimit) {
+      console.log(`[verifyCoupon] ERROR: Usage limit reached (${couponData.usageCount}/${couponData.usageLimit})`);
+      return { success: false, error: "Coupon usage limit reached" };
+    }
+    
+    // Check if product-specific coupon applies to this product
+    if (couponData.product && couponData.product !== "allproducts" && productId && couponData.product !== productId) {
+      console.log(`[verifyCoupon] ERROR: Product mismatch. Coupon for: ${couponData.product}, Requested for: ${productId}`);
+      return { success: false, error: "Coupon not valid for this product" };
+    }
+    
+    console.log(`[verifyCoupon] SUCCESS: Coupon "${code}" is valid. Discount: ${couponData.discount}${couponData.discountType === 'percentage' ? '%' : ' fixed'}`);
+    return { 
+      success: true, 
+      data: {
+        code: couponData.code,
+        discount: couponData.discount,
+        discountType: couponData.discountType || "percentage",
+        product: couponData.product
+      }
+    };
+  } catch (error) {
+    console.error("[verifyCoupon] Error verifying coupon:", error);
+    return { success: false, error: "Error verifying coupon" };
+  }
+};
+
+// Update coupon usage count
+export const incrementCouponUsage = async (code: string) => {
+  try {
+    console.log(`[incrementCouponUsage] Starting increment for coupon: "${code}"`);
+    
+    const couponsRef = collection(db, "coupon");
+    const q = query(couponsRef, where("code", "==", code));
+    console.log(`[incrementCouponUsage] Querying Firestore with: collection="coupon", where code="${code}"`);
+    
+    const querySnapshot = await getDocs(q);
+    console.log(`[incrementCouponUsage] Query result: found ${querySnapshot.size} documents`);
+    
+    if (querySnapshot.empty) {
+      console.log(`[incrementCouponUsage] ERROR: Coupon "${code}" not found in database`);
+      return { success: false, error: "Coupon not found" };
+    }
+    
+    const couponDoc = querySnapshot.docs[0];
+    const couponRef = doc(db, "coupon", couponDoc.id);
+    const currentUsageCount = couponDoc.data().usageCount || 0;
+    
+    console.log(`[incrementCouponUsage] Current usage count: ${currentUsageCount}, incrementing to ${currentUsageCount + 1}`);
+    
+    await updateDoc(couponRef, {
+      usageCount: currentUsageCount + 1,
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log(`[incrementCouponUsage] SUCCESS: Usage count updated for coupon "${code}"`);
+    return { success: true };
+  } catch (error) {
+    console.error("[incrementCouponUsage] Error updating coupon usage:", error);
+    return { success: false, error: "Error updating coupon usage" };
+  }
+};
+
+// Check if a subcollection exists for a user
+export const checkSubcollectionExists = async (userId: string, subcollectionName: string): Promise<boolean> => {
+  try {
+    const subcollectionRef = collection(db, "users", userId, subcollectionName);
+    const snapshot = await getDocs(subcollectionRef);
+    return !snapshot.empty;
+  } catch (error) {
+    console.error(`Error checking if ${subcollectionName} subcollection exists:`, error);
+    return false;
+  }
+};
+
+// Ensure a subcollection exists for a user
+export const ensureSubcollectionExists = async (userId: string, subcollectionName: string): Promise<boolean> => {
+  try {
+    const exists = await checkSubcollectionExists(userId, subcollectionName);
+    
+    if (!exists) {
+      // Create a placeholder document that we'll delete immediately
+      // This ensures the subcollection exists in Firestore
+      const placeholderRef = doc(collection(db, "users", userId, subcollectionName), "placeholder");
+      await setDoc(placeholderRef, {
+        created: serverTimestamp(),
+        placeholder: true
+      });
+      
+      // Delete the placeholder document
+      await deleteDoc(placeholderRef);
+    }
+    
+    return true;
+  } catch (error) {
+    console.error(`Error ensuring ${subcollectionName} subcollection exists:`, error);
+    return false;
+  }
+};
+
+// Transaction history operations
+export const createTransactionRecord = async (userId: string, transactionData: {
+  transactionId: string;
+  amount: number;
+  currency: string;
+  status: 'successful' | 'failed';
+  paymentMethod: 'razorpay' | 'stripe';
+  productId: string;
+  productTitle: string;
+  documentId?: string;
+  couponCode?: string;
+  couponDiscount?: number;
+  couponDiscountType?: 'percentage' | 'fixed';
+  errorMessage?: string;
+  metadata?: Record<string, any>;
+}) => {
+  try {
+    // Ensure transactions subcollection exists
+    await ensureSubcollectionExists(userId, "transactions");
+    
+    // Create transaction document
+    const transactionRef = doc(
+      collection(db, "users", userId, "transactions"), 
+      transactionData.transactionId
+    );
+    
+    await setDoc(transactionRef, {
+      ...transactionData,
+      timestamp: serverTimestamp(),
+    });
+    
+    return { success: true, id: transactionRef.id };
+  } catch (error) {
+    console.error("Error creating transaction record:", error);
+    return { success: false, error };
+  }
+};
+
+// User purchased products operations
+export const addProductToUserLibrary = async (userId: string, productData: {
+  productId: string;
+  productTitle: string;
+  productCategory: string;
+  transactionId: string;
+  paymentId: string;
+  documentId?: string;
+  price: number;
+  currency: string;
+  metadata?: Record<string, any>;
+}) => {
+  try {
+    // Ensure products subcollection exists
+    await ensureSubcollectionExists(userId, "products");
+    
+    // Create product document
+    const productRef = doc(
+      collection(db, "users", userId, "products"), 
+      productData.productId
+    );
+    
+    // Check if product already exists in user's library
+    const productDoc = await getDoc(productRef);
+    
+    if (productDoc.exists()) {
+      // Product already exists, update access time
+      await updateDoc(productRef, {
+        lastAccessed: serverTimestamp(),
+        // Add new transaction to the transactions array
+        transactions: [...(productDoc.data().transactions || []), {
+          transactionId: productData.transactionId,
+          paymentId: productData.paymentId,
+          timestamp: new Date().toISOString() // Use ISO string instead of serverTimestamp()
+        }]
+      });
+    } else {
+      // Product doesn't exist, create it
+      await setDoc(productRef, {
+        ...productData,
+        firstAccessed: serverTimestamp(),
+        lastAccessed: serverTimestamp(),
+        transactions: [{
+          transactionId: productData.transactionId,
+          paymentId: productData.paymentId,
+          timestamp: new Date().toISOString() // Use ISO string instead of serverTimestamp()
+        }]
+      });
+    }
+    
+    return { success: true, id: productRef.id };
+  } catch (error) {
+    console.error("Error adding product to user library:", error);
+    return { success: false, error };
+  }
+};
+
+// Get user's purchased products
+export const getUserProducts = async (userId: string) => {
+  try {
+    const productsRef = collection(db, "users", userId, "products");
+    const q = query(productsRef, orderBy("firstAccessed", "desc"));
+    
+    const querySnapshot = await getDocs(q);
+    const products: DocumentData[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      products.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    
+    return { success: true, data: products };
+  } catch (error) {
+    console.error("Error getting user products:", error);
+    return { success: false, error };
+  }
+};
+
+// Get user's transaction history
+export const getUserTransactions = async (userId: string, limit?: number) => {
+  try {
+    const transactionsRef = collection(db, "users", userId, "transactions");
+    const constraints: QueryConstraint[] = [orderBy("timestamp", "desc")];
+    
+    if (limit) {
+      constraints.push(limitQuery(limit));
+    }
+    
+    const q = query(transactionsRef, ...constraints);
+    const querySnapshot = await getDocs(q);
+    const transactions: DocumentData[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      transactions.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    
+    return { success: true, data: transactions };
+  } catch (error) {
+    console.error("Error getting user transactions:", error);
+    return { success: false, error };
+  }
+};
+
+// Products operations
+export const getProductsByCategory = async (category: string, limit?: number) => {
+  try {
+    console.log(`Attempting to fetch products with category: ${category}`);
+    const productsRef = collection(db, "products");
+    const constraints: QueryConstraint[] = [
+      where("category", "==", category)
+    ];
+    
+    if (limit) {
+      constraints.push(limitQuery(limit));
+    }
+    
+    const q = query(productsRef, ...constraints);
+    console.log("Executing Firestore query with constraints:", constraints);
+    const querySnapshot = await getDocs(q);
+    console.log(`Query returned ${querySnapshot.size} documents`);
+    
+    const products: DocumentData[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      console.log(`Processing document with ID: ${doc.id}`);
+      console.log("Document data:", doc.data());
+      products.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    
+    console.log(`Returning ${products.length} products`);
+    return { success: true, data: products };
+  } catch (error) {
+    console.error("Error getting products by category:", error);
+    return { success: false, error };
+  }
+};
+
+// Get a specific product by ID
+export const getProduct = async (productId: string) => {
+  try {
+    const productRef = doc(db, "products", productId);
+    const productSnap = await getDoc(productRef);
+    
+    if (productSnap.exists()) {
+      return { 
+        success: true, 
+        data: {
+          id: productSnap.id,
+          ...productSnap.data()
+        } 
+      };
+    } else {
+      return { success: false, error: "Product not found" };
+    }
+  } catch (error) {
+    console.error("Error getting product:", error);
+    return { success: false, error };
+  }
+};
+
+// Add coaching program to user's coaching subcollection
+export const addCoachingToUserProfile = async (userId: string, coachingData: {
+  programId: string;
+  programName: string;
+  amountPaid: number;
+  currency: string;
+  transactionId: string;
+  paymentMethod: 'razorpay' | 'stripe';
+  metadata?: Record<string, any>;
+}) => {
+  try {
+    // Ensure coaching subcollection exists
+    await ensureSubcollectionExists(userId, "coaching");
+    
+    // Create coaching document with programId as the document ID
+    const coachingRef = doc(
+      collection(db, "users", userId, "coaching"), 
+      coachingData.programId
+    );
+    
+    // Check if coaching program already exists in user's profile
+    const coachingDoc = await getDoc(coachingRef);
+    
+    if (coachingDoc.exists()) {
+      // Coaching program already exists, update with new payment information
+      await updateDoc(coachingRef, {
+        lastUpdated: serverTimestamp(),
+        amountPaid: coachingData.amountPaid,
+        currency: coachingData.currency,
+        lastTransactionId: coachingData.transactionId,
+        paymentMethod: coachingData.paymentMethod,
+        paymentDate: serverTimestamp(),
+        ...coachingData.metadata
+      });
+    } else {
+      // Coaching program doesn't exist, create it
+      await setDoc(coachingRef, {
+        programId: coachingData.programId,
+        programName: coachingData.programName,
+        amountPaid: coachingData.amountPaid,
+        currency: coachingData.currency,
+        transactionId: coachingData.transactionId,
+        paymentMethod: coachingData.paymentMethod,
+        enrollmentDate: serverTimestamp(),
+        paymentDate: serverTimestamp(),
+        status: 'active',
+        ...coachingData.metadata
+      });
+    }
+    
+    return { success: true, id: coachingRef.id };
+  } catch (error) {
+    console.error("Error adding coaching program to user profile:", error);
+    return { success: false, error };
+  }
 };

@@ -129,7 +129,7 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                       <Phone className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="font-medium">SMS Notifications</p>
+                      <p className="font-medium">Whatsapp Notifications</p>
                       <p className="text-xs text-muted-foreground">Receive notifications via SMS</p>
                     </div>
                   </div>
@@ -140,22 +140,7 @@ export function SettingsDialog({ trigger }: SettingsDialogProps) {
                   />
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-full bg-white/5 border border-white/10">
-                      <MessageSquare className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="font-medium">In-App Notifications</p>
-                      <p className="text-xs text-muted-foreground">Receive notifications in app</p>
-                    </div>
-                  </div>
-                  <Switch 
-                    checked={notifications.inApp} 
-                    onCheckedChange={(checked) => setNotifications({...notifications, inApp: checked})}
-                    disabled={!notifications.all}
-                  />
-                </div>
+                
               </div>
             </TabsContent>
             

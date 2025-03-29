@@ -5,7 +5,7 @@ import { AuthProvider } from '@/lib/firebase/auth-context'
 import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
-  title: 'Being Consultant',
+  title: 'Coaching Platform',
   description: 'Coaching platform for consultants',
   generator: 'v0.dev',
 }
@@ -20,8 +20,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
           disableTransitionOnChange
         >
           <AuthProvider>

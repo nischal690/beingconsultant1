@@ -14,6 +14,7 @@ import { ArrowLeft, Loader2, Mail, Apple } from "lucide-react"
 import { useAuth } from "@/lib/firebase/auth-context"
 import { toast } from "sonner"
 import { getUserProfile } from "@/lib/firebase/firestore"
+import { FirebaseError } from "firebase/app"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -82,16 +83,19 @@ export default function LoginPage() {
           router.push("/onboarding")
         }
       }, 500)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login error:", error)
-      if (error.code === "auth/invalid-credential") {
+      const firebaseError = error as FirebaseError
+      if (firebaseError.code === "auth/invalid-credential") {
         setError("Invalid email or password")
-      } else if (error.code === "auth/user-not-found") {
+      } else if (firebaseError.code === "auth/user-not-found") {
         setError("User not found")
-      } else if (error.code === "auth/wrong-password") {
+      } else if (firebaseError.code === "auth/wrong-password") {
         setError("Incorrect password")
       } else {
-        setError(error.message || "Failed to sign in")
+        setError(
+          error instanceof Error ? error.message : "Failed to sign in"
+        )
       }
       setIsLoading(false)
     }
@@ -111,7 +115,7 @@ export default function LoginPage() {
           router.push("/onboarding")
         }
       }, 500)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google")
       setIsLoading(false)
@@ -132,7 +136,7 @@ export default function LoginPage() {
           router.push("/onboarding")
         }
       }, 500)
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Apple sign in error:", error)
       setError("Failed to sign in with Apple")
       setIsLoading(false)

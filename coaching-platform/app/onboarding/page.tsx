@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-context";
-import { hasCompletedOnboarding, updateUserProfileWithOnboarding } from "@/lib/firebase/firestore";
+import { hasCompletedOnboarding, updateUserProfileWithOnboarding, getUserProfile } from "@/lib/firebase/firestore";
 import OnboardingForm from "@/components/onboarding/OnboardingForm";
 import { Loader2 } from "lucide-react";
 
@@ -20,6 +20,15 @@ export default function OnboardingPage() {
       }
 
       try {
+        // First check if the user has a LinkedIn profile
+        const userProfile = await getUserProfile(user.uid);
+        if (userProfile.success && userProfile.data && userProfile.data.linkedInProfile) {
+          // If LinkedIn profile exists, redirect to dashboard
+          router.push("/dashboard");
+          return;
+        }
+        
+        // Otherwise check if they've completed onboarding
         const completed = await hasCompletedOnboarding(user.uid);
         if (completed) {
           router.push("/dashboard");

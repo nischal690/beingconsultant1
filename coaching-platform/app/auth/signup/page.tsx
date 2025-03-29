@@ -14,6 +14,8 @@ import { useAuth } from "@/lib/firebase/auth-context"
 import { createUserProfile } from "@/lib/firebase/firestore"
 import { toast } from "sonner"
 import { auth } from "@/lib/firebase/config"
+import { getUserProfile } from "@/lib/firebase/firestore"
+import { scheduleFollowupEmail } from "@/lib/mailchimp/schedule-followup"
 
 export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -74,6 +76,14 @@ export default function SignupPage() {
           emailVerified: false
         })
         
+        // Schedule follow-up email via Mailchimp (24 hours later)
+        await scheduleFollowupEmail({
+          userId: currentUser.uid,
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName
+        })
+        
         // Set verification sent state to true
         setVerificationSent(true)
         toast.success("Account created! Please verify your email before proceeding.")
@@ -100,8 +110,31 @@ export default function SignupPage() {
     setIsLoading(true)
     try {
       await signInWithGoogle()
-      toast.success("Signed in with Google!")
-      router.push("/onboarding")
+      
+      // Check if user has LinkedIn profile already
+      const currentUser = auth.currentUser
+      if (currentUser) {
+        const userProfile = await getUserProfile(currentUser.uid)
+        
+        // Schedule follow-up email via Mailchimp (24 hours later)
+        await scheduleFollowupEmail({
+          userId: currentUser.uid,
+          email: currentUser.email || '',
+          firstName: currentUser.displayName ? currentUser.displayName.split(' ')[0] : '',
+          lastName: currentUser.displayName ? currentUser.displayName.split(' ').slice(1).join(' ') : ''
+        })
+        
+        if (userProfile.success && userProfile.data && userProfile.data.linkedInProfile) {
+          toast.success("Signed in with Google!")
+          router.push("/dashboard")
+        } else {
+          toast.success("Signed in with Google!")
+          router.push("/onboarding")
+        }
+      } else {
+        toast.success("Signed in with Google!")
+        router.push("/onboarding")
+      }
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Failed to sign in with Google")
@@ -113,8 +146,31 @@ export default function SignupPage() {
     setIsLoading(true)
     try {
       await signInWithApple()
-      toast.success("Signed in with Apple!")
-      router.push("/onboarding")
+      
+      // Check if user has LinkedIn profile already
+      const currentUser = auth.currentUser
+      if (currentUser) {
+        const userProfile = await getUserProfile(currentUser.uid)
+        
+        // Schedule follow-up email via Mailchimp (24 hours later)
+        await scheduleFollowupEmail({
+          userId: currentUser.uid,
+          email: currentUser.email || '',
+          firstName: currentUser.displayName ? currentUser.displayName.split(' ')[0] : '',
+          lastName: currentUser.displayName ? currentUser.displayName.split(' ').slice(1).join(' ') : ''
+        })
+        
+        if (userProfile.success && userProfile.data && userProfile.data.linkedInProfile) {
+          toast.success("Signed in with Apple!")
+          router.push("/dashboard")
+        } else {
+          toast.success("Signed in with Apple!")
+          router.push("/onboarding")
+        }
+      } else {
+        toast.success("Signed in with Apple!")
+        router.push("/onboarding")
+      }
     } catch (error) {
       console.error("Apple sign in error:", error)
       setError("Failed to sign in with Apple")
