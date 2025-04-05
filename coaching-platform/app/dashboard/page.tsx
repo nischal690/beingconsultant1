@@ -16,13 +16,36 @@ import {
 import { useAuth } from "@/lib/firebase/auth-context"
 import { getUserProfile, getUserCoachingPrograms } from "@/lib/firebase/firestore"
 
+// Define interface for coaching program
+interface CoachingProgram {
+  id: string;
+  programId: string;
+  programName: string;
+  amountPaid: number;
+  currency: string;
+  transactionId: string;
+  paymentMethod: 'razorpay' | 'stripe';
+  enrollmentDate: string | Date;
+  paymentDate: string | Date;
+  status: string;
+  scheduledDate?: string | Date;
+  metadata?: {
+    description?: string;
+    [key: string]: any;
+  };
+  [key: string]: any; // Allow other properties
+}
+
 const DashboardPage = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [animationStage, setAnimationStage] = useState(0)
   const [userName, setUserName] = useState("User")
-  const [coachingPrograms, setCoachingPrograms] = useState([])
+  const [coachingPrograms, setCoachingPrograms] = useState<CoachingProgram[]>([])
   const [isLoadingCoaching, setIsLoadingCoaching] = useState(true)
+  const [sessionMessage, setSessionMessage] = useState("")
+  const [hasCoaching, setHasCoaching] = useState(false)
+  const [upcomingSessions, setUpcomingSessions] = useState(0)
   const { user } = useAuth()
 
   useEffect(() => {
@@ -82,15 +105,138 @@ const DashboardPage = () => {
         try {
           const coachingResult = await getUserCoachingPrograms(user.uid)
           if (coachingResult.success) {
-            setCoachingPrograms(coachingResult.data || [])
+            const coachingData = coachingResult.data || [];
+            setCoachingPrograms(coachingData);
+            setHasCoaching(coachingData.length > 0);
+            
+            // If user has coaching programs, check for scheduled dates
+            if (coachingData.length > 0) {
+              updateSessionMessage(coachingData);
+            } else {
+              setSessionMessage("Book your first coaching session to start your journey.");
+            }
           }
         } catch (error) {
-          console.error("Error fetching coaching programs:", error)
+          console.error("Error fetching coaching programs:", error);
         } finally {
-          setIsLoadingCoaching(false)
+          setIsLoadingCoaching(false);
         }
       }
     }
+
+    // Update session message based on upcoming or past sessions
+    const updateSessionMessage = (coachingData: CoachingProgram[]) => {
+      const now = new Date();
+      console.log("Current date (local):", now.toLocaleString());
+      console.log("Updating session message with coaching data:", coachingData);
+      
+      // Helper function to parse dates consistently
+      const parseScheduledDate = (scheduledDate: any): Date => {
+        if (!scheduledDate) return new Date(0);
+        
+        // Handle Firestore Timestamp object
+        if (typeof scheduledDate === 'object' && scheduledDate.seconds) {
+          const milliseconds = scheduledDate.seconds * 1000 + (scheduledDate.nanoseconds || 0) / 1000000;
+          return new Date(milliseconds);
+        }
+        
+        // Handle string dates
+        if (typeof scheduledDate === 'string') {
+          try {
+            // First try direct parsing
+            const date = new Date(scheduledDate);
+            if (!isNaN(date.getTime())) return date;
+            
+            // Try parsing UTC format
+            if (scheduledDate.includes('UTC')) {
+              const match = scheduledDate.match(/(\w+ \d+, \d+) at (\d+:\d+:\d+ [AP]M) UTC([+-]\d+:\d+)/);
+              if (match) {
+                const [_, datePart, timePart, timezone] = match;
+                return new Date(`${datePart} ${timePart} GMT${timezone}`);
+              }
+            }
+          } catch (error) {
+            console.error("Error parsing date:", error);
+          }
+        }
+        
+        // Return epoch time as fallback
+        return new Date(0);
+      };
+
+      // Helper function to calculate days between dates
+      const getDaysDifference = (date1: Date, date2: Date): number => {
+        const oneDay = 24 * 60 * 60 * 1000; // milliseconds in one day
+        // Use UTC to avoid timezone issues
+        const utc1 = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
+        const utc2 = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
+        return Math.floor((utc2 - utc1) / oneDay);
+      };
+
+      // Filter and sort future coaching sessions
+      const futureCoachingSessions = coachingData
+        .filter((program: CoachingProgram) => {
+          if (!program.scheduledDate) return false;
+          const sessionDate = parseScheduledDate(program.scheduledDate);
+          return sessionDate.getTime() > now.getTime();
+        })
+        .sort((a: CoachingProgram, b: CoachingProgram) => {
+          const dateA = parseScheduledDate(a.scheduledDate);
+          const dateB = parseScheduledDate(b.scheduledDate);
+          return dateA.getTime() - dateB.getTime();
+        });
+
+      // Update the number of upcoming sessions
+      setUpcomingSessions(futureCoachingSessions.length);
+
+      // Filter and sort past coaching sessions
+      const pastCoachingSessions = coachingData
+        .filter((program: CoachingProgram) => {
+          if (!program.scheduledDate) return false;
+          const sessionDate = parseScheduledDate(program.scheduledDate);
+          return sessionDate.getTime() <= now.getTime();
+        })
+        .sort((a: CoachingProgram, b: CoachingProgram) => {
+          const dateA = parseScheduledDate(a.scheduledDate);
+          const dateB = parseScheduledDate(b.scheduledDate);
+          return dateB.getTime() - dateA.getTime(); // Sort in descending order for past sessions
+        });
+
+      if (futureCoachingSessions.length > 0) {
+        const nextSession = futureCoachingSessions[0];
+        const sessionDate = parseScheduledDate(nextSession.scheduledDate);
+        const daysUntil = getDaysDifference(now, sessionDate);
+        
+        let timeMessage;
+        if (daysUntil === 0) {
+          timeMessage = "today";
+        } else if (daysUntil === 1) {
+          timeMessage = "tomorrow";
+        } else {
+          timeMessage = `in ${daysUntil} days`;
+        }
+        
+        setSessionMessage(`Your next session for ${nextSession.programName} is ${timeMessage}`);
+        
+      } else if (pastCoachingSessions.length > 0) {
+        const lastSession = pastCoachingSessions[0];
+        const sessionDate = parseScheduledDate(lastSession.scheduledDate);
+        const daysSince = getDaysDifference(sessionDate, now);
+        
+        let timeMessage;
+        if (daysSince === 0) {
+          timeMessage = "today";
+        } else if (daysSince === 1) {
+          timeMessage = "yesterday";
+        } else {
+          timeMessage = `${daysSince} days ago`;
+        }
+        
+        setSessionMessage(`Your last session for ${lastSession.programName} was ${timeMessage}`);
+      } else {
+        setSessionMessage("No sessions scheduled yet");
+      }
+    };
 
     fetchUserProfile()
     fetchCoachingPrograms()
@@ -106,7 +252,7 @@ const DashboardPage = () => {
   }
 
   // Format date for display
-  const formatDate = (date) => {
+  const formatDate = (date: string | number | Date | undefined) => {
     if (!date) return 'N/A'
     
     try {
@@ -126,7 +272,7 @@ const DashboardPage = () => {
   }
 
   // Format currency for display
-  const formatCurrency = (amount, currency = 'INR') => {
+  const formatCurrency = (amount: string | number | bigint | null | undefined, currency = 'INR') => {
     if (amount === undefined || amount === null) return 'N/A'
     
     try {
@@ -165,9 +311,25 @@ const DashboardPage = () => {
                   <div className="mr-3 h-10 w-1 bg-gradient-to-b from-black/80 to-black/40 dark:from-white/80 dark:to-white/40 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.4)] dark:shadow-[0_0_8px_rgba(255,255,255,0.4)] animate-pulse-glow"></div>
                   <h2 className="text-3xl font-bold tracking-tight welcome-text-gradient animate-gradient-flow">Welcome back, {userName}!</h2>
                 </div>
+                {sessionMessage && console.log("Session Message:", sessionMessage)}
+                {sessionMessage && console.log("Contains 'Book your first':", sessionMessage.includes("Book your first coaching session"))}
+                {sessionMessage && console.log("Contains 'Schedule your first':", sessionMessage.includes("Schedule your first coaching session"))}
+                {console.log("Condition result:", sessionMessage && (
+                  sessionMessage.includes("Book your first coaching session") || 
+                  sessionMessage.includes("Schedule your first coaching session")
+                ))}
                 <p className="text-gray-600 dark:text-gray-300 text-base max-w-md relative z-10">
-                  Here's what's happening with your consulting journey today. Your next session is in 
-                  <span className="font-medium text-black dark:text-white ml-1 relative inline-block animate-float">2 days</span>.
+                  {sessionMessage ? (
+                    sessionMessage.includes("Book your first coaching session") || 
+                    sessionMessage.includes("Schedule your first coaching session") ? (
+                      <span className="font-medium text-black dark:text-white relative inline-block animate-float">{sessionMessage}</span>
+                    ) : (
+                      <>
+                        Here's what's happening with your consulting journey today.{" "}
+                        <span className="font-medium text-black dark:text-white ml-1 relative inline-block animate-float">{sessionMessage}</span>
+                      </>
+                    )
+                  ) : null}
                 </p>
                 
                 {/* Quick stats summary with enhanced styling */}
@@ -178,31 +340,34 @@ const DashboardPage = () => {
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Upcoming</p>
-                      <p className="text-sm font-semibold welcome-text-gradient animate-gradient-flow">3 Sessions</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 group/stat transition-all duration-300">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/5 dark:from-white/20 dark:to-white/5 shadow-sm group-hover:shadow-[0_0_10px_rgba(0,0,0,0.2)] dark:group-hover:shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-all duration-300">
-                      <Star className="h-4 w-4 text-black dark:text-white transition-transform duration-300" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Weekly Goal</p>
-                      <p className="text-sm font-semibold welcome-text-gradient animate-gradient-flow">70% Complete</p>
+                      <p className="text-sm font-semibold welcome-text-gradient animate-gradient-flow">
+                        {upcomingSessions} {upcomingSessions === 1 ? 'Session' : 'Sessions'}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
               
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <Button className="relative overflow-hidden group font-medium">
-                  <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
-                  <Calendar className="mr-2 h-4 w-4 relative z-10 transition-transform duration-300" />
-                  <span>Book a Session</span>
-                </Button>
-                <Button variant="outline" className="font-medium group hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
-                  <Users className="mr-2 h-4 w-4 text-black dark:text-white transition-transform duration-300" />
-                  <span>Join Group Session</span>
-                </Button>
+                {upcomingSessions > 0 ? (
+                  <Button className="relative overflow-hidden group font-medium">
+                    <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
+                    <Clock className="mr-2 h-4 w-4 relative z-10 transition-transform duration-300" />
+                    <span>Join Session</span>
+                  </Button>
+                ) : (
+                  <Button className="relative overflow-hidden group font-medium">
+                    <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
+                    <Calendar className="mr-2 h-4 w-4 relative z-10 transition-transform duration-300" />
+                    <span>Book a Session</span>
+                  </Button>
+                )}
+                {upcomingSessions > 1 && (
+                  <Button variant="outline" className="font-medium group hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
+                    <Users className="mr-2 h-4 w-4 text-black dark:text-white transition-transform duration-300" />
+                    <span>View All Sessions</span>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -649,7 +814,7 @@ const DashboardPage = () => {
                   </div>
                 ) : coachingPrograms.length === 0 ? (
                   <div className="text-center py-8">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/10 dark:from-white/20 dark:to-white/10 mb-4">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-black/20 to-black/10">
                       <BookOpen className="h-6 w-6 text-black dark:text-white" />
                     </div>
                     <h3 className="text-lg font-medium">No coaching programs yet</h3>
@@ -663,7 +828,7 @@ const DashboardPage = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {coachingPrograms.map((program) => (
+                    {coachingPrograms.map((program: CoachingProgram) => (
                       <div key={program.id} className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 hover:bg-black/5 p-3 rounded-lg transition-colors duration-200">
                         <div className="space-y-2 mb-3 md:mb-0">
                           <div className="flex items-center">
@@ -691,9 +856,17 @@ const DashboardPage = () => {
                           <div className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
                             {program.status || 'Active'}
                           </div>
-                          <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
-                            View Details
-                          </Button>
+                          {program.scheduledDate ? (
+                            <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
+                              View Details
+                            </Button>
+                          ) : (
+                            <Button size="sm" className="relative overflow-hidden group">
+                              <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80 dark:from-white/80 dark:via-white/60 dark:to-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-gradient-flow"></span>
+                              <Calendar className="mr-1.5 h-3.5 w-3.5 relative z-10" />
+                              <span className="relative z-10">Schedule</span>
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
