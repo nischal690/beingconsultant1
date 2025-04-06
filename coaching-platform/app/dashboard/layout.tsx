@@ -619,11 +619,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           </div>
           
           {/* Welcome message */}
-          <div className="hidden md:flex items-center ml-8">
-            <p className="text-white/90 text-sm font-medium">
-              {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
-            </p>
-          </div>
+          {/* Removing the welcome message as requested */}
           
           {/* Center navigation with dropdown menus - adjusted to be truly centered and responsive to sidebar state */}
           <nav className={`flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${sidebarState === "collapsed" ? "ml-[1rem]" : "ml-[3.5rem]"}`}>
@@ -639,8 +635,8 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               </Link>
               {activeDropdown === 'coaching' && (
                 <div className="absolute top-full left-0 mt-1 w-[800px] rounded-md bg-black/90 backdrop-blur-lg border border-white/10 shadow-lg shadow-black/40 overflow-hidden z-50">
-                  <div className="p-6">
-                    <div className="grid grid-cols-4 gap-6">
+                  <div className="p-5 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                    <div className="grid grid-cols-4 gap-4">
                       {/* First column */}
                       <div>
                         <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
@@ -730,103 +726,35 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               )}
             </div>
 
-            {/* Practice Dropdown */}
-            <div className="relative"
-                 onMouseEnter={() => setActiveDropdown('practice')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
+            {/* Practice Dropdown - Updated to "Practice with AI Coach" with FREE TRIAL badge */}
+            <div className="relative">
               <Link href="/dashboard/practice">
-                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'practice' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
-                  <span>Practice</span>
-                  <ChevronDown className="h-4 w-4" />
-                </div>
-              </Link>
-              {activeDropdown === 'practice' && (
-                <div className="absolute top-full left-0 mt-1 w-[800px] rounded-md bg-black/90 backdrop-blur-lg border border-white/10 shadow-lg shadow-black/40 overflow-hidden z-50">
-                  <div className="p-6">
-                    <div className="grid grid-cols-2 gap-8">
-                      <div className="col-span-2">
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
-                          <GraduationCap className="h-4 w-4 mr-2 text-primary" />
-                          Interview Prep Courses
-                        </h3>
-                        <div className="grid grid-cols-4 gap-4">
-                          <div>
-                            <Link href="/dashboard/practice/case-interview" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <MessageSquare className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Case Interview
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">All you need to stand out in every dimension of the case interview.</p>
-                          </div>
-                          
-                          <div>
-                            <Link href="/dashboard/practice/case-math" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <Calculator className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Case Math
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">Preparation for the kind of math problems you'll face in a case.</p>
-                          </div>
-                          
-                          <div>
-                            <Link href="/dashboard/practice/fit-interview" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <UserRound className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Fit Interview
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">All you need to excel in consulting fit interviews.</p>
-                          </div>
-                          
-                          <div>
-                            <Link href="/dashboard/practice/personal-experience" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <Trophy className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Personal Experience Interview
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">Preparation for McKinsey's Personal Experience Interview (PEI).</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="col-span-2 mt-6">
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
-                          <Wrench className="h-4 w-4 mr-2 text-primary" />
-                          Practice Tools
-                        </h3>
-                        <div className="grid grid-cols-4 gap-4">
-                          <div>
-                            <Link href="/dashboard/practice/frameworks" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <LayoutGrid className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Frameworks
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">Essential frameworks for solving different types of cases.</p>
-                          </div>
-                          
-                          <div>
-                            <Link href="/dashboard/practice/mock-interviews" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <Video className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Mock Interviews
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">Practice with realistic interview simulations.</p>
-                          </div>
-                          
-                          <div>
-                            <Link href="/dashboard/practice/case-library" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <Library className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Case Library
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">Extensive collection of practice cases with solutions.</p>
-                          </div>
-                          
-                          <div>
-                            <Link href="/dashboard/practice/drills" className="block px-3 py-2 text-xs font-medium text-white hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                              <Dumbbell className="h-3.5 w-3.5 mr-2 text-white/60" />
-                              Practice Drills
-                            </Link>
-                            <p className="text-xs text-white/60 ml-7 mt-1">Focused exercises to build specific case skills.</p>
-                          </div>
-                        </div>
-                      </div>
+                <div className="flex items-center gap-2 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 text-white/80 hover:text-white group">
+                  <Bot className="h-4 w-4 text-[#7BA7AE]" />
+                  <span>Practice with AI Coach</span>
+                  <div className="relative">
+                    {/* Animated bubble background effect */}
+                    <div className="absolute -top-1 -right-1 w-20 h-20">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-emerald-400/30 animate-ping"></div>
+                      <div className="absolute top-[40%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-teal-300/40 animate-ping animation-delay-300"></div>
+                      <div className="absolute top-[60%] left-[40%] -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-300/50 animate-ping animation-delay-700"></div>
                     </div>
+                    
+                    {/* Badge with glass effect */}
+                    <span className="relative inline-flex items-center justify-center px-3 py-1 text-[10px] font-bold text-black rounded-full 
+                      bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300
+                      shadow-[0_0_15px_rgba(45,212,191,0.7)] 
+                      border border-teal-200
+                      backdrop-blur-sm
+                      group-hover:shadow-[0_0_20px_rgba(45,212,191,0.9)]
+                      transition-all duration-300
+                      animate-subtle-float
+                      scale-110">
+                      FREE TRIAL
+                    </span>
                   </div>
                 </div>
-              )}
+              </Link>
             </div>
 
             {/* Resources Dropdown */}
@@ -840,92 +768,48 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                 </div>
               </Link>
               {activeDropdown === 'resources' && (
-                <div className="absolute top-full left-0 mt-1 w-[800px] rounded-md bg-black/90 backdrop-blur-lg border border-white/10 shadow-lg shadow-black/40 overflow-hidden z-50">
-                  <div className="p-5">
-                    <div className="grid grid-cols-4 gap-4">
-                      {/* First column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-2 flex items-center">
-                          <FileText className="h-4 w-4 mr-2 text-primary" />
-                          Free Resume Courses
-                        </h3>
-                        <p className="text-xs text-white/60 mb-2">Write successful applications to top firms.</p>
-                        <div className="space-y-1">
-                          <Link href="/dashboard/resources/resume/for-students" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <GraduationCap className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            For Students
-                          </Link>
-                          <Link href="/dashboard/resources/resume/for-mba" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <BookOpen className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            For MBA Candidates
-                          </Link>
-                          <Link href="/dashboard/resources/resume/for-professionals" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <Briefcase className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            For Professionals
-                          </Link>
-                        </div>
-                      </div>
-                      
-                      {/* Second column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-2 flex items-center">
-                          <FileDown className="h-4 w-4 mr-2 text-primary" />
-                          Templates & Tools
-                        </h3>
-                        <p className="text-xs text-white/60 mb-2">Video tutorials and templates.</p>
-                        <div className="space-y-1">
-                          <Link href="/dashboard/resources/templates/cv" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <FileText className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            CV Templates
-                          </Link>
-                          <Link href="/dashboard/resources/templates/cover-letter" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <Mail className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Cover Letter Templates
-                          </Link>
-                        </div>
-                      </div>
-                      
-                      {/* Third column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-2 flex items-center">
-                          <BarChart className="h-4 w-4 mr-2 text-primary" />
-                          Assessments
-                        </h3>
-                        <p className="text-xs text-white/60 mb-2">Discover your strengths.</p>
-                        <div className="space-y-1">
-                          <Link href="/dashboard/resources/assessments/personality" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <User className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Personality Assessments
-                          </Link>
-                          <Link href="/dashboard/resources/assessments/skills" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <Star className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Skills Assessments
-                          </Link>
-                        </div>
-                      </div>
-                      
-                      {/* Fourth column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-2 flex items-center">
-                          <Bookmark className="h-4 w-4 mr-2 text-primary" />
-                          Other Resources
-                        </h3>
-                        <p className="text-xs text-white/60 mb-2">Additional tools to help you.</p>
-                        <div className="space-y-1">
-                          <Link href="/dashboard/resources/cheatsheets" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <FileCheck className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Cheatsheets
-                          </Link>
-                          <Link href="/dashboard/resources/meditation" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <Heart className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Meditation Guides
-                          </Link>
-                          <Link href="/dashboard/resources/industry-insights" className="block px-3 py-1.5 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <LineChart className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Industry Insights
-                          </Link>
-                        </div>
-                      </div>
+                <div className="absolute top-full left-0 mt-1 w-[300px] rounded-md bg-white shadow-lg overflow-hidden z-50">
+                  <div className="max-h-[calc(100vh-120px)] overflow-y-auto">
+                    <div className="space-y-2 p-4">
+                      <Link href="/dashboard/resources/personality" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Personality Assessment
+                      </Link>
+                      <Link href="/dashboard/resources/cheatsheet" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Cheatsheet
+                      </Link>
+                      <Link href="/dashboard/resources/meditation" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Meditation
+                      </Link>
+                      <Link href="/dashboard/resources/ebooks" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        E-books
+                      </Link>
+                      <Link href="/dashboard/resources/podcast" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Podcast
+                      </Link>
+                      <Link href="/dashboard/resources/workshop" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Workshop
+                      </Link>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+
+                      <Link href="/dashboard/resources/case-cracking" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Case Cracking Bundle
+                      </Link>
+                      <Link href="/dashboard/resources/consulting-cv" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Consulting CV Masterclass
+                      </Link>
+                      <Link href="/dashboard/resources/fit-interview" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        FIT Interview Masterclass
+                      </Link>
+
+                      <div className="border-t border-gray-100 my-2"></div>
+
+                      <Link href="/dashboard/resources/free" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Free resources
+                      </Link>
+                      <Link href="/dashboard/resources/premium" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
+                        Premium resources
+                      </Link>
                     </div>
                   </div>
                 </div>

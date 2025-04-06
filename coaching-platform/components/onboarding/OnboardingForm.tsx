@@ -73,6 +73,7 @@ interface OnboardingData {
   previousCompanies: string;
   areasOfExpertise: string;
   interests: string;
+  careerGoal: string;
 }
 
 interface StepProps {
@@ -101,8 +102,8 @@ function Step({ title, description, fields, customContent, onChange }: StepProps
       <div className="text-center">
         <motion.h3 
           className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300"
-          initial={{ opacity: 0.8 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0.8, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           {title}
@@ -121,40 +122,47 @@ function Step({ title, description, fields, customContent, onChange }: StepProps
         customContent
       ) : (
         <div className="space-y-5">
-          {fields.map((field) => (
+          {fields.map((field, index) => (
             <motion.div 
               key={field.name} 
               className="space-y-2"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
               <label
                 htmlFor={field.name}
-                className="block text-sm font-medium text-white/80"
+                className="block text-sm font-medium text-white/80 flex items-center space-x-2"
               >
-                {field.label}
+                <span className="text-white/50">{field.icon}</span>
+                <span>{field.label}</span>
               </label>
-              <div className="relative rounded-md group">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-white/50 group-hover:text-white/80 transition-colors duration-300">
+              <div className="relative rounded-md group/field">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 rounded-md opacity-0 group-hover/field:opacity-100 transition-opacity duration-500 -z-10"></div>
+                <div className="absolute inset-0 bg-white/5 rounded-md blur-md opacity-0 group-focus-within/field:opacity-100 transition-opacity duration-300 -z-10"></div>
+                
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-white/50 group-hover/field:text-white/80 transition-colors duration-300">
                   {field.icon}
                 </div>
                 
                 {!field.slider && !field.textarea ? (
-                  <Input
-                    type="text"
-                    name={field.name}
-                    id={field.name}
-                    className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white"
-                    placeholder={`Enter your ${field.label.toLowerCase()}`}
-                    value={field.value}
-                    onChange={onChange}
-                    autoFocus={field.autoFocus}
-                  />
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      name={field.name}
+                      id={field.name}
+                      className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white transition-all duration-300 focus:ring-1 focus:ring-white/20 group-hover/field:border-white/20"
+                      placeholder={`Enter your ${field.label.toLowerCase()}`}
+                      value={field.value}
+                      onChange={onChange}
+                      autoFocus={field.autoFocus}
+                    />
+                    <div className="absolute inset-0 border border-white/0 rounded-md group-focus-within/field:border-white/20 pointer-events-none transition-all duration-500 opacity-0 group-focus-within/field:opacity-100"></div>
+                  </div>
                 ) : field.slider ? (
                   <div className="pl-10 pt-6 pb-8">
                     <div className="flex flex-col space-y-6 relative">
-                      <div className="absolute -inset-4 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 z-0"></div>
+                      <div className="absolute -inset-4 bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-xl opacity-0 group-hover/field:opacity-100 blur-xl transition-opacity duration-700 z-0"></div>
                       
                       <div className="relative z-10">
                         <Slider
@@ -173,7 +181,7 @@ function Step({ title, description, fields, customContent, onChange }: StepProps
                       </div>
                       
                       <div className="text-center">
-                        <span className="text-2xl font-bold text-white">
+                        <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
                           {field.sliderValue} {field.sliderValue === 1 ? 'year' : 'years'}
                         </span>
                       </div>
@@ -226,16 +234,22 @@ function Step({ title, description, fields, customContent, onChange }: StepProps
                     `}</style>
                   </div>
                 ) : field.textarea ? (
-                  <Textarea
-                    id={field.name}
-                    name={field.name}
-                    value={field.value}
-                    onChange={onChange}
-                    className="pl-10 min-h-[120px] bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white"
-                    placeholder={`Enter your ${field.label.toLowerCase()}`}
-                    autoFocus={field.autoFocus}
-                  />
+                  <div className="relative">
+                    <Textarea
+                      id={field.name}
+                      name={field.name}
+                      value={field.value}
+                      onChange={onChange}
+                      className="pl-10 min-h-[120px] bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-white/30 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white transition-all duration-300 focus:ring-1 focus:ring-white/20 group-hover/field:border-white/20"
+                      placeholder={`Enter your ${field.label.toLowerCase()}`}
+                      autoFocus={field.autoFocus}
+                    />
+                    <div className="absolute inset-0 border border-white/0 rounded-md group-focus-within/field:border-white/20 pointer-events-none transition-all duration-500 opacity-0 group-focus-within/field:opacity-100"></div>
+                  </div>
                 ) : null}
+                
+                {/* Subtle highlight effect */}
+                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/field:opacity-100 transition-opacity duration-500"></div>
               </div>
             </motion.div>
           ))}
@@ -266,7 +280,8 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     currentCompany: "",
     previousCompanies: "",
     areasOfExpertise: "",
-    interests: ""
+    interests: "",
+    careerGoal: ""
   });
   
   const [universitySearchOpen, setUniversitySearchOpen] = useState<{[key: string]: boolean}>({});
@@ -274,7 +289,19 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   
-  const totalSteps = 7;
+  const totalSteps = 8;
+  
+  // Define career goal options
+  const careerGoals = [
+    { id: "excel", text: "Excel in my current role as a Analytics Manager" },
+    { id: "transition", text: "Transition to a new function" },
+    { id: "leadership", text: "Move into a leadership position" },
+    { id: "startup", text: "Start my own business" },
+    { id: "industry", text: "Change industry" }
+  ];
+  
+  // Selected career goal
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -359,8 +386,23 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
     }));
   };
   
+  const handleGoalSelection = (goalId: string) => {
+    setSelectedGoal(goalId);
+    // Update the form data with the selected goal
+    setFormData(prev => ({
+      ...prev,
+      careerGoal: goalId
+    }));
+  };
+  
   const nextStep = () => {
     if (step < totalSteps) {
+      // For career goal step, ensure a goal is selected
+      if (step === 2 && !selectedGoal) {
+        // Could add a toast notification here to inform the user
+        return;
+      }
+      
       setStep(step + 1);
     } else {
       onComplete(formData);
@@ -420,6 +462,114 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
         );
       case 2:
         return (
+          <div className="space-y-6 relative">
+            {/* "YOUR GOAL" label on the left side */}
+            <div className="absolute -left-24 top-1/2 -translate-y-1/2 transform rotate-90 origin-center hidden md:block">
+              <span className="text-xs tracking-widest font-semibold text-white/40 uppercase">YOUR GOAL</span>
+            </div>
+            
+            <div className="text-center">
+              <motion.h3 
+                className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300"
+                initial={{ opacity: 0.8, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                Choose career goal
+              </motion.h3>
+              <motion.p 
+                className="mt-2 text-sm text-white/60"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                We want to understand where you want to be 1 year from now
+              </motion.p>
+            </div>
+            
+            <div className="mt-8 space-y-4">
+              {careerGoals.map((goal, index) => (
+                <motion.div
+                  key={goal.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleGoalSelection(goal.id)}
+                    className={`w-full p-4 rounded-lg text-left relative overflow-hidden group transition-all duration-300 ${
+                      selectedGoal === goal.id 
+                        ? 'bg-white/10 border border-white/30' 
+                        : 'bg-white/5 border border-white/10 hover:bg-white/8 hover:border-white/20'
+                    }`}
+                  >
+                    {/* Background effects */}
+                    <div className={`absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 opacity-0 ${
+                      selectedGoal === goal.id ? 'opacity-100' : 'group-hover:opacity-50'
+                    } transition-opacity duration-500`}></div>
+                    
+                    {/* Subtle corner accents */}
+                    <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-br-full"></div>
+                    <div className="absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-tl from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-tl-full"></div>
+                    
+                    {/* Content */}
+                    <div className="flex items-center">
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-full border ${
+                        selectedGoal === goal.id 
+                          ? 'border-white bg-white' 
+                          : 'border-white/30 bg-transparent group-hover:border-white/50'
+                      } mr-3 transition-all duration-300 flex items-center justify-center`}>
+                        {selectedGoal === goal.id && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-2 h-2 bg-black rounded-full"
+                          />
+                        )}
+                      </div>
+                      <div className="relative">
+                        <span className={`text-base ${
+                          selectedGoal === goal.id ? 'text-white' : 'text-white/70 group-hover:text-white/90'
+                        } transition-colors duration-300`}>
+                          {goal.text}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Bottom highlight */}
+                    <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+            
+            {/* Set your goal button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: selectedGoal ? 1 : 0, y: selectedGoal ? 0 : 20 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+              className="mt-8 flex justify-center"
+            >
+              {selectedGoal && (
+                <Button
+                  onClick={nextStep}
+                  className="relative overflow-hidden bg-black border border-white/20 text-white hover:border-white/40 transition-all duration-300 group/next px-8"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover/next:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover/next:opacity-100 group-hover/next:translate-x-full transition-all duration-1500 ease-in-out"></span>
+                  <span className="relative z-10 flex items-center">
+                    Set your goal
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover/next:translate-x-0.5 transition-transform duration-300" />
+                  </span>
+                </Button>
+              )}
+            </motion.div>
+          </div>
+        );
+      case 3:
+        return (
           <Step
             title="Professional Profile"
             description="Tell us about your LinkedIn profile"
@@ -435,7 +585,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
             onChange={handleChange}
           />
         );
-      case 3:
+      case 4:
         return (
           <Step
             title="Work Experience"
@@ -455,7 +605,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
             onChange={handleChange}
           />
         );
-      case 4:
+      case 5:
         return (
           <Step
             title="Education"
@@ -611,7 +761,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
             onChange={handleChange}
           />
         );
-      case 5:
+      case 6:
         return (
           <Step
             title="Location & Career"
@@ -640,7 +790,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
             onChange={handleChange}
           />
         );
-      case 6:
+      case 7:
         return (
           <Step
             title="Previous Experience"
@@ -658,7 +808,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
             onChange={handleChange}
           />
         );
-      case 7:
+      case 8:
         return (
           <Step
             title="Expertise & Interests"
@@ -715,8 +865,7 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
             previousCompanies: userData.previousCompanies || prevData.previousCompanies,
             areasOfExpertise: userData.areasOfExpertise || prevData.areasOfExpertise,
             interests: userData.interests || prevData.interests,
-            
-            educationEntries: prevData.educationEntries,
+            careerGoal: userData.careerGoal || prevData.careerGoal,
           }));
         }
         
@@ -732,12 +881,37 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
   
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-black relative overflow-hidden">
-      {/* Animated background gradients */}
+      {/* Enhanced animated background with coaching-themed elements */}
       <div className="absolute inset-0 overflow-hidden">
+        {/* Coaching-themed subtle pattern */}
+        <div className="absolute inset-0 opacity-10">
+          {/* Abstract coaching pattern using CSS */}
+          <div className="absolute top-0 left-0 w-full h-full">
+            {/* Abstract dots pattern */}
+            <div className="absolute inset-0" style={{ 
+              backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)`, 
+              backgroundSize: '30px 30px' 
+            }}></div>
+            
+            {/* Abstract lines representing growth/progress */}
+            <div className="absolute left-1/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+            <div className="absolute left-2/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+            <div className="absolute left-3/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+            
+            {/* Diagonal lines representing upward trajectory */}
+            <div className="absolute bottom-0 left-0 w-full h-full bg-[linear-gradient(45deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+          </div>
+        </div>
+        
+        {/* Animated gradient orbs representing transformation and growth */}
         <div className="absolute -inset-[10%] opacity-30">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '15s' }}></div>
           <div className="absolute bottom-1/3 right-1/3 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '25s' }}></div>
           <div className="absolute top-2/3 left-1/3 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '20s' }}></div>
+          
+          {/* Additional orbs for more dynamic feel */}
+          <div className="absolute top-1/2 right-1/4 w-72 h-72 bg-white/8 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '18s' }}></div>
+          <div className="absolute bottom-1/4 left-1/2 w-60 h-60 bg-white/7 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '22s' }}></div>
         </div>
       </div>
       
@@ -749,18 +923,34 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
       ) : (
         <div className="w-full max-w-md space-y-8 relative z-10">
           <div className="text-center">
-            <h2 className="mt-6 text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 animate-gradient-x">
-              Complete Your Profile
-            </h2>
-            <p className="mt-2 text-sm text-white/60">
-              Step {step} of {totalSteps}
-            </p>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <h2 className="mt-6 text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 animate-gradient-x">
+                Complete Your Profile
+              </h2>
+              <div className="mt-2 flex items-center justify-center space-x-2">
+                <span className="text-sm text-white/60">Step {step} of {totalSteps}</span>
+                <div className="h-1 w-1 rounded-full bg-white/30"></div>
+                <span className="text-sm text-white/60">
+                  {step === 1 ? "Basic Information" : 
+                   step === 2 ? "Career Goal" :
+                   step === 3 ? "Professional Profile" :
+                   step === 4 ? "Work Experience" :
+                   step === 5 ? "Education" :
+                   step === 6 ? "Location & Career" :
+                   step === 7 ? "Previous Experience" : "Expertise & Interests"}
+                </span>
+              </div>
+            </motion.div>
           </div>
           
-          {/* Progress bar */}
-          <div className="relative h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+          {/* Enhanced Progress bar */}
+          <div className="relative h-1.5 w-full bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
             <motion.div
-              className="absolute h-full bg-gradient-to-r from-white/80 to-white/40"
+              className="absolute h-full bg-gradient-to-r from-white/80 via-white/60 to-white/40"
               initial={{ width: `${((step - 1) / totalSteps) * 100}%` }}
               animate={{ width: `${(step / totalSteps) * 100}%` }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -772,26 +962,33 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
               key={step}
               initial={{ 
                 opacity: 0, 
-                x: 100 
+                x: 100,
+                scale: 0.95
               }}
               animate={{ 
                 opacity: 1, 
-                x: 0 
+                x: 0,
+                scale: 1
               }}
               exit={{ 
                 opacity: 0, 
                 x: -100,
+                scale: 0.95,
                 position: 'absolute' as const
               }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative w-full"
               style={{ zIndex: 10 }}
             >
-              <Card className="w-full bg-black border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden group">
-                {/* Subtle gradient border effect */}
+              <Card className="w-full bg-black/80 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden group">
+                {/* Enhanced gradient border effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                
+                {/* Subtle corner accents */}
+                <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-br-full"></div>
+                <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-tl-full"></div>
                 
                 <CardHeader className="pb-4 relative">
                   <div className="absolute top-2 right-2">
@@ -815,26 +1012,28 @@ export default function OnboardingForm({ onComplete }: OnboardingFormProps) {
                     variant="outline"
                     onClick={prevStep}
                     disabled={step === 1}
-                    className="border-white/10 text-white hover:bg-white/5 hover:border-white/20 transition-all duration-300 disabled:opacity-30 relative z-20"
+                    className="border-white/10 text-white hover:bg-white/5 hover:border-white/20 transition-all duration-300 disabled:opacity-30 relative z-20 group/back"
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back
+                    <span className="absolute inset-0 bg-white/5 opacity-0 group-hover/back:opacity-100 transition-opacity duration-300 rounded-md"></span>
+                    <ArrowLeft className="mr-2 h-4 w-4 group-hover/back:-translate-x-0.5 transition-transform duration-300" />
+                    <span className="relative z-10">Back</span>
                   </Button>
                   <Button
                     onClick={nextStep}
-                    className="relative overflow-hidden bg-black border border-white/20 text-white hover:border-white/40 transition-all duration-300 group"
+                    className="relative overflow-hidden bg-black border border-white/20 text-white hover:border-white/40 transition-all duration-300 group/next"
                   >
-                    <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover/next:opacity-100 transition-opacity duration-300"></span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover/next:opacity-100 group-hover/next:translate-x-full transition-all duration-1500 ease-in-out"></span>
                     <span className="relative z-10 flex items-center">
                       {step === totalSteps ? (
                         <>
                           Complete
-                          <CheckCircle className="ml-2 h-4 w-4" />
+                          <CheckCircle className="ml-2 h-4 w-4 group-hover/next:rotate-12 transition-transform duration-300" />
                         </>
                       ) : (
                         <>
                           Next
-                          <ArrowRight className="ml-2 h-4 w-4" />
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover/next:translate-x-0.5 transition-transform duration-300" />
                         </>
                       )}
                     </span>

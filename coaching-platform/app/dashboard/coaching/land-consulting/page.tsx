@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ChevronRight, Home, Briefcase, Star, CheckCircle, Award, Users, Gift, Globe, Sparkles, Calendar, FileText, ArrowDown, ArrowRight, ArrowUp, Info, Plus, ArrowUpRight, Zap, Layers } from "lucide-react"
+import { ChevronRight, Home, Briefcase, Star, CheckCircle, Award, Users, Gift, Globe, Sparkles, Calendar, FileText, ArrowDown, ArrowRight, ArrowUp, Info, Plus, ArrowUpRight, Zap, Layers, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -108,7 +108,7 @@ const LandConsultingOfferPage = () => {
         </span>
       </nav>
 
-      {/* Hero Section - 1:1 Personalized Coaching */}
+      {/* Hero Section - Break into Consulting */}
       <section className="relative overflow-hidden rounded-3xl text-gray-800 mb-10">
         {/* Background image with enhanced styling */}
         <div className="absolute inset-0">
@@ -126,158 +126,173 @@ const LandConsultingOfferPage = () => {
         <div className="absolute bottom-1/4 right-1/3 w-72 h-72 rounded-full bg-blue-500/20 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
         
         {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0vjZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNmgtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
         
         {/* Premium border effect */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-800/30 to-transparent"></div>
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-800/30 to-transparent"></div>
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         
         {/* Content wrapper with increased padding and backdrop blur */}
         <div className="relative p-10 md:p-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             {/* Left content column - takes 2/3 of the space */}
             <div className="md:col-span-2 space-y-8">
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
                 className="inline-block"
               >
                 <span className="px-4 py-1.5 text-sm bg-gray-800/10 backdrop-blur-md rounded-full border border-gray-800/20">
-                  Premium Coaching Experience
+                  Flagship Coaching Program
                 </span>
-              </div>
+              </motion.div>
               
-              <h1 
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight"
               >
-                <span className="block">1:1 Personalized Coaching</span>
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-600 via-gray-800 to-blue-600 animate-gradient-x">
-                  To Land Consulting Offers
+                <span className="block text-black">Break into Consulting</span>
+                <span className="text-black">
+                  Land Your Dream Offer
                 </span>
-              </h1>
+              </motion.h1>
               
-              <p 
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
               >
-                Our cutting-edge social media marketing tactics will help 
-                you maximize your brand's online visibility and expand your 
-                business exponentially. By leveraging the power of social 
-                media platforms.
-              </p>
+                Our comprehensive program designed specifically to help you master case interviews and secure offers from top consulting firms. With personalized coaching from ex-MBB consultants, you'll gain the skills, confidence, and insider knowledge needed to stand out in the competitive consulting recruitment process.
+              </motion.p>
               
-              <div 
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex gap-4"
               >
                 <Button 
                   size="lg" 
-                  className="relative overflow-hidden bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-teal-500/20"
+                  className="relative overflow-hidden bg-black text-white border border-black/20 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-black/30"
                   onClick={() => scrollToSection('pricing')}
                 >
-                  <span className="relative z-10">Buy the Program</span>
-                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  <span className="absolute inset-0 bg-gradient-to-r from-teal-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                  <span className="relative z-10 text-white">Enroll Now</span>
+                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 text-white" />
+                  <span className="absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-black opacity-100 group-hover:opacity-0 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 mix-blend-overlay bg-gradient-to-br from-black/10 to-black/30 group-hover:from-gray-700/10 group-hover:to-gray-900/30 transition-colors duration-300"></span>
                 </Button>
-              </div>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="border-black/30 hover:border-black hover:bg-transparent"
+                  onClick={() => scrollToSection('curriculum')}
+                >
+                  View Curriculum
+                  <ArrowDown className="ml-2 h-5 w-5" />
+                </Button>
+              </motion.div>
               
               {/* Stats with animated counters */}
-              <div 
-                className="flex flex-wrap gap-6 pt-4"
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="flex flex-wrap gap-8 pt-4"
               >
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gray-800">1250+</span>
-                  <span className="text-sm text-gray-600">Successful Placements</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gray-800">98%</span>
-                  <span className="text-sm text-gray-600">Success Rate</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gray-800">4.9/5</span>
-                  <span className="text-sm text-gray-600">Client Rating</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Right content column - coach profiles with enhanced styling */}
-            <div 
-              className="flex justify-center items-center"
-            >
-              <div className="relative">
-                {/* Coach profiles in oval frames with enhanced styling */}
-                <div className="flex flex-wrap justify-center gap-4">
-                  <div 
-                    className="relative"
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=250&fit=crop" 
-                        alt="Coach" 
-                        width={200}
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </div>
-                  <div 
-                    className="relative -mt-10"
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&h=250&fit=crop" 
-                        alt="Coach" 
-                        width={200}
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </div>
-                  <div 
-                    className="relative"
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200&h=250&fit=crop" 
-                        alt="Coach" 
-                        width={200}
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Flagship program card with glass morphism effect */}
-          <div
-            className="mt-12 max-w-sm"
-          >
-            <div className="bg-white backdrop-blur-md border border-gray-800/10 rounded-xl overflow-hidden shadow-xl">
-              <div className="p-6 space-y-4">
-                <h3 className="text-xl font-bold text-gray-800">Flagship program</h3>
-                <p className="text-sm text-gray-700">
-                  This program provided clear guidance from start to finish, making it easy for me to succeed.
-                </p>
-                <div className="flex items-center gap-3 mt-4">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-800/20">
-                    <Image 
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=40&h=40&fit=crop" 
-                      alt="Testimonial" 
-                      width={40}
-                      height={40}
-                      className="object-cover w-full h-full"
-                    />
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-black/5 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-black" />
                   </div>
                   <div>
-                    <Link href="#" className="text-sm font-medium text-teal-600 hover:text-teal-700 group flex items-center">
-                      Get More Details
-                      <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
-                    </Link>
+                    <p className="text-2xl font-bold">1,250+</p>
+                    <p className="text-sm text-gray-600">Successful Placements</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-black/5 flex items-center justify-center">
+                    <Award className="h-6 w-6 text-black" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">95%</p>
+                    <p className="text-sm text-gray-600">Success Rate</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-full bg-black/5 flex items-center justify-center">
+                    <Star className="h-6 w-6 text-black" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">4.9/5</p>
+                    <p className="text-sm text-gray-600">Student Rating</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Right column - Program highlights card */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-black/10 rounded-2xl transform rotate-1 scale-[1.03] blur-[2px]"></div>
+              <div className="relative bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-black/5">
+                <h3 className="text-lg font-bold mb-4 flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2 text-yellow-500" />
+                  Focus Areas
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  My offers are high-quality coaching services tailored to your unique needs. My compassionate approach is grounded in both scientific knowledge and heartfelt dedication to your interview success.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <span className="text-sm">Learn the ropes with ex-MBB coach hands on – not just watching recorded videos</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <span className="text-sm">Ace the art & science behind cracking any case</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <span className="text-sm">Master most frequently asked FIT questions</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <span className="text-sm">Create killer CV that lands interviews</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <span className="text-sm">Get continuous mentorship till you break into consulting!</span>
+                  </li>
+                </ul>
+                <div className="mt-6 pt-4 border-t border-black/10">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-bold">$1,997</span>
+                    <span className="text-muted-foreground line-through">$2,997</span>
+                    <span className="text-xs text-primary font-medium ml-1">33% off</span>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -434,7 +449,7 @@ const LandConsultingOfferPage = () => {
                   </DialogDescription>
                 </DialogHeader>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center mb-6">
                   <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
                     <div>
@@ -1304,13 +1319,13 @@ const LandConsultingOfferPage = () => {
                 <div className="p-8">
                   <div className="flex flex-col h-full">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2">Standard Program</h3>
+                      <h3 className="text-2xl font-bold mb-2">Break into Consulting</h3>
                       <p className="text-muted-foreground mb-6">
                         Complete coaching program with all core components and bonuses
                       </p>
                       
                       <div className="flex items-baseline mb-6">
-                        <span className="text-4xl font-bold text-primary">€1,997</span>
+                        <span className="text-4xl font-bold text-primary">€997</span>
                         <span className="text-muted-foreground ml-2 line-through">€2,997</span>
                         <span className="ml-2 px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded">
                           Save 33%
@@ -1358,34 +1373,26 @@ const LandConsultingOfferPage = () => {
               </div>
             </div>
             
-            {/* Premium Plan */}
+            {/* Unlimited Coaching Plan */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl opacity-70 group-hover:opacity-90 transition-opacity duration-300 -z-10"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity duration-300 -z-10"></div>
               
-              <div className="relative h-full bg-gradient-to-br from-white/90 to-white/70 dark:from-gray-900/90 dark:to-gray-900/70 backdrop-blur-md rounded-2xl shadow-medium overflow-hidden border border-primary/20 transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-lg">
+              <div className="relative h-full bg-gradient-to-br from-white/90 to-white/70 dark:from-gray-900/90 dark:to-gray-900/70 backdrop-blur-md rounded-2xl shadow-medium overflow-hidden border border-primary/10 transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-lg">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-brand-300 to-secondary"></div>
-                
-                {/* Recommended Badge */}
-                <div className="absolute top-6 right-6">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                    <Star className="h-3 w-3 mr-1 fill-current" />
-                    Recommended
-                  </span>
-                </div>
                 
                 <div className="p-8">
                   <div className="flex flex-col h-full">
                     <div>
-                      <h3 className="text-2xl font-bold mb-2">Premium Program</h3>
+                      <h3 className="text-2xl font-bold mb-2">Unlimited Coaching</h3>
                       <p className="text-muted-foreground mb-6">
-                        Enhanced coaching experience with extended support and additional sessions
+                        Support until you get an offer
                       </p>
                       
                       <div className="flex items-baseline mb-6">
                         <span className="text-4xl font-bold text-primary">€2,997</span>
-                        <span className="text-muted-foreground ml-2 line-through">€4,497</span>
+                        <span className="text-muted-foreground ml-2 line-through">€3,997</span>
                         <span className="ml-2 px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium rounded">
-                          Save 33%
+                          Save 25%
                         </span>
                       </div>
                       
@@ -1402,15 +1409,15 @@ const LandConsultingOfferPage = () => {
                           </li>
                           <li className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
-                            <span className="font-medium">2 Additional 1:1 Coaching Sessions</span>
+                            <span className="font-medium">Unlimited Coaching Sessions</span>
                           </li>
                           <li className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
-                            <span className="font-medium">6 Months of Weekly Q&A Sessions</span>
+                            <span className="font-medium">Support Until You Get an Offer</span>
                           </li>
                           <li className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
-                            <span className="font-medium">Priority Email Support for 12 Months</span>
+                            <span className="font-medium">Priority Email Support</span>
                           </li>
                           <li className="flex items-start">
                             <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
@@ -1427,7 +1434,7 @@ const LandConsultingOfferPage = () => {
                     <div className="mt-auto pt-6 border-t border-primary/10">
                       <Button variant="default" className="w-full text-lg py-6 bg-primary hover:bg-primary/90 relative overflow-hidden group">
                         <span className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary-light/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                        <span className="relative z-10">Enroll Now (Premium)</span>
+                        <span className="relative z-10">Enroll Now</span>
                       </Button>
                       <p className="text-xs text-center text-muted-foreground mt-3">
                         Secure payment via Stripe • 30-day money-back guarantee

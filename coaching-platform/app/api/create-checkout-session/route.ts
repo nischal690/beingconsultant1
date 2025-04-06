@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 // Use the provided Stripe secret key
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_51Nt4bnEeDxhnTeYJDYm8CHlklrDNOJmAWfnPuho58poep2lV3thyDloKOlsBqBq3dbBdPtK741I1joc0dM1VCokz00aTVJ00KK';
 const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2023-10-16', // Use the latest stable API version
+  apiVersion: '2025-02-24.acacia', // Latest stable API version
 });
 
 export async function POST(request: Request) {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       customerId,
       customerEmail,
       metadata = {},
-      successUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/payment-success`,
+      successUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/payment-success`,
       cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/payment-cancelled`,
     } = body;
 

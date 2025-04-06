@@ -110,9 +110,8 @@ export default function CoachingPage() {
   // State for filtering (e-commerce style)
   const [activeFilter, setActiveFilter] = useState<string>("all")
 
-  // Add state for coaching programs
-  const [coachingPrograms, setCoachingPrograms] = useState<CoachingProgram[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  // Add state for coaching programs - removing Firebase data and using only static data
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Add state for payment dialog
@@ -282,77 +281,60 @@ export default function CoachingPage() {
     }
   }
 
-  // Fetch coaching programs from Firestore
-  useEffect(() => {
-    const fetchCoachingPrograms = async () => {
-      try {
-        setIsLoading(true);
-        console.log("Fetching products with category: coaching");
-        const result = await getProductsByCategory("coaching");
-        console.log("Fetch result:", result);
-        
-        if (result.success && result.data && result.data.length > 0) {
-          console.log("Coaching programs fetched successfully:", result.data);
-          console.log("Number of programs:", result.data.length);
-          
-          // Process the data to ensure it has the right format
-          const processedPrograms = result.data.map((program: any) => {
-            // Create a default title from program field if title is missing
-            const title = program.title || program.program || "Untitled Program";
-            
-            // Create a default description if missing
-            const description = program.description || `${title} - A premium coaching program`;
-            
-            // Create a default short description if missing
-            const shortDescription = program.shortDescription || "Premium coaching program";
-            
-            // Default price if missing
-            const price = typeof program.price === 'number' ? program.price : 997;
-            
-            // Default original price and discount
-            const originalPrice = typeof program.originalPrice === 'number' ? program.originalPrice : Math.round(price * 1.33);
-            const discount = program.discount || Math.round(((originalPrice - price) / originalPrice) * 100);
-            
-            return {
-              id: program.id,
-              title,
-              description,
-              shortDescription,
-              iconName: program.iconName || "brain",
-              category: program.category || "coaching",
-              price,
-              originalPrice,
-              discount,
-              popular: program.popular || false,
-              featured: program.featured || false,
-              rating: program.rating || 4.9,
-              reviewCount: program.reviewCount || Math.floor(Math.random() * 100) + 20
-            };
-          });
-          
-          console.log("Processed coaching programs:", processedPrograms);
-          setCoachingPrograms(processedPrograms);
-        } else {
-          // No programs found or empty result, use the hardcoded ones
-          console.log("No coaching programs found or empty result. Using default programs.");
-          setError("No coaching programs found. Using default programs.");
-        }
-      } catch (error) {
-        console.error("Error fetching coaching programs:", error);
-        setError("An error occurred while loading coaching programs.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchCoachingPrograms();
-  }, []);
-
   // Filter coaching programs based on activeFilter
-  const filteredPrograms = coachingPrograms.filter(program => 
+  const filteredPrograms = [
+    // Break into consulting
+    {
+      id: "break-into-consulting",
+      title: "Break into Consulting",
+      description: "Our flagship program",
+      shortDescription: "Comprehensive case interview preparation",
+      iconName: "briefcase",
+      category: "1on1",
+      price: 997,
+      originalPrice: 2997,
+      discount: 33,
+      popular: true,
+      featured: true,
+      rating: 4.9,
+      reviewCount: 128
+    },
+    // Unlimited coaching till offer
+    {
+      id: "unlimited-coaching",
+      title: "Unlimited Coaching",
+      description: "Support until you get an offer",
+      shortDescription: "Personalized coaching from ex-MBB consultants",
+      iconName: "clock",
+      category: "1on1",
+      price: 2997,
+      originalPrice: 3997,
+      discount: 25,
+      popular: true,
+      featured: true,
+      rating: 4.9,
+      reviewCount: 94
+    },
+    // Group coaching
+    {
+      id: "group-coaching",
+      title: "Group Coaching",
+      description: "Learn with peers",
+      shortDescription: "Small group sessions with like-minded candidates",
+      iconName: "users",
+      category: "group",
+      price: 997,
+      originalPrice: 1497,
+      discount: 33,
+      popular: true,
+      featured: true,
+      rating: 4.9,
+      reviewCount: 42
+    }
+  ].filter(program => 
     activeFilter === "all" || 
-    (activeFilter === "1on1" && program.category.toLowerCase().includes("1on1")) ||
-    (activeFilter === "group" && program.category.toLowerCase().includes("group"))
+    (activeFilter === "1on1" && program.category === "1on1") ||
+    (activeFilter === "group" && program.category === "group")
   );
 
   return (
@@ -528,6 +510,40 @@ export default function CoachingPage() {
         </div>
       </section>
 
+      {/* Vertical Scrolling Ticker */}
+      <section className="relative py-3 bg-black text-white overflow-hidden">
+        {/* Gradient overlays for fade effect */}
+        <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-black to-transparent z-10"></div>
+        <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-black to-transparent z-10"></div>
+        
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[
+            "This is our Flagship Program that has 90% Success rate model",
+            "Join 1,250+ professionals who've accelerated their careers",
+            "Expert coaches from top consulting firms",
+            "Personalized guidance for your career goals",
+            "Comprehensive case interview preparation"
+          ].map((text, i) => (
+            <span key={`ticker-1-${i}`} className="mx-4 text-sm font-medium flex items-center">
+              <span className="mr-2 text-primary">•</span> {text}
+            </span>
+          ))}
+        </div>
+        <div className="flex whitespace-nowrap animate-marquee" style={{ animationDelay: "10s" }}>
+          {[
+            "This is our Flagship Program that has 90% Success rate model",
+            "Join 1,250+ professionals who've accelerated their careers",
+            "Expert coaches from top consulting firms",
+            "Personalized guidance for your career goals", 
+            "Comprehensive case interview preparation"
+          ].map((text, i) => (
+            <span key={`ticker-2-${i}`} className="mx-4 text-sm font-medium flex items-center">
+              <span className="mr-2 text-primary">•</span> {text}
+            </span>
+          ))}
+        </div>
+      </section>
+
       {/* E-commerce style filter bar - Modernized */}
       <section className="sticky top-16 z-20 bg-background/80 backdrop-blur-md py-4 border-b border-border/40">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -581,7 +597,7 @@ export default function CoachingPage() {
           </div>
           <div className="flex items-center gap-2 mt-4 md:mt-0">
             <span className="text-sm text-muted-foreground">
-              {isLoading ? "Loading programs..." : `${coachingPrograms.length} programs available`}
+              {isLoading ? "Loading programs..." : `${filteredPrograms.length} programs available`}
             </span>
           </div>
         </div>
@@ -636,9 +652,11 @@ export default function CoachingPage() {
                       </div>
                       <div className="flex items-center">
                         <div className="flex">
-                          {Array(5).fill(0).map((_, i) => (
-                            <Star key={i} className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          ))}
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                         </div>
                         <span className="text-xs text-muted-foreground ml-1">({program.reviewCount || 0})</span>
                       </div>
@@ -666,7 +684,7 @@ export default function CoachingPage() {
                       
                       <div className="flex gap-3">
                         <Button 
-                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
+                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
                           onClick={() => handleBuyNow({
                             id: program.id,
                             title: program.title,
@@ -681,7 +699,11 @@ export default function CoachingPage() {
                             Buy Now
                           </span>
                         </Button>
-                        <Button variant="outline" className="w-1/2 group border-black/30 hover:border-black hover:bg-transparent">
+                        <Button 
+                          variant="outline" 
+                          className="w-1/2 group border-black/30 hover:border-black hover:bg-transparent z-20"
+                          onClick={() => window.location.href = "/dashboard/coaching/land-consulting"}
+                        >
                           View Details
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -695,8 +717,11 @@ export default function CoachingPage() {
             // Fallback to hardcoded programs if no fetched programs available
             <>
               {/* Break into consulting */}
-              <motion.div variants={itemVariants} className="group">
-                <div className="rounded-xl border border-black/10 bg-card overflow-hidden hover:shadow-xl transition-all duration-300 relative">
+              <motion.div variants={itemVariants} className="group relative">
+                <div 
+                  className="rounded-xl border border-black/10 bg-card overflow-hidden hover:shadow-xl transition-all duration-300 relative cursor-pointer"
+                  onClick={() => window.location.href = "/dashboard/coaching/land-consulting"}
+                >
                   <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/80 to-primary/20"></div>
                   
@@ -709,16 +734,9 @@ export default function CoachingPage() {
                         </div>
                         <p className="text-muted-foreground text-sm">Our flagship program</p>
                       </div>
-                      <div className="flex items-center">
-                        <div className="flex">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        </div>
-                        <span className="text-xs text-muted-foreground ml-1">(128)</span>
-                      </div>
+                      <Badge className="bg-orange-500 text-white border-none">
+                        Popular
+                      </Badge>
                     </div>
                     
                     <div className="space-y-3 mb-6">
@@ -745,27 +763,35 @@ export default function CoachingPage() {
                       
                       <div className="flex gap-3">
                         <Button 
-                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
-                          onClick={() => handleBuyNow({
-                            id: "break-into-consulting",
-                            title: "Break into Consulting",
-                            description: "Our flagship program",
-                            price: 997,
-                            originalPrice: 2997,
-                            discount: 33
-                          })}
+                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleBuyNow({
+                              id: "break-into-consulting",
+                              title: "Break into Consulting",
+                              description: "Our flagship program",
+                              price: 997,
+                              originalPrice: 2997,
+                              discount: 33
+                            });
+                          }}
                         >
                           <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
                           <span className="relative z-10 flex items-center gap-1">
                             Buy Now
                           </span>
                         </Button>
-                        <Link href="/dashboard/coaching/land-consulting" className="w-1/2">
-                          <Button variant="outline" className="w-full group border-black/30 hover:border-black hover:bg-transparent">
-                            View Details
-                            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                          </Button>
-                        </Link>
+                        <Button 
+                          variant="outline" 
+                          className="w-1/2 group border-black/30 hover:border-black hover:bg-transparent z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = "/dashboard/coaching/land-consulting";
+                          }}
+                        >
+                          View Details
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -774,43 +800,38 @@ export default function CoachingPage() {
 
               {/* Unlimited coaching till offer */}
               <motion.div variants={itemVariants} className="group">
-                <div className="rounded-xl border border-black/10 bg-card overflow-hidden hover:shadow-xl transition-all duration-300 relative">
+                <div 
+                  className="rounded-xl border border-black/10 bg-card overflow-hidden hover:shadow-xl transition-all duration-300 relative cursor-pointer"
+                  onClick={() => window.location.href = "/dashboard/coaching/unlimited"}
+                >
                   <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500/80 to-emerald-500/20"></div>
                   
                   <div className="p-7">
-                    <div className="flex justify-between items-start mb-5">
+                    <div className="flex justify-between items-start mb-2">
                       <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-bold">Unlimited Coaching</h3>
-                          <Badge className="bg-emerald-500 text-white border-none">Best Value</Badge>
-                        </div>
-                        <p className="text-muted-foreground text-sm">Support until you get an offer</p>
+                        <h3 className="text-xl font-bold">Unlimited Coaching</h3>
+                        <Badge className="bg-emerald-500 text-white border-none">
+                          Best Value
+                        </Badge>
                       </div>
-                      <div className="flex items-center">
-                        <div className="flex">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        </div>
-                        <span className="text-xs text-muted-foreground ml-1">(94)</span>
-                      </div>
+                      <Badge className="bg-orange-500 text-white border-none">
+                        Popular
+                      </Badge>
                     </div>
                     
                     <div className="space-y-3 mb-6">
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Unlimited coaching until you receive an offer</span>
+                        <span className="text-sm">One-on-one case practice with expert coaches</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Personalized mentorship throughout your journey</span>
+                        <span className="text-sm">Real MBB-style cases and frameworks</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">24-hour response to all your questions</span>
+                        <span className="text-sm">1250+ students successfully placed</span>
                       </div>
                     </div>
                     
@@ -823,27 +844,35 @@ export default function CoachingPage() {
                       
                       <div className="flex gap-3">
                         <Button 
-                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
-                          onClick={() => handleBuyNow({
-                            id: "unlimited-coaching",
-                            title: "Unlimited Coaching",
-                            description: "Support until you get an offer",
-                            price: 2997,
-                            originalPrice: 3997,
-                            discount: 25
-                          })}
+                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleBuyNow({
+                              id: "unlimited-coaching",
+                              title: "Unlimited Coaching",
+                              description: "Support until you get an offer",
+                              price: 2997,
+                              originalPrice: 3997,
+                              discount: 25
+                            });
+                          }}
                         >
                           <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
                           <span className="relative z-10 flex items-center gap-1">
                             Buy Now
                           </span>
                         </Button>
-                        <Link href="/dashboard/coaching/unlimited" className="w-1/2">
-                          <Button variant="outline" className="w-full group border-black/30 hover:border-black hover:bg-transparent">
-                            View Details
-                            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                          </Button>
-                        </Link>
+                        <Button 
+                          variant="outline" 
+                          className="w-1/2 group border-black/30 hover:border-black hover:bg-transparent z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = "/dashboard/coaching/unlimited";
+                          }}
+                        >
+                          View Details
+                          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -852,43 +881,38 @@ export default function CoachingPage() {
 
               {/* Group coaching */}
               <motion.div variants={itemVariants} className="group">
-                <div className="rounded-xl border border-black/10 bg-card overflow-hidden hover:shadow-xl transition-all duration-300 relative">
+                <div 
+                  className="rounded-xl border border-black/10 bg-card overflow-hidden hover:shadow-xl transition-all duration-300 relative cursor-pointer"
+                  onClick={() => window.location.href = "/dashboard/coaching/group"}
+                >
                   <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/80 to-blue-500/20"></div>
                   
                   <div className="p-7">
-                    <div className="flex justify-between items-start mb-5">
+                    <div className="flex justify-between items-start mb-2">
                       <div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-bold">Group Coaching</h3>
-                          <Badge className="bg-blue-500 text-white border-none">New</Badge>
-                        </div>
-                        <p className="text-muted-foreground text-sm">Learn with peers</p>
+                        <h3 className="text-xl font-bold">Group Coaching</h3>
+                        <Badge className="bg-blue-500 text-white border-none">
+                          New
+                        </Badge>
                       </div>
-                      <div className="flex items-center">
-                        <div className="flex">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        </div>
-                        <span className="text-xs text-muted-foreground ml-1">(42)</span>
-                      </div>
+                      <Badge className="bg-orange-500 text-white border-none">
+                        Popular
+                      </Badge>
                     </div>
                     
                     <div className="space-y-3 mb-6">
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Small group sessions with like-minded candidates</span>
+                        <span className="text-sm">Weekly group case practice sessions</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Cost-effective way to receive expert guidance</span>
+                        <span className="text-sm">Learn from peers in a collaborative environment</span>
                       </div>
                       <div className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">Weekly sessions with structured curriculum</span>
+                        <span className="text-sm">Access to recorded sessions and materials</span>
                       </div>
                     </div>
                     
@@ -900,10 +924,33 @@ export default function CoachingPage() {
                       </div>
                       
                       <div className="flex gap-3">
-                        <Button className="w-1/2 bg-black/50 text-white hover:bg-black/60 transition-all duration-300" disabled>
-                          Coming Soon
+                        <Button 
+                          className="w-1/2 bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleBuyNow({
+                              id: "group-coaching",
+                              title: "Group Coaching",
+                              description: "Learn with peers",
+                              price: 997,
+                              originalPrice: 1497,
+                              discount: 33
+                            });
+                          }}
+                        >
+                          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                          <span className="relative z-10 flex items-center gap-1">
+                            Buy Now
+                          </span>
                         </Button>
-                        <Button variant="outline" className="w-1/2 group border-black/30 hover:border-black hover:bg-transparent" disabled>
+                        <Button 
+                          variant="outline" 
+                          className="w-1/2 group border-black/30 hover:border-black hover:bg-transparent z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = "/dashboard/coaching/group";
+                          }}
+                        >
                           View Details
                           <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -918,150 +965,192 @@ export default function CoachingPage() {
       </section>
 
       {/* Additional Programs Section */}
-      <section className="mt-16">
-        <div className="flex flex-col md:flex-row items-start justify-between mb-8">
-          <div>
-            <h2 className="text-3xl font-bold">Specialized Programs</h2>
-            <p className="text-muted-foreground">Focused coaching for specific needs</p>
+      {activeFilter !== "group" && (
+        <section className="mt-16">
+          <div className="flex flex-col md:flex-row items-start justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold">One on One Programs</h2>
+              <p className="text-muted-foreground">Focused coaching for specific needs</p>
+            </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* 1:1 Case Cracking */}
-          <motion.div variants={itemVariants} className="group">
-            <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-card">
-              <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 to-gray-900 flex items-center justify-center">
-                <MessageSquare className="h-12 w-12 text-primary" />
-              </div>
-              
-              <div className="p-6 w-full md:w-2/3">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="text-xl font-bold">1:1 Case Cracking</h3>
-                    <p className="text-muted-foreground text-sm">Master case interviews</p>
-                  </div>
-                  <Badge className="bg-orange-500 text-white border-none">
-                    Popular
-                  </Badge>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* 1:1 Case Cracking */}
+            <motion.div variants={itemVariants} className="group">
+              <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-card">
+                <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 to-gray-900 flex items-center justify-center">
+                  <MessageSquare className="h-12 w-12 text-primary" />
                 </div>
                 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">One-on-one case practice with expert coaches</span>
+                <div className="p-6 w-full md:w-2/3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="text-xl font-bold">1:1 Case Cracking</h3>
+                      <p className="text-muted-foreground text-sm">Master case interviews</p>
+                    </div>
+                    <Badge className="bg-orange-500 text-white border-none">
+                      Popular
+                    </Badge>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Real MBB-style cases and frameworks</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-end justify-between pt-2">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-bold">$299</span>
-                      <span className="text-xs text-muted-foreground">per session</span>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">One-on-one case practice with expert coaches</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Real MBB-style cases and frameworks</span>
                     </div>
                   </div>
                   
-                  <Button className="group" variant="outline">
-                    Coming Soon
-                    <Sparkles className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-end justify-between pt-2">
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold">$299</span>
+                        <span className="text-xs text-muted-foreground">per session</span>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
+                      onClick={() => handleBuyNow({
+                        id: "1on1-case-cracking",
+                        title: "1:1 Case Cracking",
+                        description: "Master case interviews",
+                        price: 299,
+                        originalPrice: 399,
+                        discount: 25
+                      })}
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                      <span className="relative z-10 flex items-center gap-1">
+                        Buy Now
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* 1:1 CV and CL Review */}
-          <motion.div variants={itemVariants} className="group">
-            <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-card">
-              <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 to-gray-900 flex items-center justify-center">
-                <FileCheck className="h-12 w-12 text-primary" />
-              </div>
-              
-              <div className="p-6 w-full md:w-2/3">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="text-xl font-bold">1:1 CV and CL Review</h3>
-                    <p className="text-muted-foreground text-sm">Perfect your application</p>
-                  </div>
-                  <Badge className="bg-purple-500 text-white border-none">Essential</Badge>
+            {/* 1:1 CV and CL Review */}
+            <motion.div variants={itemVariants} className="group">
+              <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-card">
+                <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 to-gray-900 flex items-center justify-center">
+                  <FileCheck className="h-12 w-12 text-primary" />
                 </div>
                 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Detailed review of your CV and cover letter</span>
+                <div className="p-6 w-full md:w-2/3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="text-xl font-bold">1:1 CV and CL Review</h3>
+                      <p className="text-muted-foreground text-sm">Get expert feedback</p>
+                    </div>
+                    <Badge className="bg-purple-500 text-white border-none">
+                      Essential
+                    </Badge>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Insider tips to pass resume screening</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-end justify-between pt-2">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-bold">$199</span>
-                      <span className="text-xs text-muted-foreground">per review</span>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Detailed review of your CV and cover letter</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Insider tips to pass resume screening</span>
                     </div>
                   </div>
                   
-                  <Button className="group" variant="outline">
-                    Coming Soon
-                    <Sparkles className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-end justify-between pt-2">
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold">$199</span>
+                        <span className="text-xs text-muted-foreground">per review</span>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
+                      onClick={() => handleBuyNow({
+                        id: "cv-cl-review",
+                        title: "1:1 CV and CL Review",
+                        description: "Get expert feedback",
+                        price: 199,
+                        originalPrice: 299,
+                        discount: 33
+                      })}
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                      <span className="relative z-10 flex items-center gap-1">
+                        Buy Now
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* 1:1 Fit Interview */}
-          <motion.div variants={itemVariants} className="group">
-            <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-card">
-              <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 to-gray-900 flex items-center justify-center">
-                <Users className="h-12 w-12 text-primary" />
-              </div>
-              
-              <div className="p-6 w-full md:w-2/3">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="text-xl font-bold">1:1 Fit Interview</h3>
-                    <p className="text-muted-foreground text-sm">Ace your behavioral interviews</p>
-                  </div>
-                  <Badge className="bg-green-500 text-white border-none">New</Badge>
+            {/* 1:1 Fit Interview */}
+            <motion.div variants={itemVariants} className="group">
+              <div className="flex flex-col md:flex-row overflow-hidden rounded-xl border bg-card">
+                <div className="relative w-full md:w-1/3 aspect-square md:aspect-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 to-gray-900 flex items-center justify-center">
+                  <Users className="h-12 w-12 text-primary" />
                 </div>
                 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Personalized fit interview preparation</span>
+                <div className="p-6 w-full md:w-2/3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="text-xl font-bold">1:1 Fit Interview</h3>
+                      <p className="text-muted-foreground text-sm">Ace your behavioral interviews</p>
+                    </div>
+                    <Badge className="bg-green-500 text-white border-none">
+                      New
+                    </Badge>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">Feedback on your storytelling and delivery</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-end justify-between pt-2">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-bold">$249</span>
-                      <span className="text-xs text-muted-foreground">per session</span>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Personalized fit interview preparation</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">Feedback on your storytelling and delivery</span>
                     </div>
                   </div>
                   
-                  <Button className="group" variant="outline">
-                    Coming Soon
-                    <Sparkles className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-end justify-between pt-2">
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold">$249</span>
+                        <span className="text-xs text-muted-foreground">per session</span>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
+                      onClick={() => handleBuyNow({
+                        id: "fit-interview",
+                        title: "1:1 Fit Interview",
+                        description: "Ace your behavioral interviews",
+                        price: 249,
+                        originalPrice: 349,
+                        discount: 29
+                      })}
+                    >
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                      <span className="relative z-10 flex items-center gap-1">
+                        Buy Now
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* AI Coach Section - Modern Black and White Aesthetic */}
       <section className="py-16">
@@ -1435,54 +1524,58 @@ export default function CoachingPage() {
       <section className="mt-16">
         <div className="relative overflow-hidden rounded-3xl">
           {/* Background gradient and effects */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-purple-600/90"></div>
-          <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.5),transparent)]"></div>
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/30 rounded-full blur-3xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-50"></div>
+          <div className="absolute inset-0 bg-grid-black/5 [mask-image:linear-gradient(0deg,transparent,rgba(0,0,0,0.05),transparent)]"></div>
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-gray-100 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gray-100 rounded-full blur-3xl"></div>
           
-          <div className="relative p-8 md:p-12 text-white">
+          <div className="relative p-8 md:p-12 text-black">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
-                <Badge className="bg-white/20 hover:bg-white/30 text-white border-none">
+                <Badge className="bg-black/90 hover:bg-black text-white border-none">
                   Limited Time Offer
                 </Badge>
-                <h2 className="text-3xl md:text-4xl font-bold">Ready to Transform Your Career?</h2>
-                <p className="text-white/80">
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-black to-gray-700 animate-gradient-x">
+                    Ready to Transform Your Career?
+                  </span>
+                </h2>
+                <p className="text-gray-700">
                   Choose the program that fits your needs and take the first step toward your dream consulting career. Special pricing available for a limited time.
                 </p>
                 <div className="flex flex-wrap gap-4 pt-2">
-                  <Button size="lg" className="bg-white text-primary hover:bg-white/90">
+                  <Button size="lg" className="bg-black text-white hover:bg-gray-200 transition-all duration-300 group hover:-translate-y-[2px] shadow-lg hover:shadow-white/10">
                     Browse All Programs
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20">
+                  <Button size="lg" variant="outline" className="border-black/70 text-black hover:bg-black/5 transition-all duration-300">
                     Schedule a Call
                   </Button>
                 </div>
               </div>
               
-              <div className="space-y-4 bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-                <h3 className="text-xl font-bold">Why Choose Our Coaching?</h3>
+              <div className="space-y-4 bg-black/5 backdrop-blur-sm p-6 rounded-xl border border-black/10 shadow-lg hover:shadow-black/10 transition-all duration-300">
+                <h3 className="text-xl font-bold text-black">Why Choose Our Coaching?</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-yellow-300 mt-0.5" />
-                    <span>Expert coaches from top consulting firms</span>
+                    <CheckCircle className="h-5 w-5 text-black mt-0.5" />
+                    <span className="text-black">Expert coaches from top consulting firms</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-yellow-300 mt-0.5" />
-                    <span>Proven track record with 1250+ placements</span>
+                    <CheckCircle className="h-5 w-5 text-black mt-0.5" />
+                    <span className="text-black">Proven track record with 1250+ placements</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-yellow-300 mt-0.5" />
-                    <span>Personalized approach for your unique needs</span>
+                    <CheckCircle className="h-5 w-5 text-black mt-0.5" />
+                    <span className="text-black">Personalized approach for your unique needs</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-yellow-300 mt-0.5" />
-                    <span>Flexible programs to fit your schedule</span>
+                    <CheckCircle className="h-5 w-5 text-black mt-0.5" />
+                    <span className="text-black">Flexible programs to fit your schedule</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-yellow-300 mt-0.5" />
-                    <span>Money-back guarantee if not satisfied</span>
+                    <CheckCircle className="h-5 w-5 text-black mt-0.5" />
+                    <span className="text-black">Money-back guarantee if not satisfied</span>
                   </li>
                 </ul>
               </div>

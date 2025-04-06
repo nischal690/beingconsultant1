@@ -35,7 +35,7 @@ export const createStripeCheckoutSession = async (options: StripeCheckoutOptions
     customerId,
     customerEmail,
     metadata = {},
-    successUrl = window.location.origin + '/dashboard/payment-success',
+    successUrl = window.location.origin + '/payment-success',
     cancelUrl = window.location.origin + '/dashboard/payment-cancelled',
   } = options;
 
@@ -93,7 +93,7 @@ export const processStripePayment = async (options: StripeCheckoutOptions) => {
 
     // Prepare success URL with query parameters
     const successUrl = options.successUrl || 
-      `${window.location.origin}/dashboard/payment-success?` + 
+      `${window.location.origin}/payment-success?` + 
       `product_id=${encodeURIComponent(options.metadata?.programId || '')}&` +
       `product_name=${encodeURIComponent(options.productName || '')}&` +
       `amount=${encodeURIComponent(options.amount / 100)}&` + // Convert back from cents to dollars
