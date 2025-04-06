@@ -4,7 +4,24 @@ import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Brain, FileText, Lightbulb, Hexagon, BarChart3, Sparkles, Search, Star, ArrowRight, ShoppingCart, X, Plus, Minus, Check, CreditCard } from "lucide-react"
+import { 
+  Brain,
+  FileText, 
+  Lightbulb, 
+  Hexagon, 
+  BarChart3, 
+  Sparkles, 
+  Search, 
+  Star, 
+  ArrowRight, 
+  ShoppingCart, 
+  X, 
+  Plus, 
+  Minus, 
+  Check, 
+  CreditCard, 
+  Info
+} from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import {
@@ -15,11 +32,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
-import { useAuth } from "@/lib/firebase/auth-context"
-import { verifyCoupon, incrementCouponUsage, createTransactionRecord, addProductToUserLibrary, getProductsByCategory } from "@/lib/firebase/firestore"
-import { processRazorpayPayment } from "@/lib/payment/razorpay"
-import { processStripePayment } from "@/lib/payment/stripe"
-import { PaymentModal, PaymentItem } from "@/components/payment/payment-modal";
 
 // Define the resource type
 interface Resource {
@@ -27,9 +39,8 @@ interface Resource {
   title: string
   description: string
   shortDescription: string
-  icon?: React.ReactNode
-  iconName?: string
-  category: string
+  icon: React.ReactNode
+  category: "all" | "paid" | "free"
   price: number
   popular?: boolean
   featured?: boolean
@@ -42,33 +53,15 @@ interface CartItem {
   quantity: number
 }
 
-// Define coupon type
-interface Coupon {
-  code: string;
-  discount: number;
-  discountType: "percentage" | "fixed";
-  product: string;
-}
-
-// Map icon names to icon components
-const iconMap: Record<string, React.ReactNode> = {
-  "brain": <Brain className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
-  "lightbulb": <Lightbulb className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
-  "hexagon": <Hexagon className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
-  "fileText": <FileText className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
-  "barChart": <BarChart3 className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
-  "sparkles": <Sparkles className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
-}
-
-// Fallback resources data in case Firestore fetch fails
-const fallbackResources: Resource[] = [
+// Resource data
+const resources: Resource[] = [
   {
     id: "personality-test",
     title: "Personality Test",
     description: "Take the world's first and only personality test tailored to consulting careers.",
     shortDescription: "Discover your consulting strengths",
-    iconName: "brain",
-    category: "resources",
+    icon: <Brain className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
+    category: "paid",
     price: 99,
     popular: true,
     featured: true,
@@ -79,8 +72,8 @@ const fallbackResources: Resource[] = [
     title: "Cheatsheet",
     description: "Our proprietary industry cheatsheet with 20+ industry frameworks.",
     shortDescription: "Master key consulting frameworks",
-    iconName: "lightbulb",
-    category: "resources",
+    icon: <Lightbulb className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
+    category: "paid",
     price: 79,
     rating: 4.7
   },
@@ -89,8 +82,8 @@ const fallbackResources: Resource[] = [
     title: "Case Bank",
     description: "Access to case bank with 300+ practice cases.",
     shortDescription: "Ace your case interviews",
-    iconName: "hexagon",
-    category: "resources",
+    icon: <Hexagon className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
+    category: "paid",
     price: 129,
     popular: true,
     featured: true,
@@ -101,8 +94,8 @@ const fallbackResources: Resource[] = [
     title: "CV Superguide",
     description: "Consulting CV Superguide to craft the perfect CV.",
     shortDescription: "Stand out from the competition",
-    iconName: "fileText",
-    category: "resources",
+    icon: <FileText className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
+    category: "paid",
     price: 49,
     rating: 4.6
   },
@@ -111,8 +104,8 @@ const fallbackResources: Resource[] = [
     title: "Business Essentials",
     description: "Essential business knowledge and frameworks for consulting interviews.",
     shortDescription: "Core business knowledge",
-    iconName: "barChart",
-    category: "resources",
+    icon: <BarChart3 className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
+    category: "paid",
     price: 89,
     rating: 4.5
   },
@@ -121,8 +114,8 @@ const fallbackResources: Resource[] = [
     title: "Jumpstart 100",
     description: "Guide to thriving in the first 100 days of your consulting career.",
     shortDescription: "Excel in your new role",
-    iconName: "brain",
-    category: "resources",
+    icon: <Brain className="h-12 w-12 text-white group-hover:text-primary transition-colors duration-500" />,
+    category: "paid",
     price: 69,
     rating: 4.7
   }
@@ -167,7 +160,6 @@ const searchBarVariants = {
 }
 
 export default function ResourcesPage() {
-  const { user } = useAuth();
   const [filter, setFilter] = useState<"all" | "paid" | "free">("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -175,95 +167,9 @@ export default function ResourcesPage() {
   const [cart, setCart] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false)
-  const [selectedResource, setSelectedResource] = useState<PaymentItem | null>(null);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
   const [showCustomModal, setShowCustomModal] = useState(false)
-  const [couponCode, setCouponCode] = useState("")
-  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null)
-  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
-  const [couponError, setCouponError] = useState<string | null>(null)
-  const [resources, setResources] = useState<Resource[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Fetch products from Firestore
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setIsLoading(true);
-        console.log("Fetching products with category: Toolkit");
-        const result = await getProductsByCategory("Toolkit");
-        console.log("Fetch result:", result);
-        
-        if (result.success && result.data && result.data.length > 0) {
-          console.log("Products fetched successfully:", result.data);
-          console.log("Number of products:", result.data.length);
-          
-          // Process the data to ensure it has the right format
-          const processedProducts = result.data.map((product: any) => {
-            // Create a default title from program field if title is missing
-            const title = product.title || product.program || "Untitled Product";
-            
-            // Create a default description if missing
-            const description = product.description || `${title} - A premium consulting resource`;
-            
-            // Create a default short description if missing
-            const shortDescription = product.shortDescription || "Premium consulting resource";
-            
-            // Default price if missing
-            const price = typeof product.price === 'number' ? product.price : 99;
-            
-            // Default icon name if missing
-            const iconName = product.iconName || "brain";
-            
-            return {
-              id: product.id,
-              title,
-              description,
-              shortDescription,
-              iconName,
-              icon: iconName ? iconMap[iconName] : iconMap.brain,
-              category: product.category || "resources",
-              price,
-              popular: product.popular || false,
-              featured: product.featured || false,
-              rating: product.rating || 4.5
-            };
-          });
-          
-          console.log("Processed products:", processedProducts);
-          setResources(processedProducts);
-          console.log("Resources state set with processed products");
-        } else {
-          // No products found or empty result
-          console.log("No products found or empty result. Using fallback data.");
-          
-          // Use fallback resources if fetch returns empty
-          const fallbackWithIcons = fallbackResources.map(resource => ({
-            ...resource,
-            icon: resource.iconName ? iconMap[resource.iconName] : null,
-          }));
-          
-          console.log("Fallback resources:", fallbackWithIcons);
-          setResources(fallbackWithIcons);
-          setError("No resources found. Using default resources.");
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setError("An error occurred while loading resources. Using fallback data.");
-        console.log("Using fallback resources due to error:", error);
-        // Use fallback resources if fetch fails
-        setResources(fallbackResources.map(resource => ({
-          ...resource,
-          icon: resource.iconName ? iconMap[resource.iconName] : null,
-        })));
-      } finally {
-        setIsLoading(false);
-        console.log("Loading state set to false");
-      }
-    };
-    
-    fetchProducts();
-  }, []);
+  const [showToolkitDialog, setShowToolkitDialog] = useState(false)
 
   // Set loaded state after initial render for animations
   useEffect(() => {
@@ -368,267 +274,25 @@ export default function ResourcesPage() {
   // Handle buy now click
   const handleBuyNow = (resource: Resource) => {
     console.log("Buy Now clicked for:", resource.title);
-    setSelectedResource({ 
-      id: resource.id, 
-      title: resource.title, 
-      description: resource.shortDescription || resource.description,
-      price: resource.price,
-      shortDescription: resource.shortDescription
-    });
+    setSelectedResource(resource);
     // Use the custom modal instead
     setShowCustomModal(true);
   }
   
-  // Handle checkout from cart
-  const handleCheckout = () => {
-    if (cart.length === 0) {
-      toast.error("Your cart is empty");
-      return;
-    }
-    
-    // Create a combined item for the payment modal
-    const combinedItem: PaymentItem = {
-      id: 'cart-checkout',
-      title: 'Cart Checkout',
-      description: `${cart.length} item${cart.length > 1 ? 's' : ''} in your cart`,
-      price: cartTotal,
-      shortDescription: cart.map(item => item.resource.title).join(', ')
-    };
-    
-    setSelectedResource(combinedItem);
-    setShowCustomModal(true);
-  };
-  
   // Handle payment method selection
-  const handlePaymentMethodSelect = async (method: 'razorpay' | 'stripe') => {
+  const handlePaymentMethodSelect = (method: 'razorpay' | 'stripe') => {
     if (!selectedResource) return
-    if (!user) {
-      toast.error("Please sign in to make a purchase");
-      return;
-    }
     
-    try {
-      // Calculate the final price after discount
-      const finalPrice = calculateDiscountedPrice(selectedResource.price);
-      const amountInSmallestUnit = method === 'razorpay' 
-        ? Math.round(finalPrice * 100) // Razorpay uses paise for INR
-        : Math.round(finalPrice * 100); // Stripe uses cents for USD
-      
-      // Prepare metadata for the payment
-      const metadata: Record<string, string> = {
-        resourceId: selectedResource.id,
-        resourceTitle: selectedResource.title,
-        documentId: selectedResource.id, // Store the document ID
-      };
-      
-      // Add coupon information to metadata if applied
-      if (appliedCoupon) {
-        metadata.couponCode = appliedCoupon.code;
-        metadata.discountApplied = `${appliedCoupon.discount}${appliedCoupon.discountType === 'percentage' ? '%' : ' fixed'}`;
-      }
-      
-      let paymentResult;
-      
-      if (method === 'razorpay') {
-        // Process Razorpay payment
-        paymentResult = await processRazorpayPayment({
-          amount: amountInSmallestUnit,
-          currency: 'USD',
-          name: "Being Consultant",
-          description: `Payment for ${selectedResource.title}`,
-          prefill: {
-            name: user?.displayName || '',
-            email: user?.email || '',
-          },
-          notes: metadata,
-          theme: {
-            color: '#245D66'
-          }
-        });
-      } else {
-        // Process Stripe payment
-        paymentResult = await processStripePayment({
-          amount: amountInSmallestUnit,
-          currency: 'usd',
-          productName: selectedResource.title,
-          productDescription: selectedResource.description,
-          customerEmail: user?.email || undefined,
-          metadata
-        });
-      }
-      
-      // Determine if this is a cart checkout or single item purchase
-      const isCartCheckout = selectedResource.id === 'cart-checkout';
-      
-      // Create transaction record regardless of success or failure
-      await createTransactionRecord(user.uid, {
-        transactionId: paymentResult.transactionId || `failed-${Date.now()}`,
-        amount: finalPrice,
-        currency: method === 'razorpay' ? 'USD' : 'USD',
-        status: paymentResult.success ? 'successful' : 'failed',
-        paymentMethod: method,
-        productId: selectedResource.id,
-        productTitle: selectedResource.title,
-        documentId: selectedResource.id, // Store the document ID
-        ...(appliedCoupon?.code ? { couponCode: appliedCoupon.code } : {}),
-        ...(appliedCoupon?.discount ? { couponDiscount: appliedCoupon.discount } : {}),
-        ...(appliedCoupon?.discountType ? { couponDiscountType: appliedCoupon.discountType } : {}),
-        ...(paymentResult.error?.message ? { errorMessage: paymentResult.error.message } : {}),
-        metadata: {
-          ...metadata,
-          isCartCheckout: isCartCheckout ? 'true' : 'false',
-          itemCount: isCartCheckout ? cart.length.toString() : '1'
-        }
-      });
-      
-      if (paymentResult.success) {
-        // If payment is successful, increment coupon usage
-        if (appliedCoupon) {
-          await incrementCouponUsage(appliedCoupon.code);
-        }
-        
-        // Add product(s) to user's library
-        if (isCartCheckout) {
-          // Add each cart item to user's library
-          for (const item of cart) {
-            await addProductToUserLibrary(user.uid, {
-              productId: item.resource.id,
-              productTitle: item.resource.title,
-              productCategory: item.resource.category,
-              transactionId: paymentResult.transactionId,
-              paymentId: paymentResult.transactionId,
-              documentId: item.resource.id, // Store the document ID
-              price: item.resource.price * item.quantity,
-              currency: method === 'razorpay' ? 'USD' : 'USD',
-              metadata: {
-                quantity: item.quantity,
-                originalPrice: item.resource.price,
-                description: item.resource.description,
-                shortDescription: item.resource.shortDescription,
-                fromCart: true,
-                documentId: item.resource.id // Also store in metadata
-              }
-            });
-          }
-          
-          // Clear cart after successful purchase
-          setCart([]);
-          setIsCartOpen(false);
-        } else {
-          // Add single product to user's library
-          await addProductToUserLibrary(user.uid, {
-            productId: selectedResource.id,
-            productTitle: selectedResource.title,
-            productCategory: selectedResource.id.includes('-') ? selectedResource.id.split('-')[0] : 'resource',
-            transactionId: paymentResult.transactionId,
-            paymentId: paymentResult.transactionId,
-            documentId: selectedResource.id, // Store the document ID
-            price: finalPrice,
-            currency: method === 'razorpay' ? 'USD' : 'USD',
-            metadata: {
-              originalPrice: selectedResource.price,
-              description: selectedResource.description,
-              shortDescription: selectedResource.shortDescription,
-              fromCart: false,
-              documentId: selectedResource.id // Also store in metadata
-            }
-          });
-        }
-        
-        // Show success message
-        toast.success(`Payment successful! Transaction ID: ${paymentResult.transactionId}`);
-        
-        // Close the dialog
-        setShowCustomModal(false);
-        
-        // Reset coupon state after payment
-        setCouponCode("");
-        setAppliedCoupon(null);
-        setCouponError(null);
-      } else {
-        // Handle payment failure
-        toast.error(`Payment failed: ${paymentResult.error?.message || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error(`Error processing ${method} payment:`, error);
-      toast.error(`Error processing payment. Please try again.`);
-      
-      // Record failed transaction due to exception
-      if (user) {
-        try {
-          await createTransactionRecord(user.uid, {
-            transactionId: `error-${Date.now()}`,
-            amount: calculateDiscountedPrice(selectedResource.price),
-            currency: method === 'razorpay' ? 'USD' : 'USD',
-            status: 'failed',
-            paymentMethod: method,
-            productId: selectedResource.id,
-            productTitle: selectedResource.title,
-            documentId: selectedResource.id, // Store the document ID
-            ...(appliedCoupon?.code ? { couponCode: appliedCoupon.code } : {}),
-            ...(appliedCoupon?.discount ? { couponDiscount: appliedCoupon.discount } : {}),
-            ...(appliedCoupon?.discountType ? { couponDiscountType: appliedCoupon.discountType } : {}),
-            errorMessage: error instanceof Error ? error.message : 'Unknown error',
-            metadata: {
-              isCartCheckout: selectedResource.id === 'cart-checkout' ? 'true' : 'false',
-              errorType: 'exception',
-              documentId: selectedResource.id // Also store in metadata
-            }
-          });
-        } catch (recordError) {
-          console.error("Failed to record transaction error:", recordError);
-        }
-      }
-    }
-  }
-  
-  // Handle applying coupon code
-  const handleApplyCoupon = async () => {
-    if (!couponCode.trim()) {
-      toast.error("Please enter a coupon code")
-      return
-    }
+    // Close the dialog
+    setShowCustomModal(false)
     
-    if (!selectedResource) {
-      toast.error("No product selected")
-      return
-    }
-    
-    setIsApplyingCoupon(true)
-    setCouponError(null)
-    
-    try {
-      // Verify coupon from Firestore
-      const result = await verifyCoupon(couponCode, selectedResource.id);
-      
-      if (result.success && result.data) {
-        setAppliedCoupon(result.data);
-        toast.success(`Coupon applied! ${result.data.discount}% discount`);
-      } else {
-        setAppliedCoupon(null);
-        setCouponError(result.error || "Invalid coupon code");
-        toast.error(result.error || "Invalid coupon code");
-      }
-    } catch (error) {
-      console.error("Error applying coupon:", error);
-      toast.error("Error applying coupon");
-      setCouponError("Error applying coupon");
-      setAppliedCoupon(null);
-    } finally {
-      setIsApplyingCoupon(false);
-    }
-  }
-  
-  // Calculate discounted price
-  const calculateDiscountedPrice = (price: number): number => {
-    if (!appliedCoupon) return price;
-    
-    if (appliedCoupon.discountType === "percentage") {
-      const discountAmount = (price * appliedCoupon.discount) / 100;
-      return price - discountAmount;
+    // Process payment based on selected method
+    if (method === 'razorpay') {
+      toast.success(`Processing Razorpay payment for ${selectedResource.title}`)
+      // Here you would integrate with Razorpay API
     } else {
-      // Fixed discount
-      return Math.max(0, price - appliedCoupon.discount);
+      toast.success(`Processing Stripe payment for ${selectedResource.title}`)
+      // Here you would integrate with Stripe API
     }
   }
 
@@ -637,14 +301,14 @@ export default function ResourcesPage() {
       {/* Animated background */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -inset-[10%] opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '15s' }}></div>
-          <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-gradient-to-r from-pink-500/20 to-red-500/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '20s' }}></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-teal-500/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '25s' }}></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-black/40 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '15s' }}></div>
+          <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-black/40 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '20s' }}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-black/40 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '25s' }}></div>
         </div>
         
         {/* Interactive cursor light effect */}
         <div 
-          className="pointer-events-none fixed opacity-20 w-[400px] h-[400px] rounded-full bg-gradient-to-r from-white/10 to-white/5 blur-3xl"
+          className="pointer-events-none fixed opacity-20 w-[400px] h-[400px] rounded-full bg-black/20 blur-3xl"
           style={{
             left: `${mousePosition.x - 200}px`,
             top: `${mousePosition.y - 200}px`,
@@ -660,7 +324,7 @@ export default function ResourcesPage() {
           {/* Left sidebar */}
           <div className="w-full md:w-[250px] bg-black/40 backdrop-blur-lg p-4 rounded-lg border border-white/10 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 animate-gradient-x">Browse resources</h3>
+              <h3 className="text-lg font-semibold text-white">Browse resources</h3>
               
               {/* Cart button with counter */}
               <Button
@@ -671,7 +335,7 @@ export default function ResourcesPage() {
               >
                 <ShoppingCart className="h-5 w-5 text-white" />
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-green-600 to-emerald-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-black/40 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {cart.reduce((total, item) => total + item.quantity, 0)}
                   </span>
                 )}
@@ -755,16 +419,15 @@ export default function ResourcesPage() {
                         <div className="border-t border-white/10 pt-3">
                           <div className="flex justify-between items-center text-sm mb-3">
                             <span>Total:</span>
-                            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+                            <span className="font-bold text-white">
                               ${cartTotal.toFixed(2)}
                             </span>
                           </div>
                           
                           <Button 
-                            className="w-full bg-[#245D66] text-white hover:bg-black hover:text-white border border-[#245D66] shadow-lg hover:shadow-[0_0_15px_rgba(36,93,102,0.4)] transition-all duration-300 relative overflow-hidden"
-                            onClick={handleCheckout}
+                            className="w-full bg-black/40 hover:bg-black/60 text-white border border-white/30 hover:border-white/50 shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative overflow-hidden"
                           >
-                            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/10 to-[#245D66]/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                            <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                             <span className="relative z-10">Checkout</span>
                           </Button>
                         </div>
@@ -781,7 +444,7 @@ export default function ResourcesPage() {
                   Resource Type <span className="inline-block w-1 h-1 rounded-full bg-white/60"></span>
                 </h4>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
                     <input 
                       type="radio" 
                       name="resourceType" 
@@ -791,7 +454,7 @@ export default function ResourcesPage() {
                     />
                     <span>All</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
                     <input 
                       type="radio" 
                       name="resourceType" 
@@ -801,7 +464,7 @@ export default function ResourcesPage() {
                     />
                     <span>Paid</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
                     <input 
                       type="radio" 
                       name="resourceType" 
@@ -826,10 +489,9 @@ export default function ResourcesPage() {
                       key={`featured-${resource.id}`} 
                       className="group p-2 rounded-md hover:bg-white/5 transition-all cursor-pointer"
                     >
-                      <div className="text-xs font-medium group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300">
-                        {resource.shortDescription}
+                      <div className="text-xs font-medium group-hover:text-white">
+                        {resource.title}
                       </div>
-                      <h3 className="text-lg font-semibold group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all duration-300">{resource.title}</h3>
                       <div className="text-[10px] text-white/50">${resource.price}</div>
                     </div>
                   ))}
@@ -843,12 +505,13 @@ export default function ResourcesPage() {
             <div className="mb-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-300 to-white animate-gradient-x">Toolkit to Ace your Interviews</h1>
+                  <h1 className="text-3xl font-bold mb-2 text-white">Toolkit to Ace your Interviews</h1>
                   <p className="text-white/70">End-to-end support and curated resources to help you crack your dream role</p>
                 </div>
                 <Button 
                   variant="outline" 
                   className="bg-transparent border border-white/20 text-white hover:bg-white/10"
+                  onClick={() => setShowToolkitDialog(true)}
                 >
                   <span className="flex items-center gap-2">
                     See how to buy Toolkits
@@ -864,8 +527,7 @@ export default function ResourcesPage() {
                 initial="hidden"
                 animate="visible"
               >
-                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-black/20 rounded-full blur-md -z-10"></div>
                 <div className="relative flex items-center">
                   <Search className="absolute left-4 text-white/50 h-4 w-4" />
                   <Input
@@ -888,23 +550,8 @@ export default function ResourcesPage() {
                 </div>
               </motion.div>
 
-              {/* Loading state */}
-              {isLoading && (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <div className="w-16 h-16 border-4 border-white/10 border-t-white rounded-full animate-spin mb-4"></div>
-                  <p className="text-white/70 text-lg">Loading resources...</p>
-                </div>
-              )}
-
-              {/* Error message */}
-              {error && !isLoading && (
-                <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
-                  <p className="text-red-300 text-sm">{error}</p>
-                </div>
-              )}
-
               <AnimatePresence>
-                {!isLoading && filteredResources.length === 0 ? (
+                {filteredResources.length === 0 ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -939,24 +586,24 @@ export default function ResourcesPage() {
                         }}
                       >
                         <Card className="overflow-hidden h-full border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/80 transition-all duration-500 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] group-hover:border-white/30 animate-pulse-glow">
-                          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <div className="absolute inset-x-0 top-0 h-px bg-white/10 opacity-50"></div>
+                          <div className="absolute inset-x-0 bottom-0 h-px bg-white/10 opacity-50"></div>
                           
                           <CardContent className="p-6 relative">
                             {resource.popular && (
-                              <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-black px-3 py-1 rounded-bl-lg rounded-tr-lg shadow-lg">
+                              <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-black/40 text-xs font-bold text-white px-3 py-1 rounded-bl-lg rounded-tr-lg shadow-lg">
                                 POPULAR
                               </div>
                             )}
                             <div className="mb-4 relative">
-                              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-700"></div>
+                              <div className="absolute inset-0 bg-black/20 rounded-full blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-700"></div>
                               {resource.icon}
                             </div>
                             <div className="space-y-2 mb-4">
-                              <div className="text-xs text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">
+                              <div className="text-xs text-white">
                                 {resource.shortDescription}
                               </div>
-                              <h3 className="text-lg font-semibold group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all duration-300">{resource.title}</h3>
+                              <h3 className="text-lg font-semibold group-hover:text-white transition-colors">{resource.title}</h3>
                               <p className="text-white/60 text-sm">{resource.description}</p>
                               
                               {/* Rating */}
@@ -975,7 +622,7 @@ export default function ResourcesPage() {
                               )}
                             </div>
                             <div className="flex justify-between items-center mt-4">
-                              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                              <div className="text-2xl font-bold text-white">
                                 ${resource.price}
                               </div>
                             </div>
@@ -983,10 +630,10 @@ export default function ResourcesPage() {
                           <CardFooter className="px-6 pb-6 pt-0">
                             {isInCart(resource.id) ? (
                               <Button 
-                                className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/30 hover:border-white/50 shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
+                                className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/10 hover:border-white/30 transition-all duration-300 relative overflow-hidden"
                                 onClick={() => removeFromCart(resource.id)}
                               >
-                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                                <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                                 <span className="relative z-10 flex items-center gap-2">
                                   <Check className="h-4 w-4" />
                                   In Cart
@@ -998,7 +645,7 @@ export default function ResourcesPage() {
                                   className="bg-black hover:bg-white text-white hover:text-black border border-white/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
                                   onClick={() => addToCart(resource)}
                                 >
-                                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                                  <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                                   <span className="flex items-center gap-1 relative z-10">
                                     <ShoppingCart className="h-3 w-3" />
                                     Add to Cart
@@ -1008,7 +655,7 @@ export default function ResourcesPage() {
                                   className="bg-[#245D66] text-white hover:bg-black hover:text-white border border-[#245D66] shadow-lg hover:shadow-[0_0_15px_rgba(36,93,102,0.4)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
                                   onClick={() => handleBuyNow(resource)}
                                 >
-                                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/10 to-[#245D66]/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
+                                  <span className="absolute inset-0 w-full h-full bg-[#245D66]/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                                   <span className="flex items-center gap-1 relative z-10">
                                     <Sparkles className="h-3 w-3" />
                                     Buy Now
@@ -1030,15 +677,269 @@ export default function ResourcesPage() {
       
       {/* Custom Payment Modal */}
       {showCustomModal && selectedResource && (
-        <PaymentModal 
-          isOpen={showCustomModal}
-          onClose={() => setShowCustomModal(false)}
-          selectedItem={selectedResource}
-          onPaymentMethodSelect={handlePaymentMethodSelect}
-          currencySymbol="$"
-          currencyCode="USD"
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
+            onClick={() => setShowCustomModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="sm:max-w-md w-full bg-black/95 border border-white/10 shadow-[0_0_50px_rgba(36,93,102,0.2)] text-white max-w-2xl">
+            {/* Decorative elements */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-black/20 rounded-full blur-2xl opacity-30"></div>
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-black/20 rounded-full blur-2xl opacity-30"></div>
+            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5"></div>
+            
+            {/* Top highlight border */}
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/10"></div>
+            
+            {/* Close button */}
+            <button 
+              className="absolute right-4 top-4 text-white/70 hover:text-white"
+              onClick={() => setShowCustomModal(false)}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </button>
+            
+            {/* Header */}
+            <div className="flex flex-col space-y-1.5 text-center sm:text-left relative z-10">
+              <h2 className="text-2xl font-bold text-center text-white pb-1">
+                Complete Your Purchase
+              </h2>
+              
+              <div className="mt-3 relative">
+                <div className="absolute -left-3 top-0 bottom-0 w-[2px] bg-white/40"></div>
+                <p className="font-medium text-white text-lg pl-2">{selectedResource.title}</p>
+                <p className="text-sm text-white/60 pl-2">{selectedResource.shortDescription}</p>
+                <div className="mt-3 flex items-baseline">
+                  <p className="text-2xl font-bold text-white pl-2">
+                    ${selectedResource.price}
+                  </p>
+                  <span className="text-xs text-white/40 ml-2">USD</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Body */}
+            <div className="space-y-4 py-5 relative z-10">
+              <div className="text-sm font-medium text-white/80 mb-3 flex items-center">
+                <span className="w-4 h-[1px] bg-white/30 mr-2"></span>
+                Select a payment method
+                <span className="w-4 h-[1px] bg-white/30 ml-2"></span>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-3">
+                <button 
+                  onClick={() => handlePaymentMethodSelect('razorpay')}
+                  className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-all duration-300 relative overflow-hidden"
+                >
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-all duration-1000"></div>
+                  
+                  <div className="h-12 w-12 flex items-center justify-center bg-[#245D66] rounded-md shadow-lg relative z-10">
+                    <img 
+                      src="https://razorpay.com/favicon.png" 
+                      alt="Razorpay" 
+                      className="h-7 w-7 object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='14' x='2' y='5' rx='2'/%3E%3Cline x1='2' x2='22' y1='10' y2='10'/%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 relative z-10">
+                    <div className="font-medium text-white group-hover:text-white transition-colors">Razorpay</div>
+                    <div className="text-xs text-white/60">Pay using UPI, cards, or net banking</div>
+                  </div>
+                  <div className="w-6 h-6 flex items-center justify-center rounded-full border border-white/20 bg-white/5 relative z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/70"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </div>
+                </button>
+                
+                <button 
+                  onClick={() => handlePaymentMethodSelect('stripe')}
+                  className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-all duration-300 relative overflow-hidden"
+                >
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-all duration-1000"></div>
+                  
+                  <div className="h-12 w-12 flex items-center justify-center bg-[#245D66] rounded-md shadow-lg relative z-10">
+                    <img 
+                      src="https://stripe.com/favicon.ico" 
+                      alt="Stripe" 
+                      className="h-7 w-7 object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='14' x='2' y='5' rx='2'/%3E%3Cline x1='2' x2='22' y1='10' y2='10'/%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 relative z-10">
+                    <div className="font-medium text-white group-hover:text-white transition-colors">Stripe</div>
+                    <div className="text-xs text-white/60">Pay using credit/debit cards</div>
+                  </div>
+                  <div className="w-6 h-6 flex items-center justify-center rounded-full border border-white/20 bg-white/5 relative z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/70"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </div>
+                </button>
+              </div>
+            </div>
+            
+            {/* Footer */}
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-between border-t border-white/10 pt-2 relative z-10">
+              <button 
+                className="mt-3 sm:mt-0 px-4 py-2 bg-transparent border border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300 rounded-md"
+                onClick={() => setShowCustomModal(false)}
+              >
+                Cancel
+              </button>
+              <div className="flex items-center text-xs text-white/50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Secure payment processing
+              </div>
+            </div>
+            
+            {/* Bottom highlight border */}
+            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/10"></div>
+          </div>
+        </div>
       )}
+      
+      {/* How to Buy Toolkit Dialog */}
+      <Dialog open={showToolkitDialog} onOpenChange={setShowToolkitDialog}>
+        <DialogContent className="bg-black/95 border border-white/10 shadow-[0_0_50px_rgba(36,93,102,0.2)] text-white max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden backdrop-blur-xl">
+          {/* Decorative elements */}
+          <div className="absolute -top-32 -right-32 w-64 h-64 bg-black/20 rounded-full blur-2xl opacity-30"></div>
+          <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-black/20 rounded-full blur-2xl opacity-30"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5"></div>
+          
+          <DialogHeader className="relative z-10">
+            <DialogTitle className="text-2xl font-bold text-center text-white pb-1">
+              How to Buy the Toolkit
+            </DialogTitle>
+            <p className="text-white/70 text-center text-sm">Your gateway to consulting excellence</p>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="group relative">
+                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-medium">1</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white text-base mb-1">Browse Resources</h3>
+                      <p className="text-white/70 text-xs">Explore our curated collection of premium consulting resources.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group relative">
+                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-medium">2</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white text-base mb-1">Select Items</h3>
+                      <p className="text-white/70 text-xs">Choose from our premium toolkit items for maximum value.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group relative">
+                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-medium">3</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white text-base mb-1">Secure Payment</h3>
+                      <p className="text-white/70 text-xs">Experience hassle-free transactions with trusted partners.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group relative">
+                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-medium">4</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white text-base mb-1">Instant Access</h3>
+                      <p className="text-white/70 text-xs">Access your resources immediately in your dashboard.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative mt-2">
+              <div className="absolute inset-0 bg-black/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="bg-black/40 border border-white/10 rounded-xl p-4 relative">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                    <Info className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white text-base mb-1.5">Premium Benefits</h3>
+                    <ul className="space-y-1">
+                      <li className="text-white/70 text-xs flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-white"></div>
+                        Lifetime access to purchased resources
+                      </li>
+                      <li className="text-white/70 text-xs flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-white"></div>
+                        Regular content updates at no extra cost
+                      </li>
+                      <li className="text-white/70 text-xs flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-white"></div>
+                        Priority support for all toolkit users
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="relative z-10 space-x-2 pt-2">
+            <Button 
+              onClick={() => setShowToolkitDialog(false)}
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/10 hover:border-white/20 transition-all duration-300"
+            >
+              Close
+            </Button>
+            <Button 
+              onClick={() => {
+                setShowToolkitDialog(false)
+                const resourcesSection = document.getElementById('resources-section')
+                if (resourcesSection) {
+                  resourcesSection.scrollIntoView({ behavior: 'smooth' })
+                }
+              }}
+              className="bg-[#245D66] hover:bg-[#245D66]/90 text-white shadow-lg transition-all duration-300 group relative overflow-hidden"
+            >
+              <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+              <span className="relative flex items-center gap-2">
+                View Toolkit Items
+                <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       {/* Keep the original Dialog component but don't use it */}
       <Dialog 

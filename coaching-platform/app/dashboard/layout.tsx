@@ -6,7 +6,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import SimpleTour, { TOUR_STATUS } from "@/app/components/SimpleTour"
 import {
   SidebarProvider,
   Sidebar,
@@ -114,7 +113,6 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
-  const [runTour, setRunTour] = useState(true)
   const { user, logout } = useAuth()
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [sidebarState, setSidebarState] = useState<"expanded" | "collapsed">("collapsed");
@@ -157,120 +155,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
   }, []);
   
-  // Define the tour steps
-  const steps = [
-    {
-      target: "body",
-      content: "Welcome to BeingConsultant Dashboard! Let's take a quick tour to help you navigate the platform.",
-      placement: "center" as const,
-      disableBeacon: true,
-    },
-    {
-      target: ".sidebar-nav",
-      content: "This is your navigation menu. Access different sections of the platform from here.",
-      placement: "right" as const,
-    },
-    {
-      target: ".coaching-section",
-      content: "Find all your coaching programs here.",
-      placement: "right" as const,
-    },
-    {
-      target: ".ai-coach-section",
-      content: "Try our AI Coach feature for instant guidance and support.",
-      placement: "right" as const,
-    },
-    {
-      target: ".resources-section",
-      content: "Access valuable resources like personality assessments, cheatsheets, meditation guides, and CV/CL templates.",
-      placement: "right" as const,
-    },
-    {
-      target: ".learning-section",
-      content: "Explore our learning materials including case interviews, frameworks, and industry insights.",
-      placement: "right" as const,
-    },
-    {
-      target: ".community-section",
-      content: "Connect with other consultants, join events, and participate in discussions.",
-      placement: "right" as const,
-    },
-    {
-      target: ".profile-dropdown",
-      content: "Access your profile settings, notifications, and account options here.",
-      placement: "bottom" as const,
-    },
-    {
-      target: ".main-content",
-      content: "This is your main dashboard area where you'll see personalized content based on the section you're viewing.",
-      placement: "left" as const,
-    },
-    {
-      target: "body",
-      content: "You're all set! Remember you can take this tour again anytime by clicking the 'Tour Guide' button at the bottom right.",
-      placement: "center" as const,
-    }
-  ];
-
-  const handleJoyrideCallback = (data: any) => {
-    const { status, step } = data;
-    
-    // Handle scrolling for specific steps
-    if (status === TOUR_STATUS.RUNNING) {
-      // Use setTimeout to ensure DOM is ready after the step change
-      setTimeout(() => {
-        // Scroll to the appropriate section based on the current step
-        switch (step) {
-          case 2: // Coaching section
-            scrollToSection('.coaching-section');
-            break;
-          case 3: // AI Coach section
-            scrollToSection('.ai-coach-section');
-            break;
-          case 4: // Resources section
-            scrollToSection('.resources-section');
-            break;
-          case 5: // Learning section
-            scrollToSection('.learning-section');
-            break;
-          case 6: // Community section
-            scrollToSection('.community-section');
-            break;
-          default:
-            break;
-        }
-      }, 100);
-    }
-    
-    if (status === TOUR_STATUS.FINISHED || status === TOUR_STATUS.SKIPPED) {
-      setRunTour(false);
-    }
-  };
-  
-  // Helper function to scroll to a section in the sidebar
-  const scrollToSection = (selector: string) => {
-    try {
-      // Find the target element
-      const targetElement = document.querySelector(selector);
-      
-      if (!targetElement) {
-        console.warn(`Target element not found: ${selector}`);
-        return;
-      }
-      
-      // Use the browser's built-in scrollIntoView method
-      // This will work regardless of which container is scrollable
-      targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-      
-      console.log(`Scrolling to ${selector} using scrollIntoView`);
-    } catch (error) {
-      console.error('Error scrolling to section:', error);
-    }
-  };
-
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -542,26 +426,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {children}
             </main>
           </div>
-          
-          {pathname === '/dashboard' && (
-            <Button 
-              className="tour-button fixed right-4 bottom-4 z-50 bg-primary hover:bg-primary/90 flex items-center gap-2 shadow-lg transition-all duration-200"
-              onClick={() => setRunTour(true)}
-            >
-              <HelpCircle size={16} />
-              <span>Tour Guide</span>
-            </Button>
-          )}
-          
-          {runTour && (
-            <SimpleTour
-              steps={steps}
-              run={runTour}
-              continuous={true}
-              showSkipButton={true}
-              callback={handleJoyrideCallback}
-            />
-          )}
         </div>
       </SidebarProvider>
     </ProtectedRoute>
@@ -617,9 +481,6 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               {/* Logo and text removed */}
             </Link>
           </div>
-          
-          {/* Welcome message */}
-          {/* Removing the welcome message as requested */}
           
           {/* Center navigation with dropdown menus - adjusted to be truly centered and responsive to sidebar state */}
           <nav className={`flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${sidebarState === "collapsed" ? "ml-[1rem]" : "ml-[3.5rem]"}`}>
