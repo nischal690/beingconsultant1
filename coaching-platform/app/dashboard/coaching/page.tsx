@@ -603,65 +603,71 @@ export default function CoachingPage() {
               animate="visible"
               className="group"
             >
-              <div className="relative h-full rounded-3xl overflow-hidden transition-all duration-300 bg-black/40 backdrop-blur-sm border border-white/10 hover:border-white/20">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 group-hover:opacity-80 transition-opacity"></div>
-                <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)]"></div>
-                
-                <div className="relative p-8">
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-                        {program.title}
-                      </h3>
-                      <p className="text-gray-400 text-sm">{program.shortDescription}</p>
-                    </div>
-                    {program.icon}
-                  </div>
-
-                  <div className="space-y-6">
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                      {program.description}
-                    </p>
-
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-2">
-                        <div className="flex gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 text-yellow-500" fill={i < Math.floor(program.rating) ? "currentColor" : "none"} />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-400">({program.reviewCount} reviews)</span>
+              <Link href={program.id === 'break-into-consulting' ? '/dashboard/coaching/land-consulting' : `/dashboard/coaching/${program.id}`} className="block h-full">
+                <div className="relative h-full rounded-3xl overflow-hidden transition-all duration-300 bg-black/40 backdrop-blur-sm border border-white/10 hover:border-white/20 cursor-pointer">
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 group-hover:opacity-80 transition-opacity"></div>
+                  <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)]"></div>
+                  
+                  <div className="relative p-8">
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
+                          {program.title}
+                        </h3>
+                        <p className="text-gray-400 text-sm">{program.shortDescription}</p>
                       </div>
+                      {program.iconName}
+                    </div>
 
-                      {program.features.map((feature, index) => (
-                        <div key={index} className="flex items-start gap-2 group/feature">
-                          <CheckCircle className="h-4 w-4 text-white/70 mt-1 flex-shrink-0 group-hover/feature:text-white transition-colors" />
-                          <span className="text-sm text-gray-300 group-hover/feature:text-white transition-colors">{feature}</span>
+                    <div className="space-y-6">
+                      <p className="text-sm text-gray-300 leading-relaxed">
+                        {program.description}
+                      </p>
+
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <div className="flex gap-0.5">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className="h-4 w-4 text-yellow-500" fill={i < Math.floor(program.rating) ? "currentColor" : "none"} />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-400">({program.reviewCount} reviews)</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  <div className="mt-8 flex justify-between items-end">
-                    <div>
-                      <p className="text-3xl font-bold text-white">${program.price}</p>
-                      {program.originalPrice && (
-                        <p className="text-sm text-gray-400 line-through">${program.originalPrice}</p>
-                      )}
+                        {program.features.map((feature, index) => (
+                          <div key={index} className="flex items-start gap-2 group/feature">
+                            <CheckCircle className="h-4 w-4 text-white/70 mt-1 flex-shrink-0 group-hover/feature:text-white transition-colors" />
+                            <span className="text-sm text-gray-300 group-hover/feature:text-white transition-colors">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <Button 
-                      onClick={() => handleBuyNow(program)} 
-                      className="relative overflow-hidden bg-white text-black hover:bg-white/90 transition-all duration-300 group/btn hover:-translate-y-1"
-                    >
-                      <span className="relative z-10 flex items-center gap-2">
-                        Enroll Now
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/50 to-white/0 opacity-0 group-hover/btn:opacity-100 transform translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000"></div>
-                    </Button>
+
+                    <div className="mt-8 flex justify-between items-end">
+                      <div>
+                        <p className="text-3xl font-bold text-white">${program.price}</p>
+                        {program.originalPrice && (
+                          <p className="text-sm text-gray-400 line-through">${program.originalPrice}</p>
+                        )}
+                      </div>
+                      <div 
+                        className="relative overflow-hidden bg-white text-black hover:bg-white/90 transition-all duration-300 group/btn hover:-translate-y-1 px-4 py-2 rounded-md font-medium"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleBuyNow(program);
+                        }}
+                      >
+                        <span className="relative z-10 flex items-center gap-2">
+                          Enroll Now
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover/btn:opacity-100 transform translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           ))}
         </div>

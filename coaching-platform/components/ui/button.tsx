@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100",
+        default: "bg-[#245D66] text-white hover:bg-white hover:text-[#245D66] dark:bg-[#245D66] dark:text-white dark:hover:bg-white dark:hover:text-[#245D66]",
         destructive:
-          "bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100",
+          "bg-[#245D66] text-white hover:bg-white hover:text-[#245D66] dark:bg-[#245D66] dark:text-white dark:hover:bg-white dark:hover:text-[#245D66]",
         outline:
-          "border border-gray-300 bg-white text-black hover:bg-gray-100 dark:border-gray-700 dark:bg-black dark:text-white dark:hover:bg-gray-900",
+          "border border-[#245D66] bg-transparent text-[#245D66] hover:bg-white hover:text-[#245D66] dark:border-[#245D66] dark:bg-transparent dark:text-[#245D66] dark:hover:bg-white dark:hover:text-[#245D66]",
         secondary:
-          "bg-gray-200 text-black hover:bg-gray-300 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700",
-        ghost: "text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-900",
-        link: "text-black underline-offset-4 hover:underline dark:text-white",
+          "bg-[#245D66] text-white hover:bg-white hover:text-[#245D66] dark:bg-[#245D66] dark:text-white dark:hover:bg-white dark:hover:text-[#245D66]",
+        ghost: "text-[#245D66] hover:bg-white hover:text-[#245D66] dark:text-[#245D66] dark:hover:bg-white dark:hover:text-[#245D66]",
+        link: "text-[#245D66] underline-offset-4 hover:underline dark:text-[#245D66]",
       },
       size: {
         default: "h-10 px-4 py-2",

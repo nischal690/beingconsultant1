@@ -85,7 +85,22 @@ export class MailchimpClient {
       });
 
       if (!response.ok) {
-        throw new Error(`Mailchimp API error: ${response.status} ${response.statusText}`);
+        // Try to get detailed error information from the response
+        const errorText = await response.text();
+        let errorInfo = `Status: ${response.status} ${response.statusText}`;
+        
+        try {
+          // Try to parse the error as JSON
+          const errorJson = JSON.parse(errorText);
+          errorInfo = `${errorInfo}, Details: ${JSON.stringify(errorJson)}`;
+        } catch (parseError) {
+          // If parsing fails, use the raw text
+          if (errorText) {
+            errorInfo = `${errorInfo}, Response: ${errorText}`;
+          }
+        }
+        
+        throw new Error(`Mailchimp API error: ${errorInfo}`);
       }
 
       return await response.json();
@@ -148,7 +163,22 @@ export class MailchimpClient {
       });
 
       if (!response.ok) {
-        throw new Error(`Mailchimp API error: ${response.status} ${response.statusText}`);
+        // Try to get detailed error information from the response
+        const errorText = await response.text();
+        let errorInfo = `Status: ${response.status} ${response.statusText}`;
+        
+        try {
+          // Try to parse the error as JSON
+          const errorJson = JSON.parse(errorText);
+          errorInfo = `${errorInfo}, Details: ${JSON.stringify(errorJson)}`;
+        } catch (parseError) {
+          // If parsing fails, use the raw text
+          if (errorText) {
+            errorInfo = `${errorInfo}, Response: ${errorText}`;
+          }
+        }
+        
+        throw new Error(`Mailchimp API error: ${errorInfo}`);
       }
 
       return await response.json();
@@ -172,7 +202,22 @@ export class MailchimpClient {
       });
 
       if (!response.ok) {
-        throw new Error(`Mailchimp API error: ${response.status} ${response.statusText}`);
+        // Try to get detailed error information from the response
+        const errorText = await response.text();
+        let errorInfo = `Status: ${response.status} ${response.statusText}`;
+        
+        try {
+          // Try to parse the error as JSON
+          const errorJson = JSON.parse(errorText);
+          errorInfo = `${errorInfo}, Details: ${JSON.stringify(errorJson)}`;
+        } catch (parseError) {
+          // If parsing fails, use the raw text
+          if (errorText) {
+            errorInfo = `${errorInfo}, Response: ${errorText}`;
+          }
+        }
+        
+        throw new Error(`Mailchimp API error: ${errorInfo}`);
       }
 
       return await response.json();

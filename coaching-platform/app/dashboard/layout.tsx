@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   SidebarProvider,
@@ -72,6 +72,15 @@ import {
   Heart,
   LineChart,
   CircleUser,
+  Smile,
+  Headphones,
+  Unlock,
+  Lock,
+  ArrowUpRight,
+  Infinity,
+  ArrowRightLeft,
+  MoveRight,
+  ArrowRight,
 } from "lucide-react"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/lib/firebase/auth-context"
@@ -91,19 +100,20 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
           <path fillRule="evenodd" clipRule="evenodd" d="M70.4129 123.487V12.5233L0.0859375 0.317322V135.693L70.4129 123.487ZM59.5171 20.2907L9.99114 12.5233V121.267L59.5171 113.5V73.5531H24.8489V62.4568H59.5171V20.2907Z" fill="url(#paint1_linear_12_122)"/>
           <defs>
             <linearGradient id="paint0_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
-              <stop stopColor="white"/>
-              <stop offset="1" stopColor="#040404"/>
+              <stop stopColor="#245D66"/>
+              <stop offset="1" stopColor="#245D66"/>
             </linearGradient>
             <linearGradient id="paint1_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
-              <stop stopColor="white"/>
-              <stop offset="1" stopColor="#040404"/>
+              <stop stopColor="#245D66"/>
+              <stop offset="1" stopColor="#245D66"/>
             </linearGradient>
           </defs>
         </svg>
         {!isCollapsed && (
-          <span className="font-semibold text-white uppercase tracking-wide text-sm leading-tight ml-2">
-            BEING CONSULTANT
-          </span>
+          <div className="flex flex-col font-medium text-white uppercase tracking-wide text-sm leading-tight ml-2">
+            <span>BEING</span>
+            <span>CONSULTANT</span>
+          </div>
         )}
       </div>
     </Link>
@@ -405,7 +415,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
                         title="Settings"
                       >
-                        <Settings className="h-4 w-4" />
+                        <Settings className="h-4 w-4 text-white" />
                         <span className="group-data-[collapsible=icon]:hidden">Settings</span>
                       </Button>
                     } 
@@ -435,7 +445,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { activeDropdown: string | null, setActiveDropdown: (dropdown: string | null) => void, sidebarState: "expanded" | "collapsed" }) {
   const { user, logout } = useAuth()
   const router = useRouter()
-  const [activeDropdownLocal, setActiveDropdownLocal] = useState<string | null>(null);
   const [firstName, setFirstName] = useState<string>("");
   
   useEffect(() => {
@@ -495,91 +504,105 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                 </div>
               </Link>
               {activeDropdown === 'coaching' && (
-                <div className="absolute top-full left-0 mt-1 w-[800px] rounded-md bg-black/90 backdrop-blur-lg border border-white/10 shadow-lg shadow-black/40 overflow-hidden z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[800px] rounded-md bg-white/95 backdrop-blur-lg border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-50">
                   <div className="p-5 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
-                    <div className="grid grid-cols-4 gap-4">
-                      {/* First column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
-                          <Users className="h-4 w-4 mr-2 text-primary" />
-                          One-on-One Coaching
-                        </h3>
-                        <p className="text-xs text-white/60 mb-3">All you need to stand out in every dimension of the case interview.</p>
-                        <div className="space-y-2">
-                          <Link href="/dashboard/coaching/one-on-one/case-interview" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <CircleUser className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Case Interview
-                          </Link>
-                          <Link href="/dashboard/coaching/one-on-one/fit-interview" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <CircleUser className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Fit Interview
-                          </Link>
-                          <Link href="/dashboard/coaching/one-on-one/personal-experience" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <CircleUser className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Personal Experience Interview
-                          </Link>
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <div className="grid grid-cols-3 gap-4">
+                          {/* First column */}
+                          <div>
+                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                              <Briefcase className="h-4 w-4 mr-2 text-primary" />
+                              Crack Consulting Interview
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-3">Everything you need to break into top consulting firms.</p>
+                            <div className="space-y-2">
+                              <Link href="/dashboard/coaching/break-into-consulting" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <ArrowUpRight className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Break into Consulting
+                              </Link>
+                              <Link href="/dashboard/coaching/unlimited-program" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Infinity className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Unlimited Coaching Program
+                              </Link>
+                              <Link href="/dashboard/coaching/one-on-one-programs" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <CircleUser className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                1:1 Specific Programs
+                              </Link>
+                              <Link href="/dashboard/coaching/group-programs" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Users className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Group Coaching Program
+                              </Link>
+                            </div>
+                          </div>
+                          
+                          {/* Second column */}
+                          <div>
+                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                              <Award className="h-4 w-4 mr-2 text-primary" />
+                              Excel Consulting Career
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-3">Take your consulting career to the next level.</p>
+                            <div className="space-y-2">
+                              <Link href="/dashboard/coaching/star-consultant-mastery" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Star className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                STAR Consultant Mastery
+                              </Link>
+                              <Link href="/dashboard/coaching/one-on-one-career" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <CircleUser className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                1:1 Specific Programs
+                              </Link>
+                              <Link href="/dashboard/coaching/consulting-toolkit" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Briefcase className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Consulting Toolkit
+                              </Link>
+                            </div>
+                          </div>
+                          
+                          {/* Third column */}
+                          <div>
+                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                              <ArrowRightLeft className="h-4 w-4 mr-2 text-primary" />
+                              Consulting Migration
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-3">Plan your next career move after consulting.</p>
+                            <div className="space-y-2">
+                              <Link href="/dashboard/coaching/exit-planning" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <LogOut className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Exit Planning & Readiness
+                              </Link>
+                              <Link href="/dashboard/coaching/career-transition" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <MoveRight className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Career Transition
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Second column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
-                          <UsersRound className="h-4 w-4 mr-2 text-primary" />
-                          Group Coaching
-                        </h3>
-                        <p className="text-xs text-white/60 mb-3">Preparation for the kind of math problems you'll face in a case.</p>
-                        <div className="space-y-2">
-                          <Link href="/dashboard/coaching/group/case-workshops" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <Users className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Case Workshops
-                          </Link>
-                          <Link href="/dashboard/coaching/group/industry-sessions" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <Briefcase className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Industry Sessions
-                          </Link>
-                        </div>
-                      </div>
-                      
-                      {/* Third column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
-                          <Bot className="h-4 w-4 mr-2 text-primary" />
-                          AI Coaching
-                        </h3>
-                        <p className="text-xs text-white/60 mb-3">All you need to excel in consulting fit interviews.</p>
-                        <div className="space-y-2">
-                          <Link href="/dashboard/coaching/ai-coach/case-practice" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <BarChart className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Case Practice
-                          </Link>
-                          <Link href="/dashboard/coaching/ai-coach/fit-practice" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <MessageSquare className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Fit Practice
-                          </Link>
-                          <Link href="/dashboard/coaching/ai-coach/resume-review" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <FileText className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Resume Review
-                          </Link>
-                        </div>
-                      </div>
-                      
-                      {/* Fourth column */}
-                      <div>
-                        <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
-                          <CalendarDays className="h-4 w-4 mr-2 text-primary" />
-                          Schedule
-                        </h3>
-                        <p className="text-xs text-white/60 mb-3">Preparation for McKinsey's Personal Experience Interview (PEI).</p>
-                        <div className="space-y-2">
-                          <Link href="/dashboard/coaching/schedule/book-session" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <CalendarPlus className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Book a Session
-                          </Link>
-                          <Link href="/dashboard/coaching/schedule/upcoming" className="block px-3 py-2 text-xs text-white/80 hover:text-white hover:bg-white/10 rounded-sm transition-colors duration-200 flex items-center">
-                            <CalendarClock className="h-3.5 w-3.5 mr-2 text-white/60" />
-                            Upcoming Sessions
-                          </Link>
-                        </div>
+                      {/* Promotional Banner - Now Vertical */}
+                      <div className="w-[200px] border-l border-gray-200 pl-4">
+                        <Link href="/dashboard/coaching" className="block group h-full">
+                          <div className="relative overflow-hidden rounded-md h-full">
+                            <div className="aspect-[2/3] relative h-full">
+                              <Image 
+                                src="https://framerusercontent.com/images/AjRKyR2dPa4q3GuHOle8Vz37jl0.png" 
+                                alt="Premium Coaching" 
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4">
+                                <div>
+                                  <h3 className="text-base font-semibold text-white mb-1">Get premium 1-1 Coaching</h3>
+                                  <div className="flex items-center">
+                                    <span className="text-sm text-white/90 font-medium">Buy</span>
+                                    <ArrowRight className="h-4 w-4 ml-2 text-primary transition-transform duration-300 group-hover:translate-x-1" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -594,12 +617,8 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                   <Bot className="h-4 w-4 text-[#7BA7AE]" />
                   <span>Practice with AI Coach</span>
                   <div className="relative">
-                    {/* Animated bubble background effect */}
-                    <div className="absolute -top-1 -right-1 w-20 h-20">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-emerald-400/30 animate-ping"></div>
-                      <div className="absolute top-[40%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-teal-300/40 animate-ping animation-delay-300"></div>
-                      <div className="absolute top-[60%] left-[40%] -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-300/50 animate-ping animation-delay-700"></div>
-                    </div>
+                    {/* Static badge background - animation removed */}
+                    <div className="absolute -top-1 -right-1 w-20 h-20"></div>
                     
                     {/* Badge with glass effect */}
                     <span className="relative inline-flex items-center justify-center px-3 py-1 text-[10px] font-bold text-black rounded-full 
@@ -609,7 +628,6 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                       backdrop-blur-sm
                       group-hover:shadow-[0_0_20px_rgba(45,212,191,0.9)]
                       transition-all duration-300
-                      animate-subtle-float
                       scale-110">
                       FREE TRIAL
                     </span>
@@ -629,48 +647,114 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                 </div>
               </Link>
               {activeDropdown === 'resources' && (
-                <div className="absolute top-full left-0 mt-1 w-[300px] rounded-md bg-white shadow-lg overflow-hidden z-50">
-                  <div className="max-h-[calc(100vh-120px)] overflow-y-auto">
-                    <div className="space-y-2 p-4">
-                      <Link href="/dashboard/resources/personality" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Personality Assessment
-                      </Link>
-                      <Link href="/dashboard/resources/cheatsheet" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Cheatsheet
-                      </Link>
-                      <Link href="/dashboard/resources/meditation" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Meditation
-                      </Link>
-                      <Link href="/dashboard/resources/ebooks" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        E-books
-                      </Link>
-                      <Link href="/dashboard/resources/podcast" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Podcast
-                      </Link>
-                      <Link href="/dashboard/resources/workshop" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Workshop
-                      </Link>
-
-                      <div className="border-t border-gray-100 my-2"></div>
-
-                      <Link href="/dashboard/resources/case-cracking" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Case Cracking Bundle
-                      </Link>
-                      <Link href="/dashboard/resources/consulting-cv" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Consulting CV Masterclass
-                      </Link>
-                      <Link href="/dashboard/resources/fit-interview" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        FIT Interview Masterclass
-                      </Link>
-
-                      <div className="border-t border-gray-100 my-2"></div>
-
-                      <Link href="/dashboard/resources/free" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Free resources
-                      </Link>
-                      <Link href="/dashboard/resources/premium" className="block text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-2 py-1 rounded-sm">
-                        Premium resources
-                      </Link>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[800px] rounded-md bg-white/95 backdrop-blur-lg border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-50">
+                  <div className="p-5 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <div className="grid grid-cols-3 gap-4">
+                          {/* First column */}
+                          <div>
+                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                              <FileText className="h-4 w-4 mr-2 text-primary" />
+                              Toolkits & Products
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-3">Essential tools to help you prepare for consulting interviews.</p>
+                            <div className="space-y-2">
+                              <Link href="/dashboard/resources/personality" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <User className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Personality Assessment
+                              </Link>
+                              <Link href="/dashboard/resources/cheatsheet" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <FileCheck className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Cheatsheet
+                              </Link>
+                              <Link href="/dashboard/resources/meditation" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Smile className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Meditation
+                              </Link>
+                              <Link href="/dashboard/resources/workshop" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Users className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Workshop
+                              </Link>
+                              <Link href="/dashboard/resources/ebooks" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <BookOpen className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                E-books
+                              </Link>
+                              <Link href="/dashboard/resources/podcast" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Headphones className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Podcast
+                              </Link>
+                            </div>
+                          </div>
+                          
+                          {/* Second column */}
+                          <div>
+                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                              <GraduationCap className="h-4 w-4 mr-2 text-primary" />
+                              Masterclasses
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-3">Comprehensive courses to master consulting interviews.</p>
+                            <div className="space-y-2">
+                              <Link href="/dashboard/resources/case-cracking" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Briefcase className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Case Cracking Bundle
+                              </Link>
+                              <Link href="/dashboard/resources/consulting-cv" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <FileText className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Consulting CV Masterclass
+                              </Link>
+                              <Link href="/dashboard/resources/fit-interview" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <MessageSquare className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                FIT Interview Masterclass
+                              </Link>
+                            </div>
+                          </div>
+                          
+                          {/* Third column */}
+                          <div>
+                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                              <BookOpen className="h-4 w-4 mr-2 text-primary" />
+                              Articles & Blogs
+                            </h3>
+                            <p className="text-xs text-gray-500 mb-3">Insights and knowledge to boost your consulting career.</p>
+                            <div className="space-y-2">
+                              <Link href="/dashboard/resources/free" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Unlock className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Free resources
+                              </Link>
+                              <Link href="/dashboard/resources/premium" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Lock className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Premium resources
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Promotional Banner - Now Vertical */}
+                      <div className="w-[200px] border-l border-gray-200 pl-4">
+                        <Link href="/dashboard/resources" className="block group h-full">
+                          <div className="relative overflow-hidden rounded-md h-full">
+                            <div className="aspect-[2/3] relative h-full">
+                              <Image 
+                                src="https://framerusercontent.com/images/UDGnefgJnsYAmnMMkYUWp0rFFm4.png?scale-down-to=512" 
+                                alt="Premium Resources" 
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4">
+                                <div>
+                                  <h3 className="text-base font-semibold text-white mb-1">Get premium resources</h3>
+                                  <div className="flex items-center">
+                                    <span className="text-sm text-white/90 font-medium">Buy</span>
+                                    <ArrowRight className="h-4 w-4 ml-2 text-primary transition-transform duration-300 group-hover:translate-x-1" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -680,15 +764,15 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           
           {/* Right section with profile dropdown */}
           <div className="flex items-center gap-4 ml-auto">
-            <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white/20 hover:bg-white/10 hover:border-white/30 transition-colors duration-200">
-              <Bell className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white hover:bg-white/10 hover:border-white transition-colors duration-200">
+              <Bell className="h-4 w-4 text-white" />
               <span className="sr-only">Notifications</span>
             </Button>
             
             <SettingsDialog 
               trigger={
-                <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white/20 hover:bg-white/10 hover:border-white/30 transition-colors duration-200">
-                  <Settings className="h-4 w-4" />
+                <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white hover:bg-white/10 hover:border-white transition-colors duration-200">
+                  <Settings className="h-4 w-4 text-white" />
                   <span className="sr-only">Settings</span>
                 </Button>
               } 
@@ -698,7 +782,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full bg-transparent hover:bg-white/10 transition-colors duration-200">
-                    <Avatar className="h-9 w-9 border border-white/20">
+                    <Avatar className="h-9 w-9 border border-white">
                       <AvatarImage src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/AjRKyR2dPa4q3GuHOle8Vz37jl0.jpg?alt=media&token=73072a47-91b6-47ab-bb50-948f02186228" alt={user?.displayName || "User"} />
                       <AvatarFallback className="bg-primary/10 text-primary">
                         {user?.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}

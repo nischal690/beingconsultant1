@@ -144,20 +144,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+    <div className="flex min-h-screen flex-col bg-cover bg-center" style={{ backgroundImage: "url('https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/signin_bg.webp?alt=media&token=5233b35e-bea5-4b8b-98f6-abccf45a7125')" }}>
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 bg-black/30 backdrop-blur-sm">
         <Link href="/" className="absolute left-4 top-4 md:left-8 md:top-8">
-          <Button variant="ghost" className="gap-1">
+          <Button variant="ghost" className="gap-1 text-white hover:bg-black/40">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
         </Link>
-        <div className="mx-auto w-full max-w-md space-y-6">
-          <div className="space-y-2 text-center">
+        <div className="mx-auto w-full max-w-md space-y-6 bg-black bg-opacity-80 p-8 rounded-2xl shadow-2xl border border-gray-800 backdrop-filter backdrop-blur-lg">
+          <div className="space-y-2 text-center text-white">
             <h1 className="text-3xl font-bold">Welcome back</h1>
-            <p className="text-gray-500 dark:text-gray-400">Enter your credentials to access your account</p>
+            <p className="text-gray-300">Enter your credentials to access your account</p>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 text-white">
             {error && (
               <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                 {error}
@@ -216,13 +216,13 @@ export default function LoginPage() {
                 <Separator className="w-full" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-black px-2 text-gray-300">Or continue with</span>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Button 
                 variant="outline" 
-                className="w-full"
+                className="border-gray-700 text-white hover:bg-gray-800 w-full"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
               >
@@ -231,7 +231,7 @@ export default function LoginPage() {
               </Button>
               <Button 
                 variant="outline" 
-                className="w-full"
+                className="border-gray-700 text-white hover:bg-gray-800 w-full"
                 onClick={handleAppleSignIn}
                 disabled={isLoading}
               >

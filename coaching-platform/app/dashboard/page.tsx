@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Calendar, Clock, FileText, MessageSquare, Star, TrendingUp, Users, X, Download, BookOpen, Play } from "lucide-react"
+import { BarChart, Calendar, Clock, FileText, MessageSquare, Star, TrendingUp, Users, X, Download, BookOpen, Play, Brain, CheckCircle, Sparkles } from "lucide-react"
 import Image from "next/image"
 import {
   Dialog,
@@ -39,7 +39,7 @@ interface CoachingProgram {
 }
 
 const DashboardPage = () => {
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false) // Permanently disabled
   const [isLoaded, setIsLoaded] = useState(false)
   const [animationStage, setAnimationStage] = useState(0)
   const [userName, setUserName] = useState("User")
@@ -52,10 +52,8 @@ const DashboardPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    // Show welcome modal after a delay
-    const timer = setTimeout(() => {
-      setShowWelcomeModal(true)
-    }, 500)
+    // Welcome modal is now disabled
+    // No longer showing the welcome modal on load
 
     // Set loading state for animations
     setTimeout(() => {
@@ -109,12 +107,12 @@ const DashboardPage = () => {
           const coachingResult = await getUserCoachingPrograms(user.uid)
           if (coachingResult.success) {
             const coachingData = coachingResult.data || [];
-            setCoachingPrograms(coachingData);
+            setCoachingPrograms(coachingData as CoachingProgram[]);
             setHasCoaching(coachingData.length > 0);
             
             // If user has coaching programs, check for scheduled dates
             if (coachingData.length > 0) {
-              updateSessionMessage(coachingData);
+              updateSessionMessage(coachingData as CoachingProgram[]);
             } else {
               setSessionMessage("Book your first coaching session to start your journey.");
             }
@@ -245,7 +243,7 @@ const DashboardPage = () => {
     fetchCoachingPrograms()
 
     return () => {
-      clearTimeout(timer)
+      // timer for welcome modal has been removed
       clearInterval(staggerInterval)
     }
   }, [user])
@@ -291,10 +289,13 @@ const DashboardPage = () => {
     if (amount === undefined || amount === null) return 'N/A'
     
     try {
+      // Convert string to number if needed
+      const numericAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+      
       return new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: currency,
-      }).format(amount)
+      }).format(Number(numericAmount))
     } catch (error) {
       console.error("Error formatting currency:", error)
       return `${amount} ${currency}`
@@ -303,7 +304,7 @@ const DashboardPage = () => {
 
   return (
     <>
-      <div className={`space-y-6 opacity-0 transition-opacity duration-500 ${isLoaded ? 'opacity-100' : ''}`}>
+      <div className={`space-y-6 opacity-0 transition-opacity duration-500 ${isLoaded ? 'opacity-100' : ''} px-6 sm:px-8 md:px-12 lg:px-16 py-8`}>
         <div className={`relative transform transition-all duration-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
           {/* Decorative background elements with enhanced animations */}
           <div className="absolute -top-4 -left-6 w-72 h-72 bg-gradient-to-br from-black/10 to-black/5 rounded-full blur-3xl -z-10 dark:from-white/10 dark:to-white/5 animate-pulse-glow"></div>
@@ -312,8 +313,7 @@ const DashboardPage = () => {
           
           {/* Modern welcome header with enhanced styling */}
           <div className="relative z-10 p-6 rounded-2xl welcome-gradient welcome-shadow welcome-border-gradient overflow-hidden animate-gradient-flow transition-all duration-500">
-            {/* Decorative accent line with animation */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black/50 to-transparent dark:via-white/50 animate-border-shine"></div>
+            {/* Decorative accent line with animation - Removed white line at top */}
             <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-black/30 to-transparent dark:via-white/30 animate-border-shine" style={{ animationDelay: '1.5s' }}></div>
             
             {/* Subtle light effects */}
@@ -385,37 +385,39 @@ const DashboardPage = () => {
         </div>
 
         <Tabs defaultValue="overview" className="w-full space-y-4">
-          <div className="flex justify-between items-center pb-3 border-b border-black/40 dark:border-white/40">
-            <TabsList className="border-none bg-transparent h-10 p-0 relative w-full">
-              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-black/40 dark:bg-white/40"></div>
+          <div className="flex justify-between items-center pb-3 relative overflow-hidden">
+            {/* Subtle gradient background for tabs */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/5 via-black/0 to-[#245D66]/5 opacity-50 dark:from-[#245D66]/10 dark:via-white/0 dark:to-[#245D66]/10"></div>
+            
+            <TabsList className="border-none bg-transparent h-12 p-0 relative w-full z-10 gap-2">
               <TabsTrigger 
                 value="overview" 
-                className="relative h-10 px-4 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-black dark:data-[state=active]:text-white group transition-all duration-300"
+                className="relative h-10 px-6 py-2 rounded-full bg-transparent data-[state=active]:bg-[#245D66]/10 data-[state=active]:backdrop-blur-sm data-[state=active]:shadow-[0_0_15px_rgba(36,93,102,0.2)] data-[state=active]:text-[#245D66] dark:data-[state=active]:text-white group transition-all duration-300 overflow-hidden"
               >
-                <span>Overview</span>
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-data-[state=active]:scale-x-100 transition-transform duration-300"></span>
+                <span className="relative z-10 font-medium">Overview</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/5 to-[#245D66]/0 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-100 transition-opacity duration-300"></span>
               </TabsTrigger>
               <TabsTrigger 
                 value="upcoming" 
-                className="relative h-10 px-4 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-black dark:data-[state=active]:text-white group transition-all duration-300"
+                className="relative h-10 px-6 py-2 rounded-full bg-transparent data-[state=active]:bg-[#245D66]/10 data-[state=active]:backdrop-blur-sm data-[state=active]:shadow-[0_0_15px_rgba(36,93,102,0.2)] data-[state=active]:text-[#245D66] dark:data-[state=active]:text-white group transition-all duration-300 overflow-hidden"
               >
-                <span>Upcoming Sessions</span>
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-data-[state=active]:scale-x-100 transition-transform duration-300"></span>
+                <span className="relative z-10 font-medium">Upcoming Sessions</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/5 to-[#245D66]/0 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-100 transition-opacity duration-300"></span>
               </TabsTrigger>
               <TabsTrigger 
                 value="resources" 
-                className="relative h-10 px-4 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-black dark:data-[state=active]:text-white group transition-all duration-300"
+                className="relative h-10 px-6 py-2 rounded-full bg-transparent data-[state=active]:bg-[#245D66]/10 data-[state=active]:backdrop-blur-sm data-[state=active]:shadow-[0_0_15px_rgba(36,93,102,0.2)] data-[state=active]:text-[#245D66] dark:data-[state=active]:text-white group transition-all duration-300 overflow-hidden"
               >
-                <span>Resources</span>
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-black dark:bg-white scale-x-0 group-data-[state=active]:scale-x-100 transition-transform duration-300"></span>
+                <span className="relative z-10 font-medium">Resources</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/5 to-[#245D66]/0 opacity-0 group-hover:opacity-100 group-data-[state=active]:opacity-100 transition-opacity duration-300"></span>
               </TabsTrigger>
             </TabsList>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" className="h-8 gap-1 group border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
-                <Download className="h-3.5 w-3.5 text-black dark:text-white transition-transform duration-300 group-hover:translate-x-0.5" />
-                <span>Export</span>
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
+            <div className="flex space-x-2 relative z-10">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-9 w-9 rounded-full bg-[#245D66]/5 text-[#245D66] hover:bg-[#245D66]/10 hover:text-[#245D66] transition-all duration-300 shadow-sm"
+              >
                 <BarChart className="h-4 w-4" />
                 <span className="sr-only">Show chart view</span>
               </Button>
@@ -427,16 +429,78 @@ const DashboardPage = () => {
             className="w-full space-y-4 pt-1 data-[state=active]:animate-fadeIn"
           >
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="bg-[#245D66] text-white p-6 rounded-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#245D66]/10 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
-                <div className="flex items-center justify-between mb-4">
+              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 dark:bg-gray-100 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
+                {/* Coaching Sessions Image with hover effect to show Gaurav's details */}
+                <div className="absolute -bottom-20 right-0 w-80 h-80 overflow-visible z-0 group">
+                  <img 
+                    src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Container1_Coaching.png?alt=media&token=4f0e224d-983d-4df0-83fe-bd7c3bee56ce" 
+                    alt="Coaching Sessions" 
+                    className="w-full h-full object-contain transform translate-x-8 translate-y-0 opacity-80"
+                  />
+                  {/* Modern aesthetic coach details tooltip that appears in the middle of the screen on hover */}
+                  <div className="fixed inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out pointer-events-none scale-95 group-hover:scale-100 z-[99999]" style={{zIndex: 99999}}>
+                    <div className="bg-gradient-to-br from-white/95 to-white/90 dark:from-gray-900/95 dark:to-gray-800/90 p-5 rounded-2xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.3)] border border-white/30 dark:border-gray-700/40 overflow-hidden relative w-80 backdrop-blur-xl">
+                      {/* Semi-transparent overlay behind the tooltip */}
+                      <div className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm -z-10"></div>
+                      {/* Background decorative elements */}
+                      <div className="absolute -top-24 -right-24 w-40 h-40 bg-[#245D66]/10 rounded-full blur-2xl"></div>
+                      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-xl"></div>
+                      
+                      {/* Content with modern layout */}
+                      <div className="relative flex items-start gap-4">
+                        {/* Avatar with gradient border */}
+                        <div className="relative flex-shrink-0">
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#245D66] to-[#3A8D9B] rounded-full blur-[1px] scale-[1.03] opacity-70"></div>
+                          <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-[#E5F4F7] to-[#FFFFFF] flex items-center justify-center border-2 border-white/80 shadow-inner">
+                            <span className="text-[#245D66] text-xl font-bold">GB</span>
+                          </div>
+                          <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-[#245D66] to-[#3A8D9B] text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-md">
+                            <span className="flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-0.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+                              Ex-McKinsey
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Text content with modern typography */}
+                        <div className="flex-1">
+                          <h4 className="text-xl font-bold text-gray-800 dark:text-white mb-0.5 leading-tight">Gaurav Bhosle</h4>
+                          <p className="text-[#245D66] text-sm font-medium mb-2">CEO • Coach • Consultant</p>
+                          
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            <span className="inline-flex items-center bg-[#245D66]/10 text-[#245D66] text-xs font-medium px-2 py-0.5 rounded-full">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                              360° Coach
+                            </span>
+                            <span className="inline-flex items-center bg-[#245D66]/10 text-[#245D66] text-xs font-medium px-2 py-0.5 rounded-full">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                              1,250+ Placements
+                            </span>
+                          </div>
+                          
+                          <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
+                            Former McKinsey consultant with a unique triple perspective as consultant, coach, and recruitment insider.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Decorative line */}
+                      <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700/30 flex justify-between items-center">
+                        <span className="text-[#245D66] text-xs font-medium">Your personal coach</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#245D66]"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mb-4 relative z-10">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-[#245D66]/10 rounded-lg">
+                    <div className="p-2 bg-[#245D66]/20 dark:bg-[#245D66]/20 rounded-lg">
                       <FileText className="h-6 w-6 text-[#245D66]" />
                     </div>
-                    <h3 className="text-lg font-semibold">Coaching Sessions</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-800">Coaching Sessions</h3>
                   </div>
-                  <button className="text-white/60 hover:text-white">
+                  <button className="text-gray-500 hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-800">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                       <path d="M5 10C6.10457 10 7 10.8954 7 12C7 13.1046 6.10457 14 5 14C3.89543 14 3 13.1046 3 12C3 10.8954 3.89543 10 5 10Z" fill="currentColor"/>
                       <path d="M12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="currentColor"/>
@@ -444,39 +508,42 @@ const DashboardPage = () => {
                     </svg>
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <p className="text-sm text-white/60">Available</p>
-                    <p className="text-2xl font-bold">4</p>
+                {/* Added a max-width container to ensure content doesn't overlap with image */}
+                <div className="max-w-[65%] relative z-10">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-500">Available</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-gray-800">4</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-500">Used</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-gray-800">1</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-white/60">Used</p>
-                    <p className="text-2xl font-bold">1</p>
-                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-600 mb-6">Be prepared to answer any question that can come your way, with clarity.</p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push('/dashboard/coaching')} 
+                    className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-[#245D66] dark:text-[#245D66] relative"
+                  >
+                    Book a Session
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
+                      <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Button>
                 </div>
-                <p className="text-sm text-white/80 mb-6">Be prepared to answer any question that can come your way, with clarity.</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => router.push('/dashboard/coaching')} 
-                  className="w-full bg-transparent border-white/20 hover:bg-white/10 text-white"
-                >
-                  Book a Session
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
-                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </Button>
               </Card>
 
-              <Card className="bg-[#245D66] text-white p-6 rounded-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#245D66]/10 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
+              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 dark:bg-gray-100 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-[#245D66]/10 rounded-lg">
+                    <div className="p-2 bg-[#245D66]/20 dark:bg-[#245D66]/20 rounded-lg">
                       <TrendingUp className="h-6 w-6 text-[#245D66]" />
                     </div>
-                    <h3 className="text-lg font-semibold">AI Mock Practice</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-800">AI Mock Practice</h3>
                   </div>
-                  <button className="text-white/60 hover:text-white">
+                  <button className="text-gray-500 hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-800">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                       <path d="M5 10C6.10457 10 7 10.8954 7 12C7 13.1046 6.10457 14 5 14C3.89543 14 3 13.1046 3 12C3 10.8954 3.89543 10 5 10Z" fill="currentColor"/>
                       <path d="M12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="currentColor"/>
@@ -486,16 +553,16 @@ const DashboardPage = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div>
-                    <p className="text-sm text-white/60">Available</p>
-                    <p className="text-2xl font-bold">4</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500">Available</p>
+                    <p className="text-2xl font-bold text-gray-800 dark:text-gray-800">4</p>
                   </div>
                   <div>
-                    <p className="text-sm text-white/60">Used</p>
-                    <p className="text-2xl font-bold">1</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500">Used</p>
+                    <p className="text-2xl font-bold text-gray-800 dark:text-gray-800">1</p>
                   </div>
                 </div>
-                <p className="text-sm text-white/80 mb-6">Practice with our AI to improve your consulting skills and confidence.</p>
-                <Button variant="outline" className="w-full bg-transparent border-white/20 hover:bg-white/10 text-white">
+                <p className="text-sm text-gray-600 dark:text-gray-600 mb-6">Practice with our AI to improve your consulting skills and confidence.</p>
+                <Button variant="outline" className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-[#245D66] dark:text-[#245D66]">
                   Start Practice
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -503,16 +570,24 @@ const DashboardPage = () => {
                 </Button>
               </Card>
 
-              <Card className="bg-[#245D66] text-white p-6 rounded-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#245D66]/10 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
-                <div className="flex items-center justify-between mb-4">
+              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 dark:bg-gray-100 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
+                {/* Toolkit Image */}
+                <div className="absolute bottom-2 right-0 w-40 h-40 overflow-visible z-0">
+                  <img 
+                    src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/container_3_toolkit.png?alt=media&token=54206a93-7af5-466b-a5a5-24ac6849e8b5" 
+                    alt="Toolkit Purchases" 
+                    className="w-full h-full object-contain transform translate-x-4 translate-y-0 opacity-80"
+                  />
+                </div>
+                <div className="flex items-center justify-between mb-4 relative z-10">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-[#245D66]/10 rounded-lg">
+                    <div className="p-2 bg-[#245D66]/20 dark:bg-[#245D66]/20 rounded-lg">
                       <BookOpen className="h-6 w-6 text-[#245D66]" />
                     </div>
-                    <h3 className="text-lg font-semibold">Toolkit Purchases</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-800">Toolkit Purchases</h3>
                   </div>
-                  <button className="text-white/60 hover:text-white">
+                  <button className="text-gray-500 hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-800">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                       <path d="M5 10C6.10457 10 7 10.8954 7 12C7 13.1046 6.10457 14 5 14C3.89543 14 3 13.1046 3 12C3 10.8954 3.89543 10 5 10Z" fill="currentColor"/>
                       <path d="M12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="currentColor"/>
@@ -520,27 +595,30 @@ const DashboardPage = () => {
                     </svg>
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <p className="text-sm text-white/60">Available</p>
-                    <p className="text-2xl font-bold">4</p>
+                {/* Added a max-width container to ensure content doesn't overlap with image */}
+                <div className="max-w-[65%] relative z-10">
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-500">Available</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-gray-800">4</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-500">Used</p>
+                      <p className="text-2xl font-bold text-gray-800 dark:text-gray-800">1</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-white/60">Used</p>
-                    <p className="text-2xl font-bold">1</p>
-                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-600 mb-6">Nervousness is a given, but you learn how to best deal with it.</p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => router.push('/dashboard/resources')}
+                    className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-[#245D66] dark:text-[#245D66] relative"
+                  >
+                    Browse Toolkits
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
+                      <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Button>
                 </div>
-                <p className="text-sm text-white/80 mb-6">Nervousness is a given, but you learn how to best deal with it.</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => router.push('/dashboard/resources')}
-                  className="w-full bg-transparent border-white/20 hover:bg-white/10 text-white"
-                >
-                  Browse Toolkits
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
-                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </Button>
               </Card>
             </div>
           </TabsContent>
@@ -555,54 +633,56 @@ const DashboardPage = () => {
                 <CardDescription>Your scheduled coaching and training sessions</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between border-b pb-4 hover:bg-black/5 p-2 rounded-lg transition-colors duration-200 hover:translate-x-1 transform">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium leading-none">Case Interview Practice</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Group Session • 8 participants</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Tomorrow, 2:00 PM</div>
-                      <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
-                        Join
-                      </Button>
-                    </div>
+                {isLoadingCoaching ? (
+                  <div className="flex items-center justify-center h-40">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#245D66] dark:border-[#7BA7AE]"></div>
                   </div>
-                  <div className="flex items-center justify-between border-b pb-4 hover:bg-black/5 p-2 rounded-lg transition-colors duration-200 hover:translate-x-1 transform">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium leading-none">CV Review Session</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">1:1 Coaching • 45 minutes</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Friday, 10:00 AM</div>
-                      <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
-                        Join
-                      </Button>
-                    </div>
+                ) : upcomingSessions > 0 ? (
+                  <div className="space-y-6">
+                    {/* Sessions will be dynamically loaded from user data */}
+                    {coachingPrograms
+                      .filter((program: CoachingProgram) => program.scheduledDate)
+                      .map((program: CoachingProgram, index: number) => (
+                        <div key={`session-${program.id}-${index}`} className="flex items-center justify-between border-b pb-4 hover:bg-black/5 p-2 rounded-lg transition-colors duration-200 hover:translate-x-1 transform">
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium leading-none">{program.programName}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Coaching Session</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{formatDate(program.scheduledDate)}</div>
+                            <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
+                              Join
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                   </div>
-                  <div className="flex items-center justify-between hover:bg-black/5 p-2 rounded-lg transition-colors duration-200 hover:translate-x-1 transform">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium leading-none">Consulting Industry Insights</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Webinar • 120 participants
-                      </p>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66]/20 to-[#245D66]/10">
+                      <Calendar className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Next Monday, 6:00 PM</div>
-                      <Button variant="outline" size="sm" className="hover:bg-black/10 hover:text-black hover:border-black/30 transition-colors duration-300">
-                        Join
-                      </Button>
-                    </div>
+                    <h3 className="text-lg font-medium">No upcoming sessions</h3>
+                    <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80 mt-2 max-w-md mx-auto">
+                      You don't have any scheduled coaching sessions. Book a session to get started.
+                    </p>
+                    <Button 
+                      onClick={() => router.push('/dashboard/coaching')}
+                      className="mt-4 relative overflow-hidden group"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/80 to-[#245D66]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                      <span className="relative">Book a Session</span>
+                    </Button>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
             {/* Coaching Programs Card */}
             <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 transform hover:-translate-y-1 animate-slideInUp">
               <CardHeader>
-                <CardTitle>Your Coaching Programs</CardTitle>
-                <CardDescription>Programs you've enrolled in</CardDescription>
+                <CardTitle>Upcoming Sessions</CardTitle>
+                <CardDescription>Your scheduled coaching and training sessions</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoadingCoaching ? (
@@ -686,16 +766,21 @@ const DashboardPage = () => {
                 <CardDescription>Continue where you left off</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4 p-2 rounded-lg hover:bg-black/5 transition-colors duration-200 hover:translate-x-1 transform">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#245D66]/10">
-                      <BookOpen className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <h3 className="font-medium">Case Interview Preparation Guide</h3>
-                      <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80">Last accessed 2 days ago</p>
-                    </div>
+                <div className="text-center py-8">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66]/20 to-[#245D66]/10">
+                    <BookOpen className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
                   </div>
+                  <h3 className="text-lg font-medium mt-4">No resources yet</h3>
+                  <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80 mt-2 max-w-md mx-auto">
+                    You haven't accessed any resources yet. Browse our toolkits to enhance your consulting skills.
+                  </p>
+                  <Button 
+                    onClick={() => router.push('/dashboard/resources')}
+                    className="mt-4 relative overflow-hidden group"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/80 to-[#245D66]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="relative">Browse Toolkits</span>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -703,143 +788,146 @@ const DashboardPage = () => {
         </Tabs>
 
         <div className="mt-8">
-          <Card className="overflow-hidden border-none bg-gradient-to-br from-white/80 to-white/50 dark:from-black/80 dark:to-black/50 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300">
-            <CardHeader className="pb-8">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="h-16 w-16 rounded-full bg-[#245D66]/20 flex items-center justify-center">
-                  <Star className="h-8 w-8 text-[#245D66] dark:text-[#7BA7AE]" />
+          <Card className="overflow-hidden bg-gradient-to-br from-white via-white to-[#F8FBFC] dark:from-black dark:via-[#0A1215] dark:to-[#0A1215] border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#245D66] via-[#7BA7AE] to-[#245D66]"></div>
+            <div className="absolute -right-20 -top-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>
+            
+            <CardHeader className="pb-4 relative z-10">
+              <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66] to-[#7BA7AE] shadow-md">
+                  <Brain className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-3xl font-bold bg-gradient-to-r from-[#245D66] to-[#245D66] dark:from-[#7BA7AE] dark:to-[#7BA7AE] bg-clip-text text-transparent">AI Case Interview Coach</CardTitle>
-                  <CardDescription className="text-lg mt-2">Your personal AI coach to ace case interviews with realistic practice and guided feedback</CardDescription>
+                  <CardTitle className="text-3xl font-bold bg-gradient-to-r from-[#245D66] to-[#7BA7AE] bg-clip-text text-transparent">AI Case Interview Coach</CardTitle>
+                  <CardDescription className="text-lg mt-2 text-gray-600 dark:text-gray-300">Your personal AI coach to ace case interviews with realistic practice and guided feedback</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <CardContent className="relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Practice Mock Interview */}
-                <div className="group relative p-6 rounded-xl bg-gradient-to-br from-[#245D66]/5 via-white/80 to-white/90 dark:from-[#245D66]/20 dark:via-black/80 dark:to-black/90 hover:shadow-lg transition-all duration-300 border border-[#245D66]/10 dark:border-[#245D66]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-                  <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
+                <div className="group relative p-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 border border-white/20 dark:border-white/5 bg-white dark:bg-black/40 backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                  
+                  {/* Image section with overlay */}
+                  <div className="relative w-full h-56 overflow-hidden">
                     <Image 
                       src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/WhatsApp%20Image%202025-03-28%20at%2013.26.37_bfd03797.jpg?alt=media&token=12472b60-cdad-4e74-947f-fc0fbe628b35"
                       alt="Practice Mock Interview"
                       fill
                       className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#245D66]/40 to-transparent"></div>
-                  </div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#245D66]/10 group-hover:scale-110 transition-transform duration-300">
-                      <MessageSquare className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                    
+                    {/* Floating badge */}
+                    <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-[#245D66] dark:text-[#7BA7AE] shadow-md border border-[#245D66]/20 dark:border-[#7BA7AE]/20">
+                      Premium
                     </div>
-                    <h3 className="text-lg font-semibold text-[#245D66] dark:text-[#7BA7AE]">Practice Realistic Mock Case Interview</h3>
+                    
+                    {/* Title overlay on image */}
+                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
+                      <h3 className="text-xl font-bold text-white">Practice Realistic Mock Case Interview</h3>
+                    </div>
                   </div>
-                  <div className="space-y-3 mb-6">
-                    <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80">Real-time voice interaction with slide sharing and on-demand case fact introduction.</p>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-sm group/item">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#245D66] group-hover/item:scale-150 transition-transform duration-300"></div>
-                        <span className="text-[#245D66]/90 dark:text-[#7BA7AE]/90">Get personalized Gap Analysis scorecard</span>
-                      </li>
-                      <li className="flex items-center gap-2 text-sm group/item">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#245D66] group-hover/item:scale-150 transition-transform duration-300"></div>
-                        <span className="text-[#245D66]/90 dark:text-[#7BA7AE]/90">Perfect for real interview simulation</span>
-                      </li>
-                    </ul>
+                  
+                  {/* Content section */}
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66] to-[#7BA7AE] group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <MessageSquare className="h-6 w-6 text-white" />
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Real-time voice interaction with slide sharing and on-demand case fact introduction.</p>
+                    </div>
+                    
+                    <div className="space-y-3 mb-6">
+                      <ul className="space-y-3">
+                        <li className="flex items-start gap-3 text-sm group/item">
+                          <CheckCircle className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] mt-0.5 shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-200">Get personalized Gap Analysis scorecard with detailed feedback</span>
+                        </li>
+                        <li className="flex items-start gap-3 text-sm group/item">
+                          <CheckCircle className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] mt-0.5 shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-200">Perfect for real interview simulation with adaptive challenges</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <Button className="w-full bg-gradient-to-r from-[#245D66] to-[#7BA7AE] hover:from-[#7BA7AE] hover:to-[#245D66] text-white font-medium py-2 relative overflow-hidden group/btn transition-all duration-500 border-0 shadow-md hover:shadow-lg">
+                      <span className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
+                      <span className="relative flex items-center justify-center gap-2">
+                        <Play className="h-4 w-4" />
+                        Start Practice
+                      </span>
+                    </Button>
                   </div>
-                  <Button variant="outline" className="w-full bg-white dark:bg-[#245D66]/10 hover:bg-[#245D66]/5 dark:hover:bg-[#245D66]/20 font-medium relative overflow-hidden group/btn border-[#245D66]/20 hover:border-[#245D66]/30 text-[#245D66] dark:text-[#7BA7AE]">
-                    <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/10 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
-                    <span className="relative">Start Practice</span>
-                  </Button>
                 </div>
 
                 {/* Guided Coaching */}
-                <div className="group relative p-6 rounded-xl bg-gradient-to-br from-[#245D66]/5 via-white/80 to-white/90 dark:from-[#245D66]/20 dark:via-black/80 dark:to-black/90 hover:shadow-lg transition-all duration-300 border border-[#245D66]/10 dark:border-[#245D66]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-                  <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden">
+                <div className="group relative p-0 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 border border-white/20 dark:border-white/5 bg-white dark:bg-black/40 backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                  
+                  {/* Image section with overlay */}
+                  <div className="relative w-full h-56 overflow-hidden">
                     <Image 
                       src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/WhatsApp%20Image%202025-03-28%20at%2013.27.42_b1735854.jpg?alt=media&token=4d8b7281-4bce-43e9-9bb1-2ba5d13454bc"
                       alt="Guided Case Interview Coaching"
                       fill
                       className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#245D66]/40 to-transparent"></div>
-                  </div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#245D66]/10 group-hover:scale-110 transition-transform duration-300">
-                      <Star className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                    
+                    {/* Floating badge */}
+                    <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-[#245D66] dark:text-[#7BA7AE] shadow-md border border-[#245D66]/20 dark:border-[#7BA7AE]/20">
+                      Popular
                     </div>
-                    <h3 className="text-lg font-semibold text-[#245D66] dark:text-[#7BA7AE]">Guided Case Interview Coaching</h3>
+                    
+                    {/* Title overlay on image */}
+                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
+                      <h3 className="text-xl font-bold text-white">Guided Case Interview Coaching</h3>
+                    </div>
                   </div>
-                  <div className="space-y-3 mb-6">
-                    <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80">Receive feedback after each interaction —perfect for candidates familiarizing themselves with the case interview format.</p>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-sm group/item">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#245D66] group-hover/item:scale-150 transition-transform duration-300"></div>
-                        <span className="text-[#245D66]/90 dark:text-[#7BA7AE]/90">Sharpen responses with guided answers</span>
-                      </li>
-                      <li className="flex items-center gap-2 text-sm group/item">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#245D66] group-hover/item:scale-150 transition-transform duration-300"></div>
-                        <span className="text-[#245D66]/90 dark:text-[#7BA7AE]/90">See ideal responses for each stage</span>
-                      </li>
-                    </ul>
+                  
+                  {/* Content section */}
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66] to-[#7BA7AE] group-hover:scale-110 transition-transform duration-300 shadow-md">
+                        <Star className="h-6 w-6 text-white" />
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Receive feedback after each interaction —perfect for candidates familiarizing themselves with the case interview format.</p>
+                    </div>
+                    
+                    <div className="space-y-3 mb-6">
+                      <ul className="space-y-3">
+                        <li className="flex items-start gap-3 text-sm group/item">
+                          <CheckCircle className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] mt-0.5 shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-200">Sharpen responses with guided answers and expert tips</span>
+                        </li>
+                        <li className="flex items-start gap-3 text-sm group/item">
+                          <CheckCircle className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] mt-0.5 shrink-0" />
+                          <span className="text-gray-700 dark:text-gray-200">See ideal responses for each stage of the case interview</span>
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <Button className="w-full bg-white hover:bg-gray-50 dark:bg-black/60 dark:hover:bg-black/80 text-[#245D66] dark:text-[#7BA7AE] font-medium py-2 relative overflow-hidden group/btn transition-all duration-500 border border-[#245D66]/30 dark:border-[#7BA7AE]/30 shadow-md hover:shadow-lg">
+                      <span className="absolute inset-0 bg-[#245D66]/5 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
+                      <span className="relative flex items-center justify-center gap-2">
+                        <Sparkles className="h-4 w-4" />
+                        Start Practice
+                      </span>
+                    </Button>
                   </div>
-                  <Button variant="outline" className="w-full bg-white dark:bg-[#245D66]/10 hover:bg-[#245D66]/5 dark:hover:bg-[#245D66]/20 font-medium relative overflow-hidden group/btn border-[#245D66]/20 hover:border-[#245D66]/30 text-[#245D66] dark:text-[#7BA7AE]">
-                    <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/10 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
-                    <span className="relative">Start Practice</span>
-                  </Button>
                 </div>
 
-                {/* Interview Simulator */}
-                <div className="group relative p-6 rounded-xl bg-gradient-to-br from-[#245D66]/5 via-white/80 to-white/90 dark:from-[#245D66]/20 dark:via-black/80 dark:to-black/90 hover:shadow-lg transition-all duration-300 border border-[#245D66]/10 dark:border-[#245D66]/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-                  <div className="relative w-full h-48 mb-6 rounded-lg overflow-hidden bg-black">
-                    <video 
-                      src="https://firebasestorage.googleapis.com/v0/b/managementconsultant-3f20b.appspot.com/o/Landingvideo.mp4?alt=media&token=92ef4468-02cf-417e-9856-2bd16537000c"
-                      className="w-full h-full object-cover opacity-80"
-                      muted
-                      loop
-                      playsInline
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="h-16 w-16 rounded-full bg-[#245D66]/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-[#7BA7AE]/30">
-                        <Play className="h-8 w-8 text-white" />
-                      </div>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#245D66]/80 to-transparent pointer-events-none"></div>
-                  </div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#245D66]/10 group-hover:scale-110 transition-transform duration-300">
-                      <TrendingUp className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-[#245D66] dark:text-[#7BA7AE]">Mock Case Interview Simulator</h3>
-                  </div>
-                  <div className="space-y-3 mb-6">
-                    <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80">Watch how our AI-powered case interview simulator works with real-time feedback and interactive features.</p>
-                    <ul className="space-y-2">
-                      <li className="flex items-center gap-2 text-sm group/item">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#245D66] group-hover/item:scale-150 transition-transform duration-300"></div>
-                        <span className="text-[#245D66]/90 dark:text-[#7BA7AE]/90">Safeguards key facts until appropriate moments</span>
-                      </li>
-                      <li className="flex items-center gap-2 text-sm group/item">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#245D66] group-hover/item:scale-150 transition-transform duration-300"></div>
-                        <span className="text-[#245D66]/90 dark:text-[#7BA7AE]/90">Adaptive learning from user feedback</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <Button variant="outline" className="w-full bg-white dark:bg-[#245D66]/10 hover:bg-[#245D66]/5 dark:hover:bg-[#245D66]/20 font-medium relative overflow-hidden group/btn border-[#245D66]/20 hover:border-[#245D66]/30 text-[#245D66] dark:text-[#7BA7AE]">
-                    <span className="absolute inset-0 bg-gradient-to-r from-[#245D66]/10 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
-                    <span className="relative">Watch Demo</span>
-                  </Button>
-                </div>
+
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Welcome modal with motion animation */}
-        <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+        <Dialog open={false} onOpenChange={setShowWelcomeModal}>
           <DialogContent className="sm:max-w-[425px] border-none shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl overflow-hidden animate-slideInUp">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#245D66] via-gray-500 to-[#245D66] dark:from-[#7BA7AE] dark:via-gray-500 dark:to-[#7BA7AE]"></div>
             <div className="absolute -right-20 -top-20 w-40 h-40 bg-[#245D66]/10 rounded-full blur-3xl -z-10"></div>

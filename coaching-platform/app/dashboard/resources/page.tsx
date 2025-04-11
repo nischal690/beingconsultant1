@@ -170,6 +170,7 @@ export default function ResourcesPage() {
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
   const [showCustomModal, setShowCustomModal] = useState(false)
   const [showToolkitDialog, setShowToolkitDialog] = useState(false)
+  const [showResourceDetailsDialog, setShowResourceDetailsDialog] = useState(false)
 
   // Set loaded state after initial render for animations
   useEffect(() => {
@@ -301,14 +302,14 @@ export default function ResourcesPage() {
       {/* Animated background */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -inset-[10%] opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-black/40 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '15s' }}></div>
-          <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-black/40 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '20s' }}></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-black/40 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '25s' }}></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '15s' }}></div>
+          <div className="absolute top-3/4 right-1/4 w-64 h-64 bg-gradient-to-r from-pink-500/20 to-red-500/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '20s' }}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-teal-500/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDuration: '25s' }}></div>
         </div>
         
         {/* Interactive cursor light effect */}
         <div 
-          className="pointer-events-none fixed opacity-20 w-[400px] h-[400px] rounded-full bg-black/20 blur-3xl"
+          className="pointer-events-none fixed opacity-20 w-[400px] h-[400px] rounded-full bg-gradient-to-r from-white/10 to-white/5 blur-3xl"
           style={{
             left: `${mousePosition.x - 200}px`,
             top: `${mousePosition.y - 200}px`,
@@ -324,7 +325,7 @@ export default function ResourcesPage() {
           {/* Left sidebar */}
           <div className="w-full md:w-[250px] bg-black/40 backdrop-blur-lg p-4 rounded-lg border border-white/10 shadow-xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-white">Browse resources</h3>
+              <h3 className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 animate-gradient-x">Browse resources</h3>
               
               {/* Cart button with counter */}
               <Button
@@ -335,7 +336,7 @@ export default function ResourcesPage() {
               >
                 <ShoppingCart className="h-5 w-5 text-white" />
                 {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-black/40 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-green-600 to-emerald-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                     {cart.reduce((total, item) => total + item.quantity, 0)}
                   </span>
                 )}
@@ -419,15 +420,15 @@ export default function ResourcesPage() {
                         <div className="border-t border-white/10 pt-3">
                           <div className="flex justify-between items-center text-sm mb-3">
                             <span>Total:</span>
-                            <span className="font-bold text-white">
+                            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
                               ${cartTotal.toFixed(2)}
                             </span>
                           </div>
                           
                           <Button 
-                            className="w-full bg-black/40 hover:bg-black/60 text-white border border-white/30 hover:border-white/50 shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative overflow-hidden"
+                            className="w-full bg-[#245D66] text-white hover:bg-black hover:text-white border border-[#245D66] shadow-lg hover:shadow-[0_0_15px_rgba(36,93,102,0.4)] transition-all duration-300 relative overflow-hidden"
                           >
-                            <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/10 to-[#245D66]/0 -translate-x-full hover:translate-x-full transition-transform duration-1000"></span>
                             <span className="relative z-10">Checkout</span>
                           </Button>
                         </div>
@@ -444,7 +445,7 @@ export default function ResourcesPage() {
                   Resource Type <span className="inline-block w-1 h-1 rounded-full bg-white/60"></span>
                 </h4>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
                     <input 
                       type="radio" 
                       name="resourceType" 
@@ -454,7 +455,7 @@ export default function ResourcesPage() {
                     />
                     <span>All</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
                     <input 
                       type="radio" 
                       name="resourceType" 
@@ -464,7 +465,7 @@ export default function ResourcesPage() {
                     />
                     <span>Paid</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
+                  <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
                     <input 
                       type="radio" 
                       name="resourceType" 
@@ -489,7 +490,7 @@ export default function ResourcesPage() {
                       key={`featured-${resource.id}`} 
                       className="group p-2 rounded-md hover:bg-white/5 transition-all cursor-pointer"
                     >
-                      <div className="text-xs font-medium group-hover:text-white">
+                      <div className="text-xs font-medium group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300">
                         {resource.title}
                       </div>
                       <div className="text-[10px] text-white/50">${resource.price}</div>
@@ -505,7 +506,7 @@ export default function ResourcesPage() {
             <div className="mb-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold mb-2 text-white">Toolkit to Ace your Interviews</h1>
+                  <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-300 to-white animate-gradient-x">Toolkit to Ace your Interviews</h1>
                   <p className="text-white/70">End-to-end support and curated resources to help you crack your dream role</p>
                 </div>
                 <Button 
@@ -527,7 +528,7 @@ export default function ResourcesPage() {
                 initial="hidden"
                 animate="visible"
               >
-                <div className="absolute inset-0 bg-black/20 rounded-full blur-md -z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-full blur-md -z-10"></div>
                 <div className="relative flex items-center">
                   <Search className="absolute left-4 text-white/50 h-4 w-4" />
                   <Input
@@ -585,25 +586,31 @@ export default function ResourcesPage() {
                           transition: { duration: 0.2 }
                         }}
                       >
-                        <Card className="overflow-hidden h-full border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/80 transition-all duration-500 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] group-hover:border-white/30 animate-pulse-glow">
-                          <div className="absolute inset-x-0 top-0 h-px bg-white/10 opacity-50"></div>
-                          <div className="absolute inset-x-0 bottom-0 h-px bg-white/10 opacity-50"></div>
+                        <Card 
+                          className="overflow-hidden h-full border-white/10 bg-black/60 backdrop-blur-md hover:bg-black/80 transition-all duration-500 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] group-hover:border-white/30 animate-pulse-glow cursor-pointer"
+                          onClick={() => {
+                            setSelectedResource(resource);
+                            setShowResourceDetailsDialog(true);
+                          }}
+                        >
+                          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           
                           <CardContent className="p-6 relative">
                             {resource.popular && (
-                              <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-black/40 text-xs font-bold text-white px-3 py-1 rounded-bl-lg rounded-tr-lg shadow-lg">
+                              <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-black px-3 py-1 rounded-bl-lg rounded-tr-lg shadow-lg">
                                 POPULAR
                               </div>
                             )}
                             <div className="mb-4 relative">
-                              <div className="absolute inset-0 bg-black/20 rounded-full blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-700"></div>
+                              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-700"></div>
                               {resource.icon}
                             </div>
                             <div className="space-y-2 mb-4">
-                              <div className="text-xs text-white">
+                              <div className="text-xs text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400">
                                 {resource.shortDescription}
                               </div>
-                              <h3 className="text-lg font-semibold group-hover:text-white transition-colors">{resource.title}</h3>
+                              <h3 className="text-lg font-semibold group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all duration-300">{resource.title}</h3>
                               <p className="text-white/60 text-sm">{resource.description}</p>
                               
                               {/* Rating */}
@@ -622,7 +629,7 @@ export default function ResourcesPage() {
                               )}
                             </div>
                             <div className="flex justify-between items-center mt-4">
-                              <div className="text-2xl font-bold text-white">
+                              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                                 ${resource.price}
                               </div>
                             </div>
@@ -630,10 +637,10 @@ export default function ResourcesPage() {
                           <CardFooter className="px-6 pb-6 pt-0">
                             {isInCart(resource.id) ? (
                               <Button 
-                                className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/10 hover:border-white/30 transition-all duration-300 relative overflow-hidden"
+                                className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/30 hover:border-white/50 shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
                                 onClick={() => removeFromCart(resource.id)}
                               >
-                                <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                                 <span className="relative z-10 flex items-center gap-2">
                                   <Check className="h-4 w-4" />
                                   In Cart
@@ -645,7 +652,7 @@ export default function ResourcesPage() {
                                   className="bg-black hover:bg-white text-white hover:text-black border border-white/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
                                   onClick={() => addToCart(resource)}
                                 >
-                                  <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                                   <span className="flex items-center gap-1 relative z-10">
                                     <ShoppingCart className="h-3 w-3" />
                                     Add to Cart
@@ -655,7 +662,7 @@ export default function ResourcesPage() {
                                   className="bg-[#245D66] text-white hover:bg-black hover:text-white border border-[#245D66] shadow-lg hover:shadow-[0_0_15px_rgba(36,93,102,0.4)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden"
                                   onClick={() => handleBuyNow(resource)}
                                 >
-                                  <span className="absolute inset-0 w-full h-full bg-[#245D66]/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/10 to-[#245D66]/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                                   <span className="flex items-center gap-1 relative z-10">
                                     <Sparkles className="h-3 w-3" />
                                     Buy Now
@@ -685,14 +692,14 @@ export default function ResourcesPage() {
           />
           
           {/* Modal Content */}
-          <div className="sm:max-w-md w-full bg-black/95 border border-white/10 shadow-[0_0_50px_rgba(36,93,102,0.2)] text-white max-w-2xl">
+          <div className="sm:max-w-md w-full bg-black/95 border border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.1)] text-white max-w-2xl">
             {/* Decorative elements */}
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-black/20 rounded-full blur-2xl opacity-30"></div>
-            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-black/20 rounded-full blur-2xl opacity-30"></div>
-            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl"></div>
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-tr from-white/10 to-transparent rounded-full blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50 pointer-events-none"></div>
             
             {/* Top highlight border */}
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/10"></div>
+            <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             
             {/* Close button */}
             <button 
@@ -705,16 +712,16 @@ export default function ResourcesPage() {
             
             {/* Header */}
             <div className="flex flex-col space-y-1.5 text-center sm:text-left relative z-10">
-              <h2 className="text-2xl font-bold text-center text-white pb-1">
+              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-300 to-white animate-gradient-x tracking-tight">
                 Complete Your Purchase
               </h2>
               
               <div className="mt-3 relative">
-                <div className="absolute -left-3 top-0 bottom-0 w-[2px] bg-white/40"></div>
+                <div className="absolute -left-3 top-0 bottom-0 w-[2px] bg-gradient-to-b from-white/40 via-white/10 to-transparent"></div>
                 <p className="font-medium text-white text-lg pl-2">{selectedResource.title}</p>
                 <p className="text-sm text-white/60 pl-2">{selectedResource.shortDescription}</p>
                 <div className="mt-3 flex items-baseline">
-                  <p className="text-2xl font-bold text-white pl-2">
+                  <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 pl-2">
                     ${selectedResource.price}
                   </p>
                   <span className="text-xs text-white/40 ml-2">USD</span>
@@ -736,9 +743,9 @@ export default function ResourcesPage() {
                   className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-all duration-300 relative overflow-hidden"
                 >
                   {/* Hover effect */}
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-all duration-1000"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-all duration-1000"></div>
                   
-                  <div className="h-12 w-12 flex items-center justify-center bg-[#245D66] rounded-md shadow-lg relative z-10">
+                  <div className="h-12 w-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 rounded-md shadow-lg relative z-10">
                     <img 
                       src="https://razorpay.com/favicon.png" 
                       alt="Razorpay" 
@@ -763,9 +770,9 @@ export default function ResourcesPage() {
                   className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-all duration-300 relative overflow-hidden"
                 >
                   {/* Hover effect */}
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-all duration-1000"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-all duration-1000"></div>
                   
-                  <div className="h-12 w-12 flex items-center justify-center bg-[#245D66] rounded-md shadow-lg relative z-10">
+                  <div className="h-12 w-12 flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-700 rounded-md shadow-lg relative z-10">
                     <img 
                       src="https://stripe.com/favicon.ico" 
                       alt="Stripe" 
@@ -788,7 +795,7 @@ export default function ResourcesPage() {
             </div>
             
             {/* Footer */}
-            <div className="flex flex-col-reverse sm:flex-row sm:justify-between border-t border-white/10 pt-2 relative z-10">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-between border-t border-white/10 pt-4 relative z-10">
               <button 
                 className="mt-3 sm:mt-0 px-4 py-2 bg-transparent border border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300 rounded-md"
                 onClick={() => setShowCustomModal(false)}
@@ -802,83 +809,83 @@ export default function ResourcesPage() {
             </div>
             
             {/* Bottom highlight border */}
-            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/10"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
           </div>
         </div>
       )}
       
       {/* How to Buy Toolkit Dialog */}
       <Dialog open={showToolkitDialog} onOpenChange={setShowToolkitDialog}>
-        <DialogContent className="bg-black/95 border border-white/10 shadow-[0_0_50px_rgba(36,93,102,0.2)] text-white max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden backdrop-blur-xl">
+        <DialogContent className="bg-gradient-to-b from-black/95 to-[#245D66]/20 border border-white/10 shadow-[0_0_50px_rgba(36,93,102,0.3)] text-white max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden backdrop-blur-xl">
           {/* Decorative elements */}
-          <div className="absolute -top-32 -right-32 w-64 h-64 bg-black/20 rounded-full blur-2xl opacity-30"></div>
-          <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-black/20 rounded-full blur-2xl opacity-30"></div>
-          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5"></div>
+          <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-b from-[#245D66]/30 to-transparent rounded-full blur-2xl opacity-60"></div>
+          <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-t from-[#245D66]/30 to-transparent rounded-full blur-2xl opacity-60"></div>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
           
           <DialogHeader className="relative z-10">
-            <DialogTitle className="text-2xl font-bold text-center text-white pb-1">
+            <DialogTitle className="text-2xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-white via-[#245D66] to-white animate-gradient-x pb-1">
               How to Buy the Toolkit
             </DialogTitle>
-            <p className="text-white/70 text-center text-sm">Your gateway to consulting excellence</p>
+            <p className="text-white/60 text-center text-sm">Your gateway to consulting excellence</p>
           </DialogHeader>
 
           <div className="space-y-4 py-4 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="group relative">
-                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
-                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/20 to-transparent rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-[#245D66]/50 transition-all duration-300 bg-white/5">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#245D66] to-[#245D66]/50 flex items-center justify-center flex-shrink-0 shadow-lg">
                       <span className="text-white font-medium">1</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white text-base mb-1">Browse Resources</h3>
-                      <p className="text-white/70 text-xs">Explore our curated collection of premium consulting resources.</p>
+                      <h3 className="font-semibold text-white text-base mb-1 group-hover:text-[#245D66] transition-colors">Browse Resources</h3>
+                      <p className="text-xs text-white/70">Explore our curated collection of premium consulting resources.</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="group relative">
-                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
-                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/20 to-transparent rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-[#245D66]/50 transition-all duration-300 bg-white/5">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#245D66] to-[#245D66]/50 flex items-center justify-center flex-shrink-0 shadow-lg">
                       <span className="text-white font-medium">2</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white text-base mb-1">Select Items</h3>
-                      <p className="text-white/70 text-xs">Choose from our premium toolkit items for maximum value.</p>
+                      <h3 className="font-semibold text-white text-base mb-1 group-hover:text-[#245D66] transition-colors">Select Items</h3>
+                      <p className="text-xs text-white/70">Choose from our premium toolkit items for maximum value.</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="group relative">
-                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
-                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/20 to-transparent rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-[#245D66]/50 transition-all duration-300 bg-white/5">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#245D66] to-[#245D66]/50 flex items-center justify-center flex-shrink-0 shadow-lg">
                       <span className="text-white font-medium">3</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white text-base mb-1">Secure Payment</h3>
-                      <p className="text-white/70 text-xs">Experience hassle-free transactions with trusted partners.</p>
+                      <h3 className="font-semibold text-white text-base mb-1 group-hover:text-[#245D66] transition-colors">Secure Payment</h3>
+                      <p className="text-xs text-white/70">Experience hassle-free transactions with trusted partners.</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="group relative">
-                <div className="absolute inset-0 bg-black/10 rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
-                <div className="relative p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/20 to-transparent rounded-xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+                <div className="relative p-4 rounded-xl border border-white/10 hover:border-[#245D66]/50 transition-all duration-300 bg-white/5">
                   <div className="flex items-start gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#245D66] to-[#245D66]/50 flex items-center justify-center flex-shrink-0 shadow-lg">
                       <span className="text-white font-medium">4</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white text-base mb-1">Instant Access</h3>
-                      <p className="text-white/70 text-xs">Access your resources immediately in your dashboard.</p>
+                      <h3 className="font-semibold text-white text-base mb-1 group-hover:text-[#245D66] transition-colors">Instant Access</h3>
+                      <p className="text-xs text-white/70">Access your resources immediately in your dashboard.</p>
                     </div>
                   </div>
                 </div>
@@ -886,25 +893,25 @@ export default function ResourcesPage() {
             </div>
 
             <div className="relative mt-2">
-              <div className="absolute inset-0 bg-black/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="bg-black/40 border border-white/10 rounded-xl p-4 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/20 via-[#245D66]/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="bg-gradient-to-r from-[#245D66]/10 to-transparent border border-[#245D66]/30 rounded-xl p-4 relative">
                 <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-[#245D66] flex items-center justify-center flex-shrink-0">
-                    <Info className="h-4 w-4 text-white" />
+                  <div className="h-8 w-8 rounded-lg bg-[#245D66]/20 flex items-center justify-center flex-shrink-0">
+                    <Info className="h-4 w-4 text-[#245D66]" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-white text-base mb-1.5">Premium Benefits</h3>
                     <ul className="space-y-1">
-                      <li className="text-white/70 text-xs flex items-center gap-2">
-                        <div className="h-1 w-1 rounded-full bg-white"></div>
+                      <li className="text-xs text-white/70 flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-[#245D66]"></div>
                         Lifetime access to purchased resources
                       </li>
-                      <li className="text-white/70 text-xs flex items-center gap-2">
-                        <div className="h-1 w-1 rounded-full bg-white"></div>
+                      <li className="text-xs text-white/70 flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-[#245D66]"></div>
                         Regular content updates at no extra cost
                       </li>
-                      <li className="text-white/70 text-xs flex items-center gap-2">
-                        <div className="h-1 w-1 rounded-full bg-white"></div>
+                      <li className="text-xs text-white/70 flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-[#245D66]"></div>
                         Priority support for all toolkit users
                       </li>
                     </ul>
@@ -917,7 +924,7 @@ export default function ResourcesPage() {
           <DialogFooter className="relative z-10 space-x-2 pt-2">
             <Button 
               onClick={() => setShowToolkitDialog(false)}
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/10 hover:border-white/20 transition-all duration-300"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/40 transition-all duration-300"
             >
               Close
             </Button>
@@ -929,9 +936,9 @@ export default function ResourcesPage() {
                   resourcesSection.scrollIntoView({ behavior: 'smooth' })
                 }
               }}
-              className="bg-[#245D66] hover:bg-[#245D66]/90 text-white shadow-lg transition-all duration-300 group relative overflow-hidden"
+              className="bg-gradient-to-r from-[#245D66] to-[#245D66]/80 hover:to-[#245D66] text-white shadow-lg hover:shadow-[#245D66]/25 transition-all duration-300 group relative overflow-hidden"
             >
-              <span className="absolute inset-0 w-full h-full bg-black/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
               <span className="relative flex items-center gap-2">
                 View Toolkit Items
                 <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
@@ -948,6 +955,269 @@ export default function ResourcesPage() {
       >
         <DialogContent className="hidden">
           <div></div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Resource Details Dialog */}
+      <Dialog
+        open={showResourceDetailsDialog}
+        onOpenChange={setShowResourceDetailsDialog}
+      >
+        <DialogContent className="bg-black/95 border border-white/20 text-white max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
+          {selectedResource && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full">
+                    {selectedResource.icon}
+                  </div>
+                  <div>
+                    <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+                      {selectedResource.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-white/70">
+                      {selectedResource.shortDescription}
+                    </DialogDescription>
+                  </div>
+                </div>
+                
+                {/* Hero Image */}
+                <div className="mt-4 w-full h-48 md:h-64 overflow-hidden rounded-lg relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10"></div>
+                  <img 
+                    src={
+                      selectedResource.id === "personality-test" ? "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" :
+                      selectedResource.id === "cheatsheet" ? "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop" :
+                      selectedResource.id === "case-bank" ? "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop" :
+                      selectedResource.id === "cv-superguide" ? "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=1200&auto=format&fit=crop" :
+                      selectedResource.id === "business-essentials" ? "https://images.unsplash.com/photo-1664575599736-c5197c684128?q=80&w=1200&auto=format&fit=crop" :
+                      "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop"
+                    } 
+                    alt={selectedResource.title}
+                    className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
+                  />
+                </div>
+              </DialogHeader>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Description Section */}
+                <div className="space-y-3 md:col-span-2">
+                  <h3 className="text-lg font-semibold text-white">About this Resource</h3>
+                  <p className="text-white/80 leading-relaxed">
+                    {selectedResource.description}
+                    {/* Extended description - you can add more detailed content here */}
+                    {selectedResource.id === "personality-test" && (
+                      <span> This comprehensive assessment analyzes your strengths, weaknesses, and natural tendencies to identify your consulting archetype. Receive a detailed report with personalized insights and recommendations.</span>
+                    )}
+                    {selectedResource.id === "case-bank" && (
+                      <span> Our case bank includes real interview cases from top consulting firms, organized by difficulty level and industry. Each case comes with detailed solutions and expert tips.</span>
+                    )}
+                    {selectedResource.id === "cheatsheet" && (
+                      <span> This cheatsheet compiles the most important frameworks and methodologies used by top consultants, with practical examples of how to apply them in different scenarios.</span>
+                    )}
+                  </p>
+                </div>
+                
+                {/* Features Section */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white">What's Included</h3>
+                  <ul className="space-y-2">
+                    {selectedResource.id === "personality-test" && (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Comprehensive personality assessment (45-60 minutes)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Detailed 20+ page personalized report</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Consulting archetype identification</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Strengths and development areas analysis</span>
+                        </li>
+                      </>
+                    )}
+                    {selectedResource.id === "case-bank" && (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">300+ practice cases with solutions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Cases organized by firm, industry, and difficulty</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Expert tips and common pitfalls</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Downloadable case materials and frameworks</span>
+                        </li>
+                      </>
+                    )}
+                    {selectedResource.id === "cheatsheet" && (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">20+ industry frameworks with examples</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Printable quick-reference guide</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Application scenarios for each framework</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Digital and printable versions included</span>
+                        </li>
+                      </>
+                    )}
+                    {selectedResource.id === "cv-superguide" && (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Comprehensive CV writing guide</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">10+ consulting CV templates</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Before/after examples with annotations</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Achievement formulation framework</span>
+                        </li>
+                      </>
+                    )}
+                    {selectedResource.id === "business-essentials" && (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Core business concepts explained</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Industry-specific knowledge guides</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Financial analysis crash course</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Strategy and operations fundamentals</span>
+                        </li>
+                      </>
+                    )}
+                    {selectedResource.id === "jumpstart-100" && (
+                      <>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">First 100 days success roadmap</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Client management best practices</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Communication and presentation templates</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-white/80">Networking and career advancement strategies</span>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+                
+                {/* Rating and Reviews Section */}
+                {selectedResource.rating && (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-white">Rating & Reviews</h3>
+                    <div className="flex items-center gap-3">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`h-5 w-5 ${i < Math.floor(selectedResource.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-white/80 font-medium">{selectedResource.rating.toFixed(1)}</span>
+                      <span className="text-white/50 text-sm">({Math.floor(Math.random() * 100) + 50} reviews)</span>
+                    </div>
+                    
+                    {/* Sample reviews */}
+                    <div className="space-y-2 mt-2">
+                      <div className="p-2 bg-white/5 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-3 w-3 ${i < 5 ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-white/80 text-xs font-medium">Alex K.</span>
+                        </div>
+                        <p className="text-white/70 text-sm">
+                          "This resource was exactly what I needed to prepare for my interviews. Highly recommended!"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2 pt-4 border-t border-white/10 md:col-span-2 mt-4">
+                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 mr-auto">
+                  ${selectedResource.price}
+                </div>
+                <Button 
+                  className="bg-black hover:bg-white text-white hover:text-black border border-white/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300 relative overflow-hidden"
+                  onClick={() => {
+                    addToCart(selectedResource);
+                    setShowResourceDetailsDialog(false);
+                  }}
+                >
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 -translate-x-full hover:translate-x-full transition-transform duration-1000"></span>
+                  <span className="flex items-center gap-1 relative z-10">
+                    <ShoppingCart className="h-4 w-4" />
+                    Add to Cart
+                  </span>
+                </Button>
+                <Button 
+                  className="bg-[#245D66] text-white hover:bg-black hover:text-white border border-[#245D66] shadow-lg hover:shadow-[0_0_15px_rgba(36,93,102,0.4)] transition-all duration-300 relative overflow-hidden"
+                  onClick={() => {
+                    handleBuyNow(selectedResource);
+                    setShowResourceDetailsDialog(false);
+                  }}
+                >
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#245D66]/0 via-[#245D66]/10 to-[#245D66]/0 -translate-x-full hover:translate-x-full transition-transform duration-1000"></span>
+                  <span className="flex items-center gap-1 relative z-10">
+                    <Sparkles className="h-4 w-4" />
+                    Buy Now
+                  </span>
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>

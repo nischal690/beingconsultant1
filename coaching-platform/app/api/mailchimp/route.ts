@@ -53,9 +53,20 @@ export async function POST(request: NextRequest) {
       result
     });
   } catch (error: any) {
+    // Log the detailed error for debugging
     console.error('Error scheduling Mailchimp email:', error);
+    
+    // Check if it's a Mailchimp API error with specific details
+    const errorMessage = error.response?.body ? 
+      `Mailchimp API error: ${JSON.stringify(error.response.body)}` : 
+      error.message || 'Failed to schedule email';
+    
     return NextResponse.json(
-      { error: error.message || 'Failed to schedule email' },
+      { 
+        error: errorMessage,
+        timestamp: new Date().toISOString(),
+        details: error.stack
+      },
       { status: 500 }
     );
   }

@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['images.unsplash.com', 'firebasestorage.googleapis.com'],
+    domains: ['images.unsplash.com', 'firebasestorage.googleapis.com', 'framerusercontent.com'],
   },
   env: {
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: 'pk_test_51Nt4bnEeDxhnTeYJ7eJC3lUIVLVs47lOcm0pLtpucPnDemepdZ4dFtMu1IxzK7fMsQFOt42bNgiuKQlFC24bkzXt00M6PmVQK2',
