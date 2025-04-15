@@ -508,39 +508,39 @@ const LandConsultingOfferPage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl -z-10"></div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
             {/* Stat 1: Reviews */}
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
+            <div className="bg-white backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <Award className="h-5 w-5 text-primary" />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-primary">680+</h3>
-              <p className="text-muted-foreground text-sm">Reviews</p>
+              <p className="text-black text-sm">Reviews</p>
             </div>
             
             {/* Stat 2: Bonus Value */}
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
+            <div className="bg-white backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <Gift className="h-5 w-5 text-primary" />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-primary">$799</h3>
-              <p className="text-muted-foreground text-sm">Worth bonus</p>
+              <p className="text-black text-sm">Worth bonus</p>
             </div>
             
             {/* Stat 3: Students Placed */}
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
+            <div className="bg-white backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <Users className="h-5 w-5 text-primary" />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-primary">1250+</h3>
-              <p className="text-muted-foreground text-sm">Students Placed</p>
+              <p className="text-black text-sm">Students Placed</p>
             </div>
             
             {/* Stat 4: Countries */}
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
+            <div className="bg-white backdrop-blur-sm rounded-xl p-5 shadow-sm border border-primary/10 flex flex-col items-center text-center">
               <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3">
                 <Globe className="h-5 w-5 text-primary" />
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-primary">50+</h3>
-              <p className="text-muted-foreground text-sm">Countries</p>
+              <p className="text-black text-sm">Countries</p>
             </div>
           </div>
         </section>
@@ -1130,7 +1130,7 @@ const LandConsultingOfferPage = () => {
                 <div className="mt-6 pt-4 border-t border-primary/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <span className="text-lg font-semibold text-primary">€499</span>
+                      <span className="text-lg font-bold text-primary">€499</span>
                       <span className="text-muted-foreground text-sm ml-2">Value</span>
                     </div>
                     <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-900/20 px-2 py-1 rounded">Included</span>
@@ -1176,7 +1176,7 @@ const LandConsultingOfferPage = () => {
                 <div className="mt-6 pt-4 border-t border-primary/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <span className="text-lg font-semibold text-primary">€299</span>
+                      <span className="text-lg font-bold text-primary">€299</span>
                       <span className="text-muted-foreground text-sm ml-2">Value</span>
                     </div>
                     <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-900/20 px-2 py-1 rounded">Included</span>
@@ -1222,7 +1222,7 @@ const LandConsultingOfferPage = () => {
                 <div className="mt-6 pt-4 border-t border-primary/10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <span className="text-lg font-semibold text-primary">€399</span>
+                      <span className="text-lg font-bold text-primary">€399</span>
                       <span className="text-muted-foreground text-sm ml-2">Value</span>
                     </div>
                     <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-900/20 px-2 py-1 rounded">Included</span>

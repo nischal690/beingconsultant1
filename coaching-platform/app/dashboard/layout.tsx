@@ -110,7 +110,7 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
           </defs>
         </svg>
         {!isCollapsed && (
-          <div className="flex flex-col font-medium text-white uppercase tracking-wide text-sm leading-tight ml-2">
+          <div className="flex flex-col font-medium text-white uppercase tracking-wide text-xs leading-tight ml-2">
             <span>BEING</span>
             <span>CONSULTANT</span>
           </div>
@@ -284,40 +284,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname === "/dashboard/ai-coach"} 
-                          className="hover-lift"
-                          tooltip="AI Coach"
-                        >
-                          <Link href="/dashboard/ai-coach" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Bot className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">AI Coach</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          asChild 
                           isActive={pathname === "/dashboard/ai-coach/case-interview"} 
                           className="hover-lift"
-                          tooltip="Case Interview"
+                          tooltip="Mock Case Interview"
                         >
-                          <Link href="/dashboard/ai-coach/case-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                          <a href="https://app.consultify-ai.com/" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                             <Brain className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Case Interview</span>
-                          </Link>
+                            <span className="group-data-[collapsible=icon]:hidden">Mock Case Interview</span>
+                          </a>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname === "/dashboard/ai-coach/fit-interview"} 
+                          isActive={pathname === "/dashboard/ai-coach/cv-evaluator"} 
                           className="hover-lift"
-                          tooltip="FIT Interview"
+                          tooltip="CV Evaluator"
                         >
-                          <Link href="/dashboard/ai-coach/fit-interview" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Users className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">FIT Interview</span>
-                          </Link>
+                          <a href="https://app.consultify-ai.com/" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <FileCheck className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">CV Evaluator</span>
+                          </a>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
@@ -333,26 +320,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/resources")} 
+                          isActive={pathname.startsWith("/dashboard/resources/free")} 
                           className="hover-lift"
-                          tooltip="Toolkit"
+                          tooltip="Free"
                         >
-                          <Link href="/dashboard/resources" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <FileText className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Toolkit</span>
+                          <Link href="/dashboard/resources/free" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Unlock className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Free</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/stories")} 
+                          isActive={pathname.startsWith("/dashboard/resources/premium")} 
                           className="hover-lift"
-                          tooltip="Stories"
+                          tooltip="Premium"
                         >
-                          <Link href="/dashboard/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Sparkles className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Stories</span>
+                          <Link href="/dashboard/resources/premium" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Lock className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Premium</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -362,43 +349,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    Learning
-                  </SidebarGroupLabel>
-                  <SidebarGroupContent className="learning-section space-y-1">
-                    <SidebarMenu>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={pathname.startsWith("/dashboard/learning")} 
-                          className="hover-lift"
-                          tooltip="Courses"
-                        >
-                          <Link href="/dashboard/learning" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <BookOpen className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Courses</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-
-                <SidebarGroup>
-                  <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    Whatsapp community
+                    Community
                   </SidebarGroupLabel>
                   <SidebarGroupContent className="community-section space-y-1">
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/community")} 
+                          isActive={pathname.startsWith("/dashboard/community/events")} 
                           className="hover-lift"
-                          tooltip="Join Community"
+                          tooltip="Events"
                         >
-                          <Link href="/dashboard/community" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <MessageSquare className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Join</span>
+                          <Link href="/dashboard/community/events" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <CalendarDays className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Events</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.startsWith("/dashboard/community/stories")} 
+                          className="hover-lift"
+                          tooltip="Stories"
+                        >
+                          <Link href="/dashboard/community/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Sparkles className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Stories</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -494,24 +471,29 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           {/* Center navigation with dropdown menus - adjusted to be truly centered and responsive to sidebar state */}
           <nav className={`flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${sidebarState === "collapsed" ? "ml-[1rem]" : "ml-[3.5rem]"}`}>
             {/* Coaching Dropdown */}
-            <div className="relative"
+            <div className="relative group"
                  onMouseEnter={() => setActiveDropdown('coaching')}
                  onMouseLeave={() => setActiveDropdown(null)}>
-              <Link href="/dashboard/coaching">
+              <button onClick={(e) => {
+                e.preventDefault();
+                setActiveDropdown(activeDropdown === 'coaching' ? null : 'coaching');
+              }} className="focus:outline-none">
                 <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'coaching' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
                   <span>Coaching</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
-              </Link>
+              </button>
               {activeDropdown === 'coaching' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[800px] rounded-md bg-white/95 backdrop-blur-lg border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-50">
-                  <div className="p-5 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[900px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
+                     onMouseEnter={() => setActiveDropdown('coaching')}
+                     onMouseLeave={() => setActiveDropdown(null)}>
+                  <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     <div className="flex gap-4">
                       <div className="flex-1">
                         <div className="grid grid-cols-3 gap-4">
                           {/* First column */}
                           <div>
-                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
                               <Briefcase className="h-4 w-4 mr-2 text-primary" />
                               Crack Consulting Interview
                             </h3>
@@ -538,7 +520,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                           
                           {/* Second column */}
                           <div>
-                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
                               <Award className="h-4 w-4 mr-2 text-primary" />
                               Excel Consulting Career
                             </h3>
@@ -561,7 +543,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                           
                           {/* Third column */}
                           <div>
-                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
                               <ArrowRightLeft className="h-4 w-4 mr-2 text-primary" />
                               Consulting Migration
                             </h3>
@@ -612,26 +594,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
 
             {/* Practice Dropdown - Updated to "Practice with AI Coach" with FREE TRIAL badge */}
             <div className="relative">
-              <Link href="/dashboard/practice">
+              <Link href="https://app.consultify-ai.com/">
                 <div className="flex items-center gap-2 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 text-white/80 hover:text-white group">
                   <Bot className="h-4 w-4 text-[#7BA7AE]" />
                   <span>Practice with AI Coach</span>
-                  <div className="relative">
-                    {/* Static badge background - animation removed */}
-                    <div className="absolute -top-1 -right-1 w-20 h-20"></div>
-                    
-                    {/* Badge with glass effect */}
-                    <span className="relative inline-flex items-center justify-center px-3 py-1 text-[10px] font-bold text-black rounded-full 
-                      bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300
-                      shadow-[0_0_15px_rgba(45,212,191,0.7)] 
-                      border border-teal-200
-                      backdrop-blur-sm
-                      group-hover:shadow-[0_0_20px_rgba(45,212,191,0.9)]
-                      transition-all duration-300
-                      scale-110">
-                      FREE TRIAL
-                    </span>
-                  </div>
                 </div>
               </Link>
             </div>
@@ -640,21 +606,27 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
             <div className="relative"
                  onMouseEnter={() => setActiveDropdown('resources')}
                  onMouseLeave={() => setActiveDropdown(null)}>
-              <Link href="/dashboard/resources">
+              <Link href="/dashboard/resources" onClick={(e) => {
+                if (activeDropdown === 'resources') {
+                  e.preventDefault();
+                }
+              }}>
                 <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'resources' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
                   <span>Resources</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
               </Link>
               {activeDropdown === 'resources' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-[800px] rounded-md bg-white/95 backdrop-blur-lg border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-50">
-                  <div className="p-5 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[900px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
+                     onMouseEnter={() => setActiveDropdown('resources')}
+                     onMouseLeave={() => setActiveDropdown(null)}>
+                  <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     <div className="flex gap-4">
                       <div className="flex-1">
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 gap-4">
                           {/* First column */}
                           <div>
-                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
+                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
                               <FileText className="h-4 w-4 mr-2 text-primary" />
                               Toolkits & Products
                             </h3>
@@ -680,51 +652,32 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <BookOpen className="h-3.5 w-3.5 mr-2 text-gray-500" />
                                 E-books
                               </Link>
-                              <Link href="/dashboard/resources/podcast" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Headphones className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Podcast
+                              <Link href="/dashboard/resources/cv-guide" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <FileText className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                CV Guide
                               </Link>
                             </div>
                           </div>
                           
                           {/* Second column */}
                           <div>
-                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
-                              <GraduationCap className="h-4 w-4 mr-2 text-primary" />
-                              Masterclasses
+                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
+                              <Unlock className="h-4 w-4 mr-2 text-primary" />
+                              FREE
                             </h3>
-                            <p className="text-xs text-gray-500 mb-3">Comprehensive courses to master consulting interviews.</p>
+                            <p className="text-xs text-gray-500 mb-3">Free content to help you on your consulting journey.</p>
                             <div className="space-y-2">
-                              <Link href="/dashboard/resources/case-cracking" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Briefcase className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Case Cracking Bundle
+                              <Link href="/dashboard/resources/blogs" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <BookOpen className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Blogs & articles
                               </Link>
-                              <Link href="/dashboard/resources/consulting-cv" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <FileText className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Consulting CV Masterclass
-                              </Link>
-                              <Link href="/dashboard/resources/fit-interview" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                              <Link href="/dashboard/resources/social" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
                                 <MessageSquare className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                FIT Interview Masterclass
+                                Social feeds
                               </Link>
-                            </div>
-                          </div>
-                          
-                          {/* Third column */}
-                          <div>
-                            <h3 className="text-sm font-bold !text-black mb-3 flex items-center">
-                              <BookOpen className="h-4 w-4 mr-2 text-primary" />
-                              Articles & Blogs
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-3">Insights and knowledge to boost your consulting career.</p>
-                            <div className="space-y-2">
-                              <Link href="/dashboard/resources/free" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Unlock className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Free resources
-                              </Link>
-                              <Link href="/dashboard/resources/premium" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Lock className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Premium resources
+                              <Link href="/dashboard/resources/community" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                                <Users className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                                Community feeds
                               </Link>
                             </div>
                           </div>
@@ -755,6 +708,36 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                           </div>
                         </Link>
                       </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Community Dropdown */}
+            <div className="relative"
+                 onMouseEnter={() => setActiveDropdown('community')}
+                 onMouseLeave={() => setActiveDropdown(null)}>
+              <Link href="/dashboard/community">
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'community' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                  <span>Community</span>
+                  <ChevronDown className="h-4 w-4" />
+                </div>
+              </Link>
+              {activeDropdown === 'community' && (
+                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[300px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
+                     onMouseEnter={() => setActiveDropdown('community')}
+                     onMouseLeave={() => setActiveDropdown(null)}>
+                  <div className="p-4">
+                    <div className="space-y-2">
+                      <Link href="/dashboard/community/events" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                        <CalendarDays className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                        Events
+                      </Link>
+                      <Link href="/dashboard/community/stories" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
+                        <Sparkles className="h-3.5 w-3.5 mr-2 text-gray-500" />
+                        Stories
+                      </Link>
                     </div>
                   </div>
                 </div>

@@ -33,7 +33,11 @@ export default function OnboardingPage() {
           const existingData: Partial<OnboardingData> = {};
           
           // Map Firebase data to form fields
-          if (profileData.name) existingData.name = profileData.name;
+          if (profileData.firstName || profileData.lastName) {
+            existingData.name = [profileData.firstName, profileData.lastName].filter(Boolean).join(' ');
+          } else if (profileData.name) {
+            existingData.name = profileData.name;
+          }
           if (profileData.email) existingData.email = profileData.email;
           if (profileData.phone) existingData.phone = profileData.phone;
           if (profileData.linkedInProfile) existingData.linkedInProfile = profileData.linkedInProfile;

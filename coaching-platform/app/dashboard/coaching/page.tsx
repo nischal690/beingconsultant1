@@ -604,65 +604,81 @@ export default function CoachingPage() {
               className="group"
             >
               <Link href={program.id === 'break-into-consulting' ? '/dashboard/coaching/land-consulting' : `/dashboard/coaching/${program.id}`} className="block h-full">
-                <div className="relative h-full rounded-3xl overflow-hidden transition-all duration-300 bg-black/40 backdrop-blur-sm border border-white/10 hover:border-white/20 cursor-pointer">
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 group-hover:opacity-80 transition-opacity"></div>
-                  <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)]"></div>
+                <div className="relative h-full rounded-xl overflow-hidden transition-all duration-300 border border-white/10 hover:border-white/20 cursor-pointer shadow-md hover:shadow-lg hover:-translate-y-1">
+                  {/* Background image with overlay */}
+                  <div className="absolute inset-0 w-full h-full">
+                    {program.id === 'break-into-consulting' && (
+                      <Image 
+                        src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2940&auto=format&fit=crop" 
+                        alt={program.title}
+                        fill
+                        className="object-cover opacity-20 transition-transform duration-700 scale-100 group-hover:scale-105"
+                        priority
+                      />
+                    )}
+                    {program.id === 'group-coaching' && (
+                      <Image 
+                        src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2940&auto=format&fit=crop" 
+                        alt={program.title}
+                        fill
+                        className="object-cover opacity-20 transition-transform duration-700 scale-100 group-hover:scale-105"
+                        priority
+                      />
+                    )}
+                    {program.id === 'unlimited-coaching' && (
+                      <Image 
+                        src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2940&auto=format&fit=crop" 
+                        alt={program.title}
+                        fill
+                        className="object-cover opacity-20 transition-transform duration-700 scale-100 group-hover:scale-105"
+                        priority
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/90"></div>
+                  </div>
                   
-                  <div className="relative p-8">
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-                          {program.title}
-                        </h3>
-                        <p className="text-gray-400 text-sm">{program.shortDescription}</p>
+                  <div className="relative p-5 z-10">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="inline-block px-2 py-1.5 rounded-full bg-white/10 text-xs font-medium text-white/90 border border-white/10">
+                        {program.category}
                       </div>
-                      {program.iconName}
+                      <div className="bg-white/10 p-2 rounded-full">
+                        {program.iconName === "briefcase" && <Briefcase className="h-4 w-4 text-white" />}
+                        {program.iconName === "clock" && <Clock className="h-4 w-4 text-white" />}
+                        {program.iconName === "users" && <Users className="h-4 w-4 text-white" />}
+                      </div>
                     </div>
 
-                    <div className="space-y-6">
-                      <p className="text-sm text-gray-300 leading-relaxed">
-                        {program.description}
-                      </p>
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-white transition-colors">
+                      {program.title}
+                    </h3>
+                    <p className="text-gray-300 text-xs mb-3">{program.shortDescription}</p>
 
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2">
-                          <div className="flex gap-0.5">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="h-4 w-4 text-yellow-500" fill={i < Math.floor(program.rating) ? "currentColor" : "none"} />
-                            ))}
-                          </div>
-                          <span className="text-sm text-gray-400">({program.reviewCount} reviews)</span>
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {program.features.slice(0, 3).map((feature, index) => (
+                        <div key={index} className="flex items-center gap-1 text-xs text-gray-200">
+                          <CheckCircle className="h-3 w-3 text-white/80 flex-shrink-0" />
+                          <span>{feature}</span>
                         </div>
-
-                        {program.features.map((feature, index) => (
-                          <div key={index} className="flex items-start gap-2 group/feature">
-                            <CheckCircle className="h-4 w-4 text-white/70 mt-1 flex-shrink-0 group-hover/feature:text-white transition-colors" />
-                            <span className="text-sm text-gray-300 group-hover/feature:text-white transition-colors">{feature}</span>
-                          </div>
-                        ))}
-                      </div>
+                      ))}
                     </div>
 
-                    <div className="mt-8 flex justify-between items-end">
-                      <div>
-                        <p className="text-3xl font-bold text-white">${program.price}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-baseline gap-2">
+                        <p className="text-lg font-bold text-white">${program.price}</p>
                         {program.originalPrice && (
-                          <p className="text-sm text-gray-400 line-through">${program.originalPrice}</p>
+                          <p className="text-xs text-gray-400 line-through">${program.originalPrice}</p>
                         )}
                       </div>
                       <div 
-                        className="relative overflow-hidden bg-white text-black hover:bg-white/90 transition-all duration-300 group/btn hover:-translate-y-1 px-4 py-2 rounded-md font-medium"
+                        className="bg-white text-black px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-white/90 transition-all"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleBuyNow(program);
                         }}
                       >
-                        <span className="relative z-10 flex items-center gap-2">
-                          Enroll Now
-                          <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
-                        </span>
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover/btn:opacity-100 transform translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000"></div>
+                        Enroll
                       </div>
                     </div>
                   </div>
@@ -945,6 +961,7 @@ export default function CoachingPage() {
                 
                 <Button 
                   className="w-full bg-black hover:bg-gray-900 text-white border border-white/10 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-white/5 relative overflow-hidden"
+                  onClick={() => window.open('https://app.consultify-ai.com/', '_self')}
                 >
                   <span className="relative z-10">Start Practice</span>
                   <span className="absolute inset-0 w-0 bg-gradient-to-r from-white/5 to-white/20 transition-all duration-300 group-hover:w-full"></span>

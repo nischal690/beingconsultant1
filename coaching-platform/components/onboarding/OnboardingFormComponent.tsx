@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/firebase/auth-context";
 
 export type OnboardingData = {
   name: string;
@@ -33,10 +34,12 @@ type OnboardingFormProps = {
 
 export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEnd = false, initialData = null }: OnboardingFormProps) {
   const [step, setStep] = useState(1);
-  
+  const { user } = useAuth();
+  const [firstName, setFirstName] = useState<string>("");
+
   // Define animation for the pulse effect
   const pulseAnimation = `@keyframes pulse-slow { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }`;
-  
+
   const [formData, setFormData] = useState<OnboardingData>({
     name: initialData?.name || "",
     email: initialData?.email || "",
@@ -52,7 +55,7 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
     interests: initialData?.interests || "",
     timeCommitment: initialData?.timeCommitment || ""
   });
-  
+
   const totalSteps = 6;
   const inputRefs = useRef<(HTMLInputElement | HTMLTextAreaElement | null)[]>([]);
 
@@ -66,6 +69,21 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
       onStepChange(step);
     }
   }, [step, onStepChange]);
+
+  useEffect(() => {
+    // Get the user's first name from Firebase Auth or Firestore
+    if (user) {
+      if (user.displayName) {
+        // If user has a display name, use the first part as first name
+        const nameParts = user.displayName.split(' ');
+        setFirstName(nameParts[0] || "");
+      } else if (initialData?.name) {
+        // If initialData has a name, use the first part as first name
+        const nameParts = initialData.name.split(' ');
+        setFirstName(nameParts[0] || "");
+      }
+    }
+  }, [user, initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -122,7 +140,7 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
           <User className="h-5 w-5 text-white/70" />
         </div>
         <div className="flex flex-col">
-          <span className="text-white font-medium">Prathap</span>
+          <span className="text-white font-medium">{firstName || "User"}</span>
           <span className="text-white/50 text-sm flex items-center">
             <span className="h-2 w-2 rounded-full bg-green-500 mr-1.5"></span>
             Online
@@ -192,16 +210,6 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="Phone number"
-                        className="pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm"
-                      />
-                    </div>
-                    <div className="relative">
-                      <Linkedin className="absolute left-3 top-3 h-5 w-5 text-white/60" />
-                      <Input
-                        name="linkedInProfile"
-                        value={formData.linkedInProfile}
-                        onChange={handleChange}
-                        placeholder="LinkedIn profile URL"
                         className="pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm"
                       />
                     </div>

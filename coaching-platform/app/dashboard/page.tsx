@@ -434,7 +434,7 @@ const DashboardPage = () => {
                 {/* Coaching Sessions Image with hover effect to show Gaurav's details */}
                 <div className="absolute -bottom-20 right-0 w-80 h-80 overflow-visible z-0 group">
                   <img 
-                    src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Container1_Coaching.png?alt=media&token=4f0e224d-983d-4df0-83fe-bd7c3bee56ce" 
+                    src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Container1_Coaching.png?alt=media&token=94a9472a-ea5a-4aec-bde6-2d7e8b1ceed0" 
                     alt="Coaching Sessions" 
                     className="w-full h-full object-contain transform translate-x-8 translate-y-0 opacity-80"
                   />
@@ -562,7 +562,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-600 mb-6">Practice with our AI to improve your consulting skills and confidence.</p>
-                <Button variant="outline" className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-[#245D66] dark:text-[#245D66]">
+                <Button variant="outline" className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-[#245D66] dark:text-[#245D66]" onClick={() => window.location.href = 'https://app.consultify-ai.com/'}>
                   Start Practice
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -853,7 +853,10 @@ const DashboardPage = () => {
                       </ul>
                     </div>
                     
-                    <Button className="w-full bg-gradient-to-r from-[#245D66] to-[#7BA7AE] hover:from-[#7BA7AE] hover:to-[#245D66] text-white font-medium py-2 relative overflow-hidden group/btn transition-all duration-500 border-0 shadow-md hover:shadow-lg">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-[#245D66] to-[#7BA7AE] hover:from-[#7BA7AE] hover:to-[#245D66] text-white font-medium py-2 relative overflow-hidden group/btn transition-all duration-500 border-0 shadow-md hover:shadow-lg"
+                      onClick={() => window.open('https://app.consultify-ai.com/', '_self')}
+                    >
                       <span className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
                       <span className="relative flex items-center justify-center gap-2">
                         <Play className="h-4 w-4" />
@@ -910,7 +913,10 @@ const DashboardPage = () => {
                       </ul>
                     </div>
                     
-                    <Button className="w-full bg-white hover:bg-gray-50 dark:bg-black/60 dark:hover:bg-black/80 text-[#245D66] dark:text-[#7BA7AE] font-medium py-2 relative overflow-hidden group/btn transition-all duration-500 border border-[#245D66]/30 dark:border-[#7BA7AE]/30 shadow-md hover:shadow-lg">
+                    <Button 
+                      className="w-full bg-white hover:bg-gray-50 dark:bg-black/60 dark:hover:bg-black/80 text-[#245D66] dark:text-[#7BA7AE] font-medium py-2 relative overflow-hidden group/btn transition-all duration-500 border border-[#245D66]/30 dark:border-[#7BA7AE]/30 shadow-md hover:shadow-lg"
+                      onClick={() => window.open('https://app.consultify-ai.com/', '_self')}
+                    >
                       <span className="absolute inset-0 bg-[#245D66]/5 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></span>
                       <span className="relative flex items-center justify-center gap-2">
                         <Sparkles className="h-4 w-4" />
