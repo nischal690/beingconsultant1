@@ -87,6 +87,7 @@ import { useAuth } from "@/lib/firebase/auth-context"
 import { getUserProfile } from "@/lib/firebase/firestore"
 import { useRouter } from "next/navigation"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
 
 // Custom component for the sidebar logo that hides text when collapsed
 function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" }) {
@@ -423,6 +424,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
   const { user, logout } = useAuth()
   const router = useRouter()
   const [firstName, setFirstName] = useState<string>("");
+  const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -472,8 +474,19 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           <nav className={`flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${sidebarState === "collapsed" ? "ml-[1rem]" : "ml-[3.5rem]"}`}>
             {/* Coaching Dropdown */}
             <div className="relative group"
-                 onMouseEnter={() => setActiveDropdown('coaching')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
+                 onMouseEnter={() => {
+                   if (dropdownTimeout) {
+                     clearTimeout(dropdownTimeout);
+                     setDropdownTimeout(null);
+                   }
+                   setActiveDropdown('coaching');
+                 }}
+                 onMouseLeave={() => {
+                   const timeout = setTimeout(() => {
+                     setActiveDropdown(null);
+                   }, 300); // 300ms delay before hiding
+                   setDropdownTimeout(timeout);
+                 }}>
               <button onClick={(e) => {
                 e.preventDefault();
                 setActiveDropdown(activeDropdown === 'coaching' ? null : 'coaching');
@@ -485,8 +498,19 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               </button>
               {activeDropdown === 'coaching' && (
                 <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[900px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
-                     onMouseEnter={() => setActiveDropdown('coaching')}
-                     onMouseLeave={() => setActiveDropdown(null)}>
+                     onMouseEnter={() => {
+                       if (dropdownTimeout) {
+                         clearTimeout(dropdownTimeout);
+                         setDropdownTimeout(null);
+                       }
+                       setActiveDropdown('coaching');
+                     }}
+                     onMouseLeave={() => {
+                       const timeout = setTimeout(() => {
+                         setActiveDropdown(null);
+                       }, 300); // 300ms delay before hiding
+                       setDropdownTimeout(timeout);
+                     }}>
                   <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     <div className="flex gap-4">
                       <div className="flex-1">
@@ -604,8 +628,19 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
 
             {/* Resources Dropdown */}
             <div className="relative"
-                 onMouseEnter={() => setActiveDropdown('resources')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
+                 onMouseEnter={() => {
+                   if (dropdownTimeout) {
+                     clearTimeout(dropdownTimeout);
+                     setDropdownTimeout(null);
+                   }
+                   setActiveDropdown('resources');
+                 }}
+                 onMouseLeave={() => {
+                   const timeout = setTimeout(() => {
+                     setActiveDropdown(null);
+                   }, 300); // 300ms delay before hiding
+                   setDropdownTimeout(timeout);
+                 }}>
               <Link href="/dashboard/resources" onClick={(e) => {
                 if (activeDropdown === 'resources') {
                   e.preventDefault();
@@ -618,8 +653,19 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               </Link>
               {activeDropdown === 'resources' && (
                 <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[900px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
-                     onMouseEnter={() => setActiveDropdown('resources')}
-                     onMouseLeave={() => setActiveDropdown(null)}>
+                     onMouseEnter={() => {
+                       if (dropdownTimeout) {
+                         clearTimeout(dropdownTimeout);
+                         setDropdownTimeout(null);
+                       }
+                       setActiveDropdown('resources');
+                     }}
+                     onMouseLeave={() => {
+                       const timeout = setTimeout(() => {
+                         setActiveDropdown(null);
+                       }, 300); // 300ms delay before hiding
+                       setDropdownTimeout(timeout);
+                     }}>
                   <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     <div className="flex gap-4">
                       <div className="flex-1">
@@ -716,8 +762,19 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
 
             {/* Community Dropdown */}
             <div className="relative"
-                 onMouseEnter={() => setActiveDropdown('community')}
-                 onMouseLeave={() => setActiveDropdown(null)}>
+                 onMouseEnter={() => {
+                   if (dropdownTimeout) {
+                     clearTimeout(dropdownTimeout);
+                     setDropdownTimeout(null);
+                   }
+                   setActiveDropdown('community');
+                 }}
+                 onMouseLeave={() => {
+                   const timeout = setTimeout(() => {
+                     setActiveDropdown(null);
+                   }, 300); // 300ms delay before hiding
+                   setDropdownTimeout(timeout);
+                 }}>
               <Link href="/dashboard/community">
                 <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'community' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
                   <span>Community</span>
@@ -747,10 +804,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           
           {/* Right section with profile dropdown */}
           <div className="flex items-center gap-4 ml-auto">
-            <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white hover:bg-white/10 hover:border-white transition-colors duration-200">
-              <Bell className="h-4 w-4 text-white" />
-              <span className="sr-only">Notifications</span>
-            </Button>
+            <NotificationDropdown />
             
             <SettingsDialog 
               trigger={
