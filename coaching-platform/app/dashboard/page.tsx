@@ -330,11 +330,11 @@ const DashboardPage = () => {
                   {sessionMessage ? (
                     sessionMessage.includes("Book your first coaching session") || 
                     sessionMessage.includes("Schedule your first coaching session") ? (
-                      <span className="font-medium text-black dark:text-white relative inline-block animate-float">{sessionMessage}</span>
+                      <span className="font-medium text-black dark:text-white relative inline-block">{sessionMessage}</span>
                     ) : (
                       <>
                         Here's what's happening with your consulting journey today.{" "}
-                        <span className="font-medium text-black dark:text-white ml-1 relative inline-block animate-float">{sessionMessage}</span>
+                        <span className="font-medium text-black dark:text-white ml-1 relative inline-block">{sessionMessage}</span>
                       </>
                     )
                   ) : null}
@@ -429,20 +429,27 @@ const DashboardPage = () => {
             className="w-full space-y-4 pt-1 data-[state=active]:animate-fadeIn"
           >
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md">
+              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md z-10 group-hover:z-50">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 dark:bg-gray-100 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
                 {/* Coaching Sessions Image with hover effect to show Gaurav's details */}
-                <div className="absolute -bottom-20 right-0 w-80 h-80 overflow-visible z-0 group">
+                <div className="absolute -bottom-20 right-0 w-80 h-80 overflow-visible z-0 group hover:z-50" id="coachingImageContainer">
+                  <style jsx>{`
+                    #coachingImageContainer:hover ~ .adjacent-card {
+                      opacity: 0;
+                      pointer-events: none;
+                    }
+                  `}</style>
                   <img 
                     src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Container1_Coaching.png?alt=media&token=94a9472a-ea5a-4aec-bde6-2d7e8b1ceed0" 
                     alt="Coaching Sessions" 
                     className="w-full h-full object-contain transform translate-x-8 translate-y-0 opacity-80"
                   />
                   {/* Modern aesthetic coach details tooltip that appears in the middle of the screen on hover */}
-                  <div className="fixed inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out pointer-events-none scale-95 group-hover:scale-100 z-[99999]" style={{zIndex: 99999}}>
-                    <div className="bg-gradient-to-br from-white/95 to-white/90 dark:from-gray-900/95 dark:to-gray-800/90 p-5 rounded-2xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.3)] border border-white/30 dark:border-gray-700/40 overflow-hidden relative w-80 backdrop-blur-xl">
-                      {/* Semi-transparent overlay behind the tooltip */}
-                      <div className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm -z-10"></div>
+                  <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 ease-in-out pointer-events-none scale-95 group-hover:scale-100" style={{position: 'fixed', zIndex: 9999999}}>
+                    {/* Semi-transparent overlay behind the tooltip */}
+                    <div className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm" style={{position: 'fixed', zIndex: 9999990}}></div>
+                    <div className="bg-gradient-to-br from-white/95 to-white/90 dark:from-gray-900/95 dark:to-gray-800/90 p-5 rounded-2xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.3)] border border-white/30 dark:border-gray-700/40 overflow-hidden w-80 backdrop-blur-xl" style={{position: 'relative', zIndex: 9999999}}>
+
                       {/* Background decorative elements */}
                       <div className="absolute -top-24 -right-24 w-40 h-40 bg-[#245D66]/10 rounded-full blur-2xl"></div>
                       <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-xl"></div>
@@ -534,7 +541,7 @@ const DashboardPage = () => {
                 </div>
               </Card>
 
-              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md">
+              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md transition-opacity duration-300 adjacent-card">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 dark:bg-gray-100 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
@@ -570,7 +577,7 @@ const DashboardPage = () => {
                 </Button>
               </Card>
 
-              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md">
+              <Card variant="light" className="p-6 rounded-xl relative overflow-hidden shadow-md transition-opacity duration-300 adjacent-card">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 dark:bg-gray-100 rounded-full blur-2xl transform translate-x-16 -translate-y-8"></div>
                 {/* Toolkit Image */}
                 <div className="absolute bottom-2 right-0 w-40 h-40 overflow-visible z-0">
