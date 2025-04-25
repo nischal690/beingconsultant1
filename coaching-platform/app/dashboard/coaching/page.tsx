@@ -22,19 +22,21 @@ import {
   Filter,
   Zap,
   X,
-  Check
+  Check,
+  Globe
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { processRazorpayPayment } from "@/lib/payment/razorpay"
 import { processStripePayment } from "@/lib/payment/stripe"
 import { useAuth } from "@/lib/firebase/auth-context";
 import { PaymentModal, PaymentItem } from "@/components/payment/payment-modal"
-import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord } from "@/lib/firebase/firestore"
+import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord, checkCoachingProgramExists } from "@/lib/firebase/firestore"
 
 // Helper component for testimonials
 function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
@@ -78,6 +80,7 @@ interface CoachingProgram {
   rating?: number
   reviewCount?: number
   features?: string[]
+  uniqueId: string // Unique identifier for the coaching program
 }
 
 export default function CoachingPage() {
@@ -122,6 +125,23 @@ export default function CoachingPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null)
   const [couponError, setCouponError] = useState<string | null>(null)
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
+  
+  // Currency switcher state
+  const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "EUR" | "INR">("USD")
+  
+  // Currency conversion rates (approximate values)
+  const conversionRates = {
+    USD: 1,
+    EUR: 0.92, // 1 USD = 0.92 EUR
+    INR: 83.5  // 1 USD = 83.5 INR
+  }
+  
+  // Currency symbols
+  const currencySymbols = {
+    USD: "$",
+    EUR: "€",
+    INR: "₹"
+  }
 
   // Sample coupon data
   const availableCoupons = [
@@ -138,8 +158,21 @@ export default function CoachingPage() {
 
   // Calculate discounted price
   const calculateDiscountedPrice = (price: number) => {
-    if (!appliedCoupon) return price;
-    return price - (price * (appliedCoupon.discount / 100));
+    if (appliedCoupon) {
+      return price - (price * appliedCoupon.discount) / 100;
+    }
+    return price;
+  }
+  
+  // Convert price to selected currency
+  const convertPrice = (priceInUSD: number) => {
+    return (priceInUSD * conversionRates[selectedCurrency]).toFixed(2);
+  }
+  
+  // Format price with currency symbol
+  const formatPrice = (price: number) => {
+    const convertedPrice = convertPrice(price);
+    return `${currencySymbols[selectedCurrency]}${convertedPrice}`;
   }
 
   // Handle apply coupon
@@ -167,18 +200,26 @@ export default function CoachingPage() {
 
   // Handle payment method selection
   const handlePaymentMethodSelect = async (method: 'razorpay' | 'stripe') => {
+    // Convert price to the selected currency for payment processing
+    const priceInSelectedCurrency = parseFloat(convertPrice(calculateDiscountedPrice(selectedProgram!.price)));
     if (!selectedProgram) return;
     
     try {
+      console.log(`[Payment Start] Processing ${method} payment for program: ${selectedProgram.title}`);
+      
       // Calculate the final price after discount
       const finalPrice = calculateDiscountedPrice(selectedProgram.price);
       const amountInSmallestUnit = Math.round(finalPrice * 100);
+      
+      // Get unique ID for the coaching program
+      const programUniqueId = (selectedProgram as any).uniqueId || `coaching-program-${Date.now()}`;
       
       // Prepare metadata for the payment
       const metadata: Record<string, string> = {
         programId: selectedProgram.id,
         programTitle: selectedProgram.title,
-        programCategory: 'coaching'
+        programCategory: 'coaching',
+        programUniqueId: programUniqueId
       };
       
       if (appliedCoupon) {
@@ -186,9 +227,12 @@ export default function CoachingPage() {
         metadata.discountApplied = `${appliedCoupon.discount}%`;
       }
       
+      console.log(`[Payment Processing] Metadata prepared: ${JSON.stringify(metadata)}`);
+      
       let paymentResult;
       
       if (method === 'razorpay') {
+        console.log(`[Payment Processing] Initiating Razorpay payment for amount: ${finalPrice} USD`);
         paymentResult = await processRazorpayPayment({
           amount: amountInSmallestUnit,
           currency: 'USD',
@@ -204,6 +248,7 @@ export default function CoachingPage() {
           }
         });
       } else {
+        console.log(`[Payment Processing] Initiating Stripe payment for amount: ${finalPrice} USD`);
         paymentResult = await processStripePayment({
           amount: amountInSmallestUnit,
           currency: 'usd',
@@ -214,9 +259,14 @@ export default function CoachingPage() {
         });
       }
       
+      console.log(`[Payment Result] Payment result received: ${JSON.stringify(paymentResult)}`);
+      
       if (paymentResult.success) {
+        console.log(`[Payment Success] Payment successful with transaction ID: ${paymentResult.transactionId}`);
+        
         // If payment is successful and there was a coupon applied
         if (appliedCoupon) {
+          console.log(`[Payment Success] Coupon applied: ${appliedCoupon.code} with ${appliedCoupon.discount}% discount`);
           // In a real implementation, you would increment coupon usage here
           // await incrementCouponUsage(appliedCoupon.code);
         }
@@ -225,28 +275,43 @@ export default function CoachingPage() {
           try {
             console.log(`[Payment Success] Starting to record transaction and coaching program for user: ${user.uid}`);
             
+            // First, check if this coaching program already exists in the user's profile
+            const programExists = await checkCoachingProgramExists(user.uid, selectedProgram.id);
+            
+            if (programExists) {
+              console.log(`[Payment] Coaching program already exists for user: ${user.uid}, program: ${selectedProgram.id}. Skipping creation.`);
+              toast.info("This coaching program is already in your account.");
+              return;
+            }
+            
             // Create transaction record
-            const transactionResult = await createTransactionRecord(user.uid, {
+            const transactionData = {
               transactionId: paymentResult.transactionId,
               amount: finalPrice,
               currency: method === 'razorpay' ? 'USD' : 'usd',
-              status: 'successful',
+              status: "successful" as "successful" | "failed" | "pending",
               paymentMethod: method,
               productId: selectedProgram.id,
               productTitle: selectedProgram.title,
               couponCode: appliedCoupon?.code,
               couponDiscount: appliedCoupon?.discount,
-              couponDiscountType: 'percentage',
-              metadata: metadata
-            });
+              couponDiscountType: "percentage" as "fixed" | "percentage",
+              metadata: {
+                ...metadata,
+                purchaseDate: new Date().toISOString()
+              }
+            };
+            
+            console.log(`[Payment Success] Creating transaction record with data: ${JSON.stringify(transactionData)}`);
+            const transactionResult = await createTransactionRecord(user.uid, transactionData);
             
             console.log(`[Payment Success] Transaction record created: ${JSON.stringify(transactionResult)}`);
             
             // Add coaching program to user's profile (coaching subcollection only)
             console.log(`[Payment Success] Creating coaching record for program: ${selectedProgram.id} - ${selectedProgram.title}`);
             
-            const coachingResult = await addCoachingToUserProfile(user.uid, {
-              programId: selectedProgram.id,
+            const coachingData = {
+              programId: programUniqueId, // Use the unique ID as the program ID
               programName: selectedProgram.title,
               amountPaid: finalPrice,
               currency: method === 'razorpay' ? 'USD' : 'usd',
@@ -255,12 +320,30 @@ export default function CoachingPage() {
               metadata: {
                 originalPrice: selectedProgram.originalPrice,
                 discountApplied: appliedCoupon ? `${appliedCoupon.discount}%` : null,
-                couponCode: appliedCoupon?.code || null
+                couponCode: appliedCoupon?.code || null,
+                originalProgramId: selectedProgram.id,
+                purchaseDate: new Date().toISOString(),
+                programDescription: selectedProgram.description || '',
+                programShortDescription: selectedProgram.shortDescription || ''
               }
-            });
+            };
             
-            console.log(`[Payment Success] Coaching record created successfully: ${JSON.stringify(coachingResult)}`);
-            console.log(`[Payment Success] Payment flow completed for user: ${user.uid}, program: ${selectedProgram.id}`);
+            console.log(`[Payment Success] Creating coaching record with data: ${JSON.stringify(coachingData)}`);
+            const coachingResult = await addCoachingToUserProfile(user.uid, coachingData);
+            
+            if (coachingResult.success) {
+              if (coachingResult.alreadyExists) {
+                console.log(`[Payment Success] Coaching program already exists for user: ${user.uid}, program: ${selectedProgram.id}`);
+                toast.info("This coaching program is already in your account.");
+              } else {
+                console.log(`[Payment Success] Coaching record created successfully: ${JSON.stringify(coachingResult)}`);
+                console.log(`[Payment Success] Payment flow completed for user: ${user.uid}, program: ${selectedProgram.id}`);
+                toast.success("Coaching program added to your account!");
+              }
+            } else {
+              console.error(`[Payment Error] Failed to create coaching record:`, coachingResult.error);
+              toast.error("There was an issue adding the coaching program to your account.");
+            }
           } catch (error) {
             console.error("[Payment Error] Error recording transaction or coaching program:", error);
           }
@@ -274,10 +357,11 @@ export default function CoachingPage() {
         setAppliedCoupon(null);
         setCouponError(null);
       } else {
+        console.error(`[Payment Error] Payment failed: ${paymentResult.error?.message || 'Unknown error'}`);
         toast.error(`Payment failed: ${paymentResult.error?.message || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error(`Error processing ${method} payment:`, error);
+      console.error(`[Payment Error] Error processing ${method} payment:`, error);
       toast.error(`Error processing payment. Please try again.`);
     }
   }
@@ -302,7 +386,8 @@ export default function CoachingPage() {
       features: [
         "Personalized 1:1 sessions with ex-MBB consultants",
         "Industry-specific case frameworks and methodologies"
-      ]
+      ],
+      uniqueId: "coaching-program-001"
     },
     // Unlimited coaching
     {
@@ -322,16 +407,17 @@ export default function CoachingPage() {
       features: [
         "Unlimited mock interviews and feedback sessions",
         "Priority access to study materials and resources"
-      ]
+      ],
+      uniqueId: "coaching-program-002"
     },
     // Group coaching
     {
       id: "group-coaching",
       title: "Group Coaching",
-      description: "Join a small group of like-minded candidates to learn and practice together. Benefit from peer learning, shared experiences, and structured group sessions led by expert coaches.",
-      shortDescription: "Small group sessions with like-minded candidates",
+      description: "Join a Small Group of like-minded candidates to learn and practice together. Benefit from peer learning, shared experiences, and structured group sessions led by expert coaches.",
+      shortDescription: "Small Group sessions with like-minded candidates",
       iconName: "users",
-      category: "group",
+      category: "Group",
       price: 997,
       originalPrice: 1497,
       discount: 33,
@@ -342,12 +428,13 @@ export default function CoachingPage() {
       features: [
         "Interactive group sessions with max 5 participants",
         "Weekly case practice with diverse industry focus"
-      ]
+      ],
+      uniqueId: "coaching-program-003"
     }
   ].filter(program => 
     activeFilter === "all" || 
     (activeFilter === "1on1" && program.category === "1on1") ||
-    (activeFilter === "group" && program.category === "group")
+    (activeFilter === "Group" && program.category === "Group")
   );
 
   // Add state for section reference
@@ -516,7 +603,7 @@ export default function CoachingPage() {
                     <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
                       <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
                       <Image 
-                        src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=200&h=250&fit=crop" 
+                        src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=200&h=250&fit=crop" 
                         alt="Coach" 
                         width={200} 
                         height={250}
@@ -557,16 +644,49 @@ export default function CoachingPage() {
                 1:1 Coaching
               </Button>
               <Button 
-                variant={activeFilter === "group" ? "default" : "ghost"} 
+                variant={activeFilter === "Group" ? "default" : "ghost"} 
                 size="sm"
-                onClick={() => setActiveFilter("group")}
-                className={`rounded-full px-4 ${activeFilter === "group" ? "bg-primary/90 text-white shadow-md" : ""}`}
+                onClick={() => setActiveFilter("Group")}
+                className={`rounded-full px-4 ${activeFilter === "Group" ? "bg-primary/90 text-white shadow-md" : ""}`}
               >
                 Group Programs
               </Button>
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300 backdrop-blur-sm">
+                <Globe className="h-4 w-4 text-white/80" />
+                <Select
+                  value={selectedCurrency}
+                  onValueChange={(value) => setSelectedCurrency(value as "USD" | "EUR" | "INR")}
+                >
+                  <SelectTrigger className="w-[120px] h-7 bg-transparent border-0 text-white hover:text-white focus:ring-0 focus:ring-offset-0 pl-0">
+                    <SelectValue placeholder="Currency" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/90 border border-white/20 text-white backdrop-blur-xl shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <SelectItem value="USD" className="hover:bg-white/10 focus:bg-white/10 rounded-sm my-1 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">USD</span>
+                        <span className="text-white/70">($)</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="EUR" className="hover:bg-white/10 focus:bg-white/10 rounded-sm my-1 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">EUR</span>
+                        <span className="text-white/70">(€)</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="INR" className="hover:bg-white/10 focus:bg-white/10 rounded-sm my-1 cursor-pointer">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">INR</span>
+                        <span className="text-white/70">(₹)</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <Button variant="ghost" size="sm" className="flex items-center gap-1 rounded-full">
               <span>Sort By</span>
               <ChevronDown className="h-4 w-4" />
@@ -638,9 +758,10 @@ export default function CoachingPage() {
                   </div>
                   
                   <div className="relative p-5 z-10">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="inline-block px-2 py-1.5 rounded-full bg-white/10 text-xs font-medium text-white/90 border border-white/10">
-                        {program.category}
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="text-xl font-bold">{program.title}</h3>
+                        <p className="text-gray-300 text-xs">{program.shortDescription}</p>
                       </div>
                       <div className="bg-white/10 p-2 rounded-full">
                         {program.iconName === "briefcase" && <Briefcase className="h-4 w-4 text-white" />}
@@ -649,14 +770,9 @@ export default function CoachingPage() {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-white transition-colors">
-                      {program.title}
-                    </h3>
-                    <p className="text-gray-300 text-xs mb-3">{program.shortDescription}</p>
-
                     <div className="flex flex-wrap gap-1 mb-3">
                       {program.features.slice(0, 3).map((feature, index) => (
-                        <div key={index} className="flex items-center gap-1 text-xs text-gray-200">
+                        <div key={index} className="flex items-start gap-1 text-xs text-gray-200">
                           <CheckCircle className="h-3 w-3 text-white/80 flex-shrink-0" />
                           <span>{feature}</span>
                         </div>
@@ -665,9 +781,9 @@ export default function CoachingPage() {
 
                     <div className="flex justify-between items-center">
                       <div className="flex items-baseline gap-2">
-                        <p className="text-lg font-bold text-white">${program.price}</p>
+                        <p className="text-lg font-bold">{formatPrice(program.price)}</p>
                         {program.originalPrice && (
-                          <p className="text-xs text-gray-400 line-through">${program.originalPrice}</p>
+                          <p className="text-xs text-gray-400 line-through">{formatPrice(program.originalPrice)}</p>
                         )}
                       </div>
                       <div 
@@ -732,7 +848,7 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">$299</span>
+                        <span className="text-xl font-bold">{formatPrice(299)}</span>
                         <span className="text-xs text-muted-foreground">per session</span>
                       </div>
                     </div>
@@ -740,12 +856,13 @@ export default function CoachingPage() {
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
                       onClick={() => handleBuyNow({
-                        id: "1on1-case-cracking",
+                        id: "1-1-case-cracking",
                         title: "1:1 Case Cracking",
                         description: "Master case interviews",
                         price: 299,
                         originalPrice: 399,
-                        discount: 25
+                        discount: 25,
+                        uniqueId: "coaching-program-004"
                       })}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
@@ -790,7 +907,7 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">$199</span>
+                        <span className="text-xl font-bold">{formatPrice(199)}</span>
                         <span className="text-xs text-muted-foreground">per review</span>
                       </div>
                     </div>
@@ -803,7 +920,8 @@ export default function CoachingPage() {
                         description: "Get expert feedback",
                         price: 199,
                         originalPrice: 299,
-                        discount: 33
+                        discount: 33,
+                        uniqueId: "coaching-program-005"
                       })}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
@@ -848,7 +966,7 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">$249</span>
+                        <span className="text-xl font-bold">{formatPrice(249)}</span>
                         <span className="text-xs text-muted-foreground">per session</span>
                       </div>
                     </div>
@@ -861,7 +979,8 @@ export default function CoachingPage() {
                         description: "Ace your behavioral interviews",
                         price: 249,
                         originalPrice: 349,
-                        discount: 29
+                        discount: 29,
+                        uniqueId: "coaching-program-006"
                       })}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
@@ -1254,7 +1373,7 @@ export default function CoachingPage() {
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#E5EFF1] rounded-full blur-3xl"></div>
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#E5EFF1] rounded-full blur-3xl"></div>
           
-          <div className="relative p-8 md:p-12 text-black">
+          <div className="relative p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
                 <Badge className="bg-[#245D66] hover:bg-[#1A444B] text-white border-none">
@@ -1280,7 +1399,7 @@ export default function CoachingPage() {
               </div>
               
               <div className="space-y-4 bg-[#245D66]/5 backdrop-blur-sm p-6 rounded-xl border border-[#245D66]/10 shadow-lg hover:shadow-[#245D66]/10 transition-all duration-300">
-                <h3 className="text-xl font-bold text-[#245D66]">Why Choose Our Coaching?</h3>
+                <div className="text-xl font-bold" style={{color: 'rgb(36, 93, 102)'}}><span style={{opacity: 0.9}}>Why Choose Our Coaching?</span></div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
@@ -1317,8 +1436,8 @@ export default function CoachingPage() {
         onClose={() => setShowPaymentDialog(false)}
         selectedItem={selectedProgram!}
         onPaymentMethodSelect={handlePaymentMethodSelect}
-        currencySymbol="$"
-        currencyCode="USD"
+        currencySymbol={currencySymbols[selectedCurrency]}
+        currencyCode={selectedCurrency}
       />
     </div>
   );
