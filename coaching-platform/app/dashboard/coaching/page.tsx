@@ -446,7 +446,7 @@ export default function CoachingPage() {
   };
 
   return (
-    <div className="container mx-auto space-y-10 pb-20">
+    <div className="w-full space-y-10 pb-20">
       {/* Hero Section - 1:1 Personalized Coaching */}
       <section className="relative overflow-hidden rounded-3xl text-gray-800">
         {/* Background image with enhanced styling */}
