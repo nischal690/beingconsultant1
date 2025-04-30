@@ -37,7 +37,7 @@ import { processStripePayment } from "@/lib/payment/stripe"
 import { useAuth } from "@/lib/firebase/auth-context";
 import { PaymentModal, PaymentItem } from "@/components/payment/payment-modal"
 import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord } from "@/lib/firebase/firestore"
-import { coachingPrograms, getProgramsByCategory } from "@/data/coaching-programs"
+import { CoachingProgram, coachingPrograms, getProgramsByCategory } from "@/data/coaching-programs"
 
 // Helper component for testimonials
 function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
@@ -133,13 +133,19 @@ export default function CoachingPage() {
 
   // Handle buy now click
   const handleBuyNow = (program: CoachingProgram) => {
+    // Convert prices to numbers
+    const priceConverted = convertPrice(program.price);
+    const originalPriceConverted = program.originalPrice 
+      ? convertPrice(program.originalPrice) 
+      : undefined;
+      
     setSelectedProgram({
       id: program.id,
       title: program.title,
       description: program.description,
       shortDescription: program.shortDescription || "",
-      price: convertPrice(program.price),
-      originalPrice: program.originalPrice ? convertPrice(program.originalPrice) : undefined,
+      price: priceConverted,
+      originalPrice: originalPriceConverted,
       uniqueId: program.id // Use the program ID as the uniqueId
     });
     setAppliedCoupon(null); // Reset applied coupon when selecting a new program
@@ -154,14 +160,13 @@ export default function CoachingPage() {
   }
   
   // Convert price to selected currency
-  const convertPrice = (priceInUSD: number) => {
-    return (priceInUSD * conversionRates[selectedCurrency]).toFixed(2);
+  const convertPrice = (priceInUSD: number): number => {
+    return priceInUSD * conversionRates[selectedCurrency];
   }
   
   // Format price with currency symbol
-  const formatPrice = (price: number) => {
-    const convertedPrice = convertPrice(price);
-    return `${currencySymbols[selectedCurrency]}${convertedPrice}`;
+  const formatPrice = (price: number): string => {
+    return `${currencySymbols[selectedCurrency]}${price.toFixed(2)}`;
   }
 
   // Handle apply coupon
@@ -198,7 +203,7 @@ export default function CoachingPage() {
       const couponToUse = coupon || appliedCoupon;
       
       // Calculate the final price with the coupon discount
-      const finalPrice = calculateDiscountedPrice(parseFloat(selectedProgram.price), couponToUse);
+      const finalPrice = calculateDiscountedPrice(selectedProgram.price, couponToUse);
       const amountInSmallestUnit = Math.round(finalPrice * 100);
       
       console.log(`[Payment] Original price: ${selectedProgram.price}, Final price after discount: ${finalPrice}`);
