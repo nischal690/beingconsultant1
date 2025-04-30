@@ -767,21 +767,19 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">{formatPrice(299)}</span>
+                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "coaching-program-004")?.price || 299)}</span>
                         <span className="text-xs text-muted-foreground">per session</span>
                       </div>
                     </div>
                     
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
-                      onClick={() => handleBuyNow(coachingPrograms.find(p => p.id === "coaching-program-004") || {
-                        id: "coaching-program-004",
-                        title: "1:1 Case Cracking",
-                        description: "Master case interviews",
-                        price: 299,
-                        originalPrice: 499,
-                        category: "1on1"
-                      })}
+                      onClick={() => {
+                        const program = coachingPrograms.find(p => p.id === "coaching-program-004");
+                        if (program) {
+                          handleBuyNow(program);
+                        }
+                      }}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
                       <span className="relative z-10 flex items-center gap-1">
@@ -825,21 +823,19 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">{formatPrice(199)}</span>
+                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "cv-cl-review")?.price || 199)}</span>
                         <span className="text-xs text-muted-foreground">per review</span>
                       </div>
                     </div>
                     
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
-                      onClick={() => handleBuyNow(coachingPrograms.find(p => p.id === "cv-cl-review") || {
-                        id: "cv-cl-review",
-                        title: "1:1 CV and CL Review",
-                        description: "Get expert feedback",
-                        price: 199,
-                        originalPrice: 299,
-                        category: "1on1"
-                      })}
+                      onClick={() => {
+                        const program = coachingPrograms.find(p => p.id === "cv-cl-review");
+                        if (program) {
+                          handleBuyNow(program);
+                        }
+                      }}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
                       <span className="relative z-10 flex items-center gap-1">
@@ -883,21 +879,19 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">{formatPrice(249)}</span>
+                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "fit-interview")?.price || 249)}</span>
                         <span className="text-xs text-muted-foreground">per session</span>
                       </div>
                     </div>
                     
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
-                      onClick={() => handleBuyNow(coachingPrograms.find(p => p.id === "fit-interview") || {
-                        id: "fit-interview",
-                        title: "1:1 Fit Interview",
-                        description: "Ace your behavioral interviews",
-                        price: 249,
-                        originalPrice: 349,
-                        category: "1on1"
-                      })}
+                      onClick={() => {
+                        const program = coachingPrograms.find(p => p.id === "fit-interview");
+                        if (program) {
+                          handleBuyNow(program);
+                        }
+                      }}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
                       <span className="relative z-10 flex items-center gap-1">

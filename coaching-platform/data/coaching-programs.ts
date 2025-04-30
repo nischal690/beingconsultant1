@@ -106,7 +106,7 @@ export const coachingPrograms: CoachingProgram[] = [
     description: "Get your resume reviewed by ex-MBB consultants",
     shortDescription: "Expert resume review and optimization",
     iconName: "fileText",
-    category: "document",
+    category: "1on1",
     price: 99,
     originalPrice: 199,
     discount: 50,
