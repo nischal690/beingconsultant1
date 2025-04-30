@@ -13,6 +13,7 @@ export type PaymentItem = {
   originalPrice?: number;
   discount?: number;
   shortDescription?: string;
+  uniqueId?: string;
 };
 
 export type Coupon = {
@@ -68,6 +69,11 @@ export function PaymentModal({
     }, 1000);
   };
 
+  // Format price with the provided currency symbol
+  const formatPrice = (price: number): string => {
+    return `${currencySymbol}${price.toFixed(2)}`;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -108,24 +114,22 @@ export function PaymentModal({
             <div className="mt-3 flex items-baseline">
               {appliedCoupon ? (
                 <>
-                  <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 pl-2">
-                    {currencySymbol}{calculateDiscountedPrice(selectedItem.price).toFixed(2)}
-                  </p>
-                  <span className="text-xs line-through text-white/40 ml-2">
-                    {currencySymbol}{selectedItem.price.toFixed(2)}
-                  </span>
-                  <span className="text-xs text-green-400 ml-2">
-                    {appliedCoupon.discount}% OFF
+                  <span className="text-2xl font-bold text-white">{formatPrice(calculateDiscountedPrice(selectedItem.price))}</span>
+                  <span className="ml-2 text-sm line-through text-white/40">{formatPrice(selectedItem.price)}</span>
+                  <span className="ml-2 text-xs text-green-400">-{appliedCoupon.discount}%</span>
+                </>
+              ) : selectedItem.originalPrice ? (
+                <>
+                  <span className="text-2xl font-bold text-white">{formatPrice(selectedItem.price)}</span>
+                  <span className="ml-2 text-sm line-through text-white/40">{formatPrice(selectedItem.originalPrice)}</span>
+                  <span className="ml-2 text-xs text-green-400">
+                    -{Math.round((1 - selectedItem.price / selectedItem.originalPrice) * 100)}%
                   </span>
                 </>
               ) : (
-                <>
-                  <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 pl-2">
-                    {currencySymbol}{selectedItem.price.toFixed(2)}
-                  </p>
-                  <span className="text-xs text-white/40 ml-2">{currencyCode}</span>
-                </>
+                <span className="text-2xl font-bold text-white">{formatPrice(selectedItem.price)}</span>
               )}
+              <span className="ml-2 text-xs text-white/50">({currencyCode})</span>
             </div>
           </div>
         </div>

@@ -36,7 +36,7 @@ import { processRazorpayPayment } from "@/lib/payment/razorpay"
 import { processStripePayment } from "@/lib/payment/stripe"
 import { useAuth } from "@/lib/firebase/auth-context";
 import { PaymentModal, PaymentItem } from "@/components/payment/payment-modal"
-import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord, checkCoachingProgramExists } from "@/lib/firebase/firestore"
+import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord } from "@/lib/firebase/firestore"
 
 // Helper component for testimonials
 function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
@@ -152,7 +152,13 @@ export default function CoachingPage() {
 
   // Handle buy now click
   const handleBuyNow = (program: any) => {
-    setSelectedProgram(program);
+    // Create a copy of the program with the converted price
+    const programWithConvertedPrice = {
+      ...program,
+      price: parseFloat(convertPrice(program.price)),
+      originalPrice: program.originalPrice ? parseFloat(convertPrice(program.originalPrice)) : undefined
+    };
+    setSelectedProgram(programWithConvertedPrice);
     setShowPaymentDialog(true);
   }
 
@@ -200,42 +206,42 @@ export default function CoachingPage() {
 
   // Handle payment method selection
   const handlePaymentMethodSelect = async (method: 'razorpay' | 'stripe') => {
-    // Convert price to the selected currency for payment processing
-    const priceInSelectedCurrency = parseFloat(convertPrice(calculateDiscountedPrice(selectedProgram!.price)));
     if (!selectedProgram) return;
     
     try {
       console.log(`[Payment Start] Processing ${method} payment for program: ${selectedProgram.title}`);
       
-      // Calculate the final price after discount
+      // The price is already converted in the selectedProgram object
       const finalPrice = calculateDiscountedPrice(selectedProgram.price);
       const amountInSmallestUnit = Math.round(finalPrice * 100);
       
-      // Get unique ID for the coaching program
-      const programUniqueId = (selectedProgram as any).uniqueId || `coaching-program-${Date.now()}`;
+      // Generate a unique ID for the transaction
+      const transactionId = `txn_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       
-      // Prepare metadata for the payment
+      // Generate a unique ID for the coaching program
+      const programUniqueId = selectedProgram.uniqueId || `program_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      
+      // Prepare metadata for the transaction
       const metadata: Record<string, string> = {
+        userId: user?.uid || '',
+        userEmail: user?.email || '',
         programId: selectedProgram.id,
-        programTitle: selectedProgram.title,
-        programCategory: 'coaching',
-        programUniqueId: programUniqueId
-      };
-      
-      if (appliedCoupon) {
-        metadata.couponCode = appliedCoupon.code;
-        metadata.discountApplied = `${appliedCoupon.discount}%`;
+        programName: selectedProgram.title,
+        couponCode: appliedCoupon?.code || '',
+        couponDiscount: appliedCoupon?.discount?.toString() || '0',
+        originalPrice: (selectedProgram.originalPrice || 0).toString(),
+        finalPrice: finalPrice.toString(),
+        currency: selectedCurrency,
+        timestamp: new Date().toISOString()
       }
-      
-      console.log(`[Payment Processing] Metadata prepared: ${JSON.stringify(metadata)}`);
       
       let paymentResult;
       
       if (method === 'razorpay') {
-        console.log(`[Payment Processing] Initiating Razorpay payment for amount: ${finalPrice} USD`);
+        console.log(`[Payment Processing] Initiating Razorpay payment for amount: ${finalPrice} ${selectedCurrency}`);
         paymentResult = await processRazorpayPayment({
           amount: amountInSmallestUnit,
-          currency: 'USD',
+          currency: selectedCurrency,
           name: "Being Consultant",
           description: `Payment for ${selectedProgram.title}`,
           prefill: {
@@ -248,10 +254,10 @@ export default function CoachingPage() {
           }
         });
       } else {
-        console.log(`[Payment Processing] Initiating Stripe payment for amount: ${finalPrice} USD`);
+        console.log(`[Payment Processing] Initiating Stripe payment for amount: ${finalPrice} ${selectedCurrency}`);
         paymentResult = await processStripePayment({
           amount: amountInSmallestUnit,
-          currency: 'usd',
+          currency: selectedCurrency.toLowerCase(),
           productName: selectedProgram.title,
           productDescription: selectedProgram.description,
           customerEmail: user?.email || '',
@@ -276,30 +282,27 @@ export default function CoachingPage() {
             console.log(`[Payment Success] Starting to record transaction and coaching program for user: ${user.uid}`);
             
             // First, check if this coaching program already exists in the user's profile
-            const programExists = await checkCoachingProgramExists(user.uid, selectedProgram.id);
+            // const programExists = await checkCoachingProgramExists(user.uid, selectedProgram.id);
             
-            if (programExists) {
-              console.log(`[Payment] Coaching program already exists for user: ${user.uid}, program: ${selectedProgram.id}. Skipping creation.`);
-              toast.info("This coaching program is already in your account.");
-              return;
-            }
+            // if (programExists) {
+            //   console.log(`[Payment] Coaching program already exists for user: ${user.uid}, program: ${selectedProgram.id}. Skipping creation.`);
+            //   toast.info("This coaching program is already in your account.");
+            //   return;
+            // }
             
             // Create transaction record
             const transactionData = {
-              transactionId: paymentResult.transactionId,
+              transactionId: paymentResult.id || transactionId,
               amount: finalPrice,
-              currency: method === 'razorpay' ? 'USD' : 'usd',
-              status: "successful" as "successful" | "failed" | "pending",
+              currency: selectedCurrency,
+              status: "successful" as "successful" | "failed",
               paymentMethod: method,
               productId: selectedProgram.id,
               productTitle: selectedProgram.title,
-              couponCode: appliedCoupon?.code,
-              couponDiscount: appliedCoupon?.discount,
-              couponDiscountType: "percentage" as "fixed" | "percentage",
-              metadata: {
-                ...metadata,
-                purchaseDate: new Date().toISOString()
-              }
+              couponCode: appliedCoupon?.code || undefined,
+              couponDiscount: appliedCoupon?.discount || undefined,
+              couponDiscountType: "percentage" as const,
+              metadata: metadata
             };
             
             console.log(`[Payment Success] Creating transaction record with data: ${JSON.stringify(transactionData)}`);
@@ -314,34 +317,26 @@ export default function CoachingPage() {
               programId: programUniqueId, // Use the unique ID as the program ID
               programName: selectedProgram.title,
               amountPaid: finalPrice,
-              currency: method === 'razorpay' ? 'USD' : 'usd',
-              transactionId: paymentResult.transactionId,
+              currency: selectedCurrency,
+              transactionId: paymentResult.id || transactionId,
               paymentMethod: method,
               metadata: {
                 originalPrice: selectedProgram.originalPrice,
-                discountApplied: appliedCoupon ? `${appliedCoupon.discount}%` : null,
-                couponCode: appliedCoupon?.code || null,
-                originalProgramId: selectedProgram.id,
-                purchaseDate: new Date().toISOString(),
-                programDescription: selectedProgram.description || '',
-                programShortDescription: selectedProgram.shortDescription || ''
+                discount: appliedCoupon?.discount || 0,
+                couponCode: appliedCoupon?.code || "",
+                purchaseDate: new Date().toISOString()
               }
             };
             
-            console.log(`[Payment Success] Creating coaching record with data: ${JSON.stringify(coachingData)}`);
+            console.log(`[Payment Success] Coaching data prepared: ${JSON.stringify(coachingData)}`);
+            
             const coachingResult = await addCoachingToUserProfile(user.uid, coachingData);
             
             if (coachingResult.success) {
-              if (coachingResult.alreadyExists) {
-                console.log(`[Payment Success] Coaching program already exists for user: ${user.uid}, program: ${selectedProgram.id}`);
-                toast.info("This coaching program is already in your account.");
-              } else {
-                console.log(`[Payment Success] Coaching record created successfully: ${JSON.stringify(coachingResult)}`);
-                console.log(`[Payment Success] Payment flow completed for user: ${user.uid}, program: ${selectedProgram.id}`);
-                toast.success("Coaching program added to your account!");
-              }
+              console.log(`[Payment Success] Coaching program added to user profile: ${coachingResult.id}`);
+              toast.success("Coaching program added to your account!");
             } else {
-              console.error(`[Payment Error] Failed to create coaching record:`, coachingResult.error);
+              console.error(`[Payment Error] Failed to add coaching program: ${coachingResult.error}`);
               toast.error("There was an issue adding the coaching program to your account.");
             }
           } catch (error) {
@@ -351,7 +346,7 @@ export default function CoachingPage() {
           console.warn("[Payment Warning] User not authenticated, skipping transaction and coaching record creation");
         }
         
-        toast.success(`Payment successful! Transaction ID: ${paymentResult.transactionId}`);
+        toast.success(`Payment successful! Transaction ID: ${paymentResult.id || transactionId}`);
         setShowPaymentDialog(false);
         setCouponCode("");
         setAppliedCoupon(null);
@@ -446,7 +441,7 @@ export default function CoachingPage() {
   };
 
   return (
-    <div className="w-full space-y-10 pb-20">
+    <div className="w-full space-y-10 pb-20 px-4 md:px-6 lg:px-8">
       {/* Hero Section - 1:1 Personalized Coaching */}
       <section className="relative overflow-hidden rounded-3xl text-gray-800">
         {/* Background image with enhanced styling */}
