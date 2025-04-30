@@ -70,8 +70,8 @@ export const coachingPrograms: CoachingProgram[] = [
     price: 497,
     originalPrice: 997,
     discount: 50,
-    popular: false,
-    featured: false,
+    popular: true,
+    featured: true,
     rating: 4.7,
     reviewCount: 56,
     features: [
@@ -101,7 +101,7 @@ export const coachingPrograms: CoachingProgram[] = [
   },
   // Resume Review
   {
-    id: "cv-cl-review",
+    id: "coaching-program-005",
     title: "1:1 CV and CL Review",
     description: "Get your resume reviewed by ex-MBB consultants",
     shortDescription: "Expert resume review and optimization",
@@ -121,7 +121,7 @@ export const coachingPrograms: CoachingProgram[] = [
   },
   // Career Strategy Session
   {
-    id: "fit-interview",
+    id: "coaching-program-006",
     title: "1:1 Fit Interview",
     description: "Strategic career planning session",
     shortDescription: "Plan your consulting career path",

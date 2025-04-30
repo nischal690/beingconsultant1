@@ -690,7 +690,7 @@ export default function CoachingPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {program.features.slice(0, 3).map((feature, index) => (
+                      {program.features?.slice(0, 3).map((feature, index) => (
                         <div key={index} className="flex items-start gap-1 text-xs text-gray-200">
                           <CheckCircle className="h-3 w-3 text-white/80 flex-shrink-0" />
                           <span>{feature}</span>
@@ -823,7 +823,7 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "cv-cl-review")?.price || 199)}</span>
+                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "coaching-program-005")?.price || 199)}</span>
                         <span className="text-xs text-muted-foreground">per review</span>
                       </div>
                     </div>
@@ -831,7 +831,7 @@ export default function CoachingPage() {
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
                       onClick={() => {
-                        const program = coachingPrograms.find(p => p.id === "cv-cl-review");
+                        const program = coachingPrograms.find(p => p.id === "coaching-program-005");
                         if (program) {
                           handleBuyNow(program);
                         }
@@ -879,7 +879,7 @@ export default function CoachingPage() {
                   <div className="flex items-end justify-between pt-2">
                     <div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "fit-interview")?.price || 249)}</span>
+                        <span className="text-xl font-bold">{formatPrice(coachingPrograms.find(p => p.id === "coaching-program-006")?.price || 249)}</span>
                         <span className="text-xs text-muted-foreground">per session</span>
                       </div>
                     </div>
@@ -887,7 +887,7 @@ export default function CoachingPage() {
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
                       onClick={() => {
-                        const program = coachingPrograms.find(p => p.id === "fit-interview");
+                        const program = coachingPrograms.find(p => p.id === "coaching-program-006");
                         if (program) {
                           handleBuyNow(program);
                         }
