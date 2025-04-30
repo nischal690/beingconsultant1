@@ -37,6 +37,7 @@ import { processStripePayment } from "@/lib/payment/stripe"
 import { useAuth } from "@/lib/firebase/auth-context";
 import { PaymentModal, PaymentItem } from "@/components/payment/payment-modal"
 import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord } from "@/lib/firebase/firestore"
+import { coachingPrograms, getProgramsByCategory } from "@/data/coaching-programs"
 
 // Helper component for testimonials
 function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
@@ -61,26 +62,6 @@ function TestimonialCard({ quote, author, role }: { quote: string, author: strin
       </CardContent>
     </Card>
   )
-}
-
-// Define the coaching program type
-interface CoachingProgram {
-  id: string
-  title: string
-  description: string
-  shortDescription: string
-  icon?: React.ReactNode
-  iconName?: string
-  category: string
-  price: number
-  originalPrice?: number
-  discount?: number
-  popular?: boolean
-  featured?: boolean
-  rating?: number
-  reviewCount?: number
-  features?: string[]
-  uniqueId: string // Unique identifier for the coaching program
 }
 
 export default function CoachingPage() {
@@ -151,15 +132,15 @@ export default function CoachingPage() {
   ]
 
   // Handle buy now click
-  const handleBuyNow = (program: any) => {
+  const handleBuyNow = (program: CoachingProgram) => {
     setSelectedProgram({
       id: program.id,
       title: program.title,
       description: program.description,
-      shortDescription: program.shortDescription,
-      price: parseFloat(convertPrice(program.price)),
-      originalPrice: program.originalPrice ? parseFloat(convertPrice(program.originalPrice)) : undefined,
-      uniqueId: program.uniqueId || `program_${Date.now()}_${Math.floor(Math.random() * 1000)}`
+      shortDescription: program.shortDescription || "",
+      price: convertPrice(program.price),
+      originalPrice: program.originalPrice ? convertPrice(program.originalPrice) : undefined,
+      uniqueId: program.id // Use the program ID as the uniqueId
     });
     setAppliedCoupon(null); // Reset applied coupon when selecting a new program
     setShowPaymentDialog(true);
@@ -217,7 +198,7 @@ export default function CoachingPage() {
       const couponToUse = coupon || appliedCoupon;
       
       // Calculate the final price with the coupon discount
-      const finalPrice = calculateDiscountedPrice(selectedProgram.price, couponToUse);
+      const finalPrice = calculateDiscountedPrice(parseFloat(selectedProgram.price), couponToUse);
       const amountInSmallestUnit = Math.round(finalPrice * 100);
       
       console.log(`[Payment] Original price: ${selectedProgram.price}, Final price after discount: ${finalPrice}`);
@@ -275,7 +256,7 @@ export default function CoachingPage() {
       console.log(`[Payment Result] Payment result received: ${JSON.stringify(paymentResult)}`);
       
       if (paymentResult.success) {
-        console.log(`[Payment Success] Payment successful with transaction ID: ${paymentResult.transactionId}`);
+        console.log(`[Payment Success] Payment successful with transaction ID: ${paymentResult.id || transactionId}`);
         
         // If payment is successful and there was a coupon applied
         if (couponToUse) {
@@ -367,76 +348,8 @@ export default function CoachingPage() {
     }
   }
 
-  // Filter coaching programs based on activeFilter
-  const filteredPrograms = [
-    // Break into consulting
-    {
-      id: "break-into-consulting",
-      title: "Break into Consulting",
-      description: "Master the art of case interviews with our comprehensive program designed for aspiring consultants. Get structured frameworks, real-world cases, and expert guidance to secure your dream consulting role.",
-      shortDescription: "Comprehensive case interview preparation",
-      iconName: "briefcase",
-      category: "1on1",
-      price: 997,
-      originalPrice: 2997,
-      discount: 33,
-      popular: true,
-      featured: true,
-      rating: 4.9,
-      reviewCount: 128,
-      features: [
-        "Personalized 1:1 sessions with ex-MBB consultants",
-        "Industry-specific case frameworks and methodologies"
-      ],
-      uniqueId: "coaching-program-001"
-    },
-    // Unlimited coaching
-    {
-      id: "unlimited-coaching",
-      title: "Unlimited Coaching",
-      description: "Get unlimited support until you receive your offer. Our most comprehensive package includes unlimited mock interviews, 24/7 query resolution, and personalized feedback to ensure your success.",
-      shortDescription: "Personalized coaching from ex-MBB consultants",
-      iconName: "clock",
-      category: "1on1",
-      price: 2997,
-      originalPrice: 3997,
-      discount: 25,
-      popular: true,
-      featured: true,
-      rating: 4.9,
-      reviewCount: 94,
-      features: [
-        "Unlimited mock interviews and feedback sessions",
-        "Priority access to study materials and resources"
-      ],
-      uniqueId: "coaching-program-002"
-    },
-    // Group coaching
-    {
-      id: "group-coaching",
-      title: "Group Coaching",
-      description: "Join a Small Group of like-minded candidates to learn and practice together. Benefit from peer learning, shared experiences, and structured group sessions led by expert coaches.",
-      shortDescription: "Small Group sessions with like-minded candidates",
-      iconName: "users",
-      category: "Group",
-      price: 997,
-      originalPrice: 1497,
-      discount: 33,
-      popular: true,
-      featured: true,
-      rating: 4.9,
-      reviewCount: 42,
-      features: [
-        "Interactive group sessions with max 5 participants",
-        "Weekly case practice with diverse industry focus"
-      ],
-      uniqueId: "coaching-program-003"
-    }
-  ].filter(program => 
-    activeFilter === "all" || 
-    (activeFilter === "1on1" && program.category === "1on1") ||
-    (activeFilter === "Group" && program.category === "Group")
-  );
+  // Get filtered programs based on the active filter
+  const filteredPrograms = getProgramsByCategory(activeFilter);
 
   // Add state for section reference
   const programsSectionRef = useRef<HTMLElement>(null);
@@ -856,14 +769,13 @@ export default function CoachingPage() {
                     
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
-                      onClick={() => handleBuyNow({
-                        id: "1-1-case-cracking",
+                      onClick={() => handleBuyNow(coachingPrograms.find(p => p.id === "coaching-program-004") || {
+                        id: "coaching-program-004",
                         title: "1:1 Case Cracking",
                         description: "Master case interviews",
                         price: 299,
-                        originalPrice: 399,
-                        discount: 25,
-                        uniqueId: "coaching-program-004"
+                        originalPrice: 499,
+                        category: "1on1"
                       })}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
@@ -915,14 +827,13 @@ export default function CoachingPage() {
                     
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
-                      onClick={() => handleBuyNow({
+                      onClick={() => handleBuyNow(coachingPrograms.find(p => p.id === "cv-cl-review") || {
                         id: "cv-cl-review",
                         title: "1:1 CV and CL Review",
                         description: "Get expert feedback",
                         price: 199,
                         originalPrice: 299,
-                        discount: 33,
-                        uniqueId: "coaching-program-005"
+                        category: "1on1"
                       })}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
@@ -974,14 +885,13 @@ export default function CoachingPage() {
                     
                     <Button 
                       className="group bg-black text-white hover:bg-white hover:text-black border border-black/20 hover:border-white shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden z-20"
-                      onClick={() => handleBuyNow({
+                      onClick={() => handleBuyNow(coachingPrograms.find(p => p.id === "fit-interview") || {
                         id: "fit-interview",
                         title: "1:1 Fit Interview",
                         description: "Ace your behavioral interviews",
                         price: 249,
                         originalPrice: 349,
-                        discount: 29,
-                        uniqueId: "coaching-program-006"
+                        category: "1on1"
                       })}
                     >
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
