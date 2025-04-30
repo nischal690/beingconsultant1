@@ -627,14 +627,43 @@ export default function CoachingPage() {
             </p>
           </div>
           <div className="flex items-center gap-2 mt-4 md:mt-0">
-            <span className="text-sm text-gray-400">
+            <div className="flex items-center gap-2">
+              <Button 
+                variant={activeFilter === "all" ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => setActiveFilter("all")}
+                className="rounded-full"
+              >
+                All Programs
+              </Button>
+              <Button 
+                variant={activeFilter === "1on1" ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => setActiveFilter("1on1")}
+                className="rounded-full"
+              >
+                One-on-One
+              </Button>
+              <Button 
+                variant={activeFilter === "group" ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => setActiveFilter("group")}
+                className="rounded-full"
+              >
+                Group Programs
+              </Button>
+            </div>
+            <span className="text-sm text-gray-400 ml-2">
               {isLoading ? "Loading programs..." : `${filteredPrograms.length} programs available`}
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPrograms.filter(program => program.featured).map((program) => (
+          {filteredPrograms
+            .filter(program => program.featured)
+            .filter(program => activeFilter === "all" || program.category === activeFilter)
+            .map((program) => (
             <motion.div
               key={program.id}
               variants={itemVariants}
