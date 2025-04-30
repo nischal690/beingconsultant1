@@ -537,42 +537,19 @@ export default function CoachingPage() {
         </div>
       </section>
 
-      {/* E-commerce style filter bar - Modernized */}
-      <section className="sticky top-16 z-20 bg-background/80 backdrop-blur-md py-4 border-b border-border/40">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="flex items-center gap-1 rounded-full">
-              <Filter className="h-4 w-4" />
-              <span>Filter</span>
-            </Button>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant={activeFilter === "all" ? "default" : "ghost"} 
-                size="sm"
-                onClick={() => setActiveFilter("all")}
-                className={`rounded-full px-4 ${activeFilter === "all" ? "bg-primary/90 text-white shadow-md" : ""}`}
-              >
-                All Programs
-              </Button>
-              <Button 
-                variant={activeFilter === "1on1" ? "default" : "ghost"} 
-                size="sm"
-                onClick={() => setActiveFilter("1on1")}
-                className={`rounded-full px-4 ${activeFilter === "1on1" ? "bg-primary/90 text-white shadow-md" : ""}`}
-              >
-                1:1 Coaching
-              </Button>
-              <Button 
-                variant={activeFilter === "Group" ? "default" : "ghost"} 
-                size="sm"
-                onClick={() => setActiveFilter("Group")}
-                className={`rounded-full px-4 ${activeFilter === "Group" ? "bg-primary/90 text-white shadow-md" : ""}`}
-              >
-                Group Programs
-              </Button>
-            </div>
+      {/* Coaching Programs */}
+      <section ref={programsSectionRef} className="mt-8">
+        <div className="flex flex-col md:flex-row items-start justify-between mb-12">
+          <div className="relative">
+            <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
+              Featured Programs
+            </h2>
+            <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            <p className="text-gray-400 mt-4 max-w-xl">
+              Discover our premium coaching solutions crafted by ex-MBB consultants
+            </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-4 md:mt-0">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300 backdrop-blur-sm">
                 <Globe className="h-4 w-4 text-white/80" />
@@ -606,27 +583,6 @@ export default function CoachingPage() {
                 </Select>
               </div>
             </div>
-            <Button variant="ghost" size="sm" className="flex items-center gap-1 rounded-full">
-              <span>Sort By</span>
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Coaching Programs */}
-      <section ref={programsSectionRef} className="mt-8">
-        <div className="flex flex-col md:flex-row items-start justify-between mb-12">
-          <div className="relative">
-            <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
-              Featured Programs
-            </h2>
-            <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-            <p className="text-gray-400 mt-4 max-w-xl">
-              Discover our premium coaching solutions crafted by ex-MBB consultants
-            </p>
-          </div>
-          <div className="flex items-center gap-2 mt-4 md:mt-0">
             <div className="flex items-center gap-2">
               <Button 
                 variant={activeFilter === "all" ? "default" : "outline"} 
@@ -950,7 +906,7 @@ export default function CoachingPage() {
               </span>
               <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             </h2>
-            <p className="mt-4 text-gray-400 max-w-2xl mx-auto">
+            <p className="mt-4 text-gray-400 max-w-2xl">
               Select your Practice Mode
             </p>
             <p className="text-sm text-gray-500">
