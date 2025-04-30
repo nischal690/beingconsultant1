@@ -152,22 +152,24 @@ export default function CoachingPage() {
 
   // Handle buy now click
   const handleBuyNow = (program: any) => {
-    // Create a copy of the program with the converted price
-    const programWithConvertedPrice = {
-      ...program,
+    setSelectedProgram({
+      id: program.id,
+      title: program.title,
+      description: program.description,
+      shortDescription: program.shortDescription,
       price: parseFloat(convertPrice(program.price)),
-      originalPrice: program.originalPrice ? parseFloat(convertPrice(program.originalPrice)) : undefined
-    };
-    setSelectedProgram(programWithConvertedPrice);
+      originalPrice: program.originalPrice ? parseFloat(convertPrice(program.originalPrice)) : undefined,
+      uniqueId: program.uniqueId || `program_${Date.now()}_${Math.floor(Math.random() * 1000)}`
+    });
+    setAppliedCoupon(null); // Reset applied coupon when selecting a new program
     setShowPaymentDialog(true);
   }
 
   // Calculate discounted price
-  const calculateDiscountedPrice = (price: number) => {
-    if (appliedCoupon) {
-      return price - (price * appliedCoupon.discount) / 100;
-    }
-    return price;
+  const calculateDiscountedPrice = (price: number, coupon: { code: string; discount: number } | null = null) => {
+    const discountToApply = coupon || appliedCoupon;
+    if (!discountToApply) return price;
+    return price - (price * discountToApply.discount / 100);
   }
   
   // Convert price to selected currency
@@ -205,15 +207,20 @@ export default function CoachingPage() {
   }
 
   // Handle payment method selection
-  const handlePaymentMethodSelect = async (method: 'razorpay' | 'stripe') => {
+  const handlePaymentMethodSelect = async (method: 'razorpay' | 'stripe', coupon: { code: string; discount: number } | null = null) => {
     if (!selectedProgram) return;
     
     try {
       console.log(`[Payment Start] Processing ${method} payment for program: ${selectedProgram.title}`);
       
-      // The price is already converted in the selectedProgram object
-      const finalPrice = calculateDiscountedPrice(selectedProgram.price);
+      // Use the coupon passed from the payment modal or the one in state
+      const couponToUse = coupon || appliedCoupon;
+      
+      // Calculate the final price with the coupon discount
+      const finalPrice = calculateDiscountedPrice(selectedProgram.price, couponToUse);
       const amountInSmallestUnit = Math.round(finalPrice * 100);
+      
+      console.log(`[Payment] Original price: ${selectedProgram.price}, Final price after discount: ${finalPrice}`);
       
       // Generate a unique ID for the transaction
       const transactionId = `txn_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
@@ -227,9 +234,9 @@ export default function CoachingPage() {
         userEmail: user?.email || '',
         programId: selectedProgram.id,
         programName: selectedProgram.title,
-        couponCode: appliedCoupon?.code || '',
-        couponDiscount: appliedCoupon?.discount?.toString() || '0',
-        originalPrice: (selectedProgram.originalPrice || 0).toString(),
+        couponCode: couponToUse?.code || '',
+        couponDiscount: couponToUse?.discount?.toString() || '0',
+        originalPrice: (selectedProgram.originalPrice || selectedProgram.price).toString(),
         finalPrice: finalPrice.toString(),
         currency: selectedCurrency,
         timestamp: new Date().toISOString()
@@ -271,10 +278,9 @@ export default function CoachingPage() {
         console.log(`[Payment Success] Payment successful with transaction ID: ${paymentResult.transactionId}`);
         
         // If payment is successful and there was a coupon applied
-        if (appliedCoupon) {
-          console.log(`[Payment Success] Coupon applied: ${appliedCoupon.code} with ${appliedCoupon.discount}% discount`);
-          // In a real implementation, you would increment coupon usage here
-          // await incrementCouponUsage(appliedCoupon.code);
+        if (couponToUse) {
+          console.log(`[Payment Success] Coupon applied: ${couponToUse.code} with ${couponToUse.discount}% discount`);
+          // Coupon usage is now incremented in the payment modal
         }
         
         if (user) {
@@ -299,8 +305,8 @@ export default function CoachingPage() {
               paymentMethod: method,
               productId: selectedProgram.id,
               productTitle: selectedProgram.title,
-              couponCode: appliedCoupon?.code || undefined,
-              couponDiscount: appliedCoupon?.discount || undefined,
+              couponCode: couponToUse?.code || undefined,
+              couponDiscount: couponToUse?.discount || undefined,
               couponDiscountType: "percentage" as const,
               metadata: metadata
             };
@@ -322,8 +328,8 @@ export default function CoachingPage() {
               paymentMethod: method,
               metadata: {
                 originalPrice: selectedProgram.originalPrice,
-                discount: appliedCoupon?.discount || 0,
-                couponCode: appliedCoupon?.code || "",
+                discount: couponToUse?.discount || 0,
+                couponCode: couponToUse?.code || "",
                 purchaseDate: new Date().toISOString()
               }
             };
@@ -1433,6 +1439,10 @@ export default function CoachingPage() {
         onPaymentMethodSelect={handlePaymentMethodSelect}
         currencySymbol={currencySymbols[selectedCurrency]}
         currencyCode={selectedCurrency}
+        onCouponApplied={(coupon) => {
+          setAppliedCoupon(coupon);
+          console.log(`[Coupon] ${coupon ? 'Applied coupon: ' + coupon.code + ' with discount: ' + coupon.discount + '%' : 'Coupon removed'}`);
+        }}
       />
     </div>
   );

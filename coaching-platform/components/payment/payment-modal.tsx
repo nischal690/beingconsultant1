@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { verifyCoupon, incrementCouponUsage } from "@/lib/firebase/firestore";
 
 export type PaymentItem = {
   id: string;
@@ -25,9 +27,10 @@ interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedItem: PaymentItem;
-  onPaymentMethodSelect: (method: 'razorpay' | 'stripe') => void;
+  onPaymentMethodSelect: (method: 'razorpay' | 'stripe', appliedCoupon?: Coupon | null) => void;
   currencySymbol?: string;
   currencyCode?: string;
+  onCouponApplied?: (coupon: Coupon | null) => void;
 }
 
 export function PaymentModal({
@@ -36,7 +39,8 @@ export function PaymentModal({
   selectedItem,
   onPaymentMethodSelect,
   currencySymbol = "$",
-  currencyCode = "USD"
+  currencyCode = "USD",
+  onCouponApplied
 }: PaymentModalProps) {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
@@ -56,17 +60,32 @@ export function PaymentModal({
     setIsApplyingCoupon(true);
     setCouponError(null);
     
-    // Simulate API call to validate coupon
-    setTimeout(() => {
-      if (couponCode === "TEST") {
-        setAppliedCoupon({ code: "TEST", discount: 10 });
-      } else if (couponCode === "NEWUSER") {
-        setAppliedCoupon({ code: "NEWUSER", discount: 15 });
+    try {
+      // Use Firebase coupon verification
+      const result = await verifyCoupon(couponCode, selectedItem.id);
+      
+      if (result.success && result.data) {
+        const coupon = { 
+          code: result.data.code, 
+          discount: result.data.discount 
+        };
+        setAppliedCoupon(coupon);
+        // Call the callback when coupon is applied
+        if (onCouponApplied) {
+          onCouponApplied(coupon);
+        }
+        toast.success(`Coupon "${result.data.code}" applied successfully!`);
       } else {
-        setCouponError("Invalid coupon code. Please try again.");
+        setCouponError(result.error || "Invalid coupon code");
+        toast.error(result.error || "Invalid coupon code");
       }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      setCouponError("Error verifying coupon");
+      toast.error("Error verifying coupon");
+    } finally {
       setIsApplyingCoupon(false);
-    }, 1000);
+    }
   };
 
   // Format price with the provided currency symbol
@@ -169,6 +188,9 @@ export function PaymentModal({
                     setAppliedCoupon(null);
                     setCouponCode("");
                     setCouponError(null);
+                    if (onCouponApplied) {
+                      onCouponApplied(null);
+                    }
                   }}
                 >
                   Remove
@@ -207,7 +229,7 @@ export function PaymentModal({
             )}
             
             <div className="mt-2 text-xs text-white/50">
-              Try coupon code "TEST" for 10% off or "NEWUSER" for 15% off
+              Try coupon code "TEST4" for 100% off (valid until April 30, 2025)
             </div>
           </div>
           
@@ -221,7 +243,15 @@ export function PaymentModal({
             
             <Button
               className="w-full bg-[#072654] hover:bg-[#0A3A7A] text-white group relative overflow-hidden"
-              onClick={() => onPaymentMethodSelect('razorpay')}
+              onClick={() => {
+                // Increment coupon usage if a coupon is applied
+                if (appliedCoupon) {
+                  incrementCouponUsage(appliedCoupon.code).catch(err => {
+                    console.error("Error incrementing coupon usage:", err);
+                  });
+                }
+                onPaymentMethodSelect('razorpay', appliedCoupon);
+              }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#072654]/0 via-[#0A3A7A]/30 to-[#072654]/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></div>
               <div className="flex items-center justify-center gap-2 relative z-10">
@@ -236,7 +266,15 @@ export function PaymentModal({
             
             <Button
               className="w-full bg-[#635BFF] hover:bg-[#8780FF] text-white group relative overflow-hidden"
-              onClick={() => onPaymentMethodSelect('stripe')}
+              onClick={() => {
+                // Increment coupon usage if a coupon is applied
+                if (appliedCoupon) {
+                  incrementCouponUsage(appliedCoupon.code).catch(err => {
+                    console.error("Error incrementing coupon usage:", err);
+                  });
+                }
+                onPaymentMethodSelect('stripe', appliedCoupon);
+              }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#635BFF]/0 via-[#8780FF]/30 to-[#635BFF]/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></div>
               <div className="flex items-center justify-center gap-2 relative z-10">
