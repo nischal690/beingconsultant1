@@ -156,13 +156,16 @@ body {
   
   /* Shimmer animation for dashboard header elements */
   @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
   
   .animate-shimmer {
-    animation: shimmer 2.5s infinite;
-    position: relative;
+    animation: shimmer 2s infinite;
   }
   
   /* Subtle floating animation for badges */

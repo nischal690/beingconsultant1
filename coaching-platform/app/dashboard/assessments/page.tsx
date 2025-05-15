@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 export default function AssessmentsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [scrolled, setScrolled] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   // Handle scroll detection for nav effects
   useEffect(() => {

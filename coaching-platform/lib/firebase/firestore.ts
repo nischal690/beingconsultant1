@@ -401,11 +401,14 @@ export const incrementCouponUsage = async (code: string) => {
 // Check if a subcollection exists for a user
 export const checkSubcollectionExists = async (userId: string, subcollectionName: string): Promise<boolean> => {
   try {
+    console.log(`[Firestore Debug] Checking if ${subcollectionName} subcollection exists for user ${userId}`);
     const subcollectionRef = collection(db, "users", userId, subcollectionName);
     const snapshot = await getDocs(subcollectionRef);
-    return !snapshot.empty;
+    const exists = !snapshot.empty;
+    console.log(`[Firestore Debug] Subcollection ${subcollectionName} exists check result: ${exists}, document count: ${snapshot.size}`);
+    return exists;
   } catch (error) {
-    console.error(`Error checking if ${subcollectionName} subcollection exists:`, error);
+    console.error(`[Firestore Error] Error checking if ${subcollectionName} subcollection exists:`, error);
     return false;
   }
 };
@@ -413,9 +416,12 @@ export const checkSubcollectionExists = async (userId: string, subcollectionName
 // Ensure a subcollection exists for a user
 export const ensureSubcollectionExists = async (userId: string, subcollectionName: string): Promise<boolean> => {
   try {
+    console.log(`[Firestore Debug] Checking if ${subcollectionName} subcollection exists for user ${userId}`);
     const exists = await checkSubcollectionExists(userId, subcollectionName);
+    console.log(`[Firestore Debug] Subcollection ${subcollectionName} exists: ${exists}`);
     
     if (!exists) {
+      console.log(`[Firestore Debug] Creating placeholder document for ${subcollectionName} subcollection`);
       // Create a placeholder document that we'll delete immediately
       // This ensures the subcollection exists in Firestore
       const placeholderRef = doc(collection(db, "users", userId, subcollectionName), "placeholder");
@@ -423,14 +429,18 @@ export const ensureSubcollectionExists = async (userId: string, subcollectionNam
         created: serverTimestamp(),
         placeholder: true
       });
+      console.log(`[Firestore Debug] Placeholder document created successfully`);
       
       // Delete the placeholder document
+      console.log(`[Firestore Debug] Deleting placeholder document`);
       await deleteDoc(placeholderRef);
+      console.log(`[Firestore Debug] Placeholder document deleted successfully`);
     }
     
+    console.log(`[Firestore Debug] ${subcollectionName} subcollection is now ready`);
     return true;
   } catch (error) {
-    console.error(`Error ensuring ${subcollectionName} subcollection exists:`, error);
+    console.error(`[Firestore Error] Error ensuring ${subcollectionName} subcollection exists:`, error);
     return false;
   }
 };
@@ -652,19 +662,27 @@ export const addCoachingToUserProfile = async (userId: string, coachingData: {
   metadata?: Record<string, any>;
 }) => {
   try {
+    console.log("[Firestore Debug] Starting addCoachingToUserProfile with userId:", userId);
+    console.log("[Firestore Debug] Coaching data received:", JSON.stringify(coachingData, null, 2));
+    
     // Ensure coaching subcollection exists
-    await ensureSubcollectionExists(userId, "coaching");
+    console.log("[Firestore Debug] Ensuring coaching subcollection exists");
+    const subcollectionResult = await ensureSubcollectionExists(userId, "coaching");
+    console.log("[Firestore Debug] Subcollection result:", subcollectionResult);
     
     // Create coaching document with programId as the document ID
+    console.log("[Firestore Debug] Creating coaching document with programId:", coachingData.programId);
     const coachingRef = doc(
       collection(db, "users", userId, "coaching"), 
       coachingData.programId
     );
     
     // Check if coaching program already exists in user's profile
+    console.log("[Firestore Debug] Checking if coaching program already exists");
     const coachingDoc = await getDoc(coachingRef);
     
     if (coachingDoc.exists()) {
+      console.log("[Firestore Debug] Coaching program already exists, updating");
       // Coaching program already exists, update with new payment information
       await updateDoc(coachingRef, {
         lastUpdated: serverTimestamp(),
@@ -675,9 +693,11 @@ export const addCoachingToUserProfile = async (userId: string, coachingData: {
         paymentDate: serverTimestamp(),
         ...coachingData.metadata
       });
+      console.log("[Firestore Debug] Coaching program updated successfully");
     } else {
+      console.log("[Firestore Debug] Coaching program doesn't exist, creating new document");
       // Coaching program doesn't exist, create it
-      await setDoc(coachingRef, {
+      const docData = {
         programId: coachingData.programId,
         programName: coachingData.programName,
         amountPaid: coachingData.amountPaid,
@@ -688,12 +708,18 @@ export const addCoachingToUserProfile = async (userId: string, coachingData: {
         paymentDate: serverTimestamp(),
         status: 'active',
         ...coachingData.metadata
-      });
+      };
+      
+      console.log("[Firestore Debug] Document data to be written:", JSON.stringify(docData, null, 2));
+      
+      await setDoc(coachingRef, docData);
+      console.log("[Firestore Debug] Coaching program created successfully");
     }
     
+    console.log("[Firestore Debug] addCoachingToUserProfile completed successfully");
     return { success: true, id: coachingRef.id };
   } catch (error) {
-    console.error("Error adding coaching program to user profile:", error);
+    console.error("[Firestore Error] Error adding coaching program to user profile:", error);
     return { success: false, error };
   }
 };

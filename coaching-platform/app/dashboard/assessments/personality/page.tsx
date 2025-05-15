@@ -2,325 +2,765 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { Progress } from "@/components/ui/progress";
+import {
+  UserCircle2,
+  Brain,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle,
+  BarChart3,
+  RefreshCw,
+  Download
+} from "lucide-react";
 
-// Define the question type
-interface Question {
-  id: number;
-  text: string;
-  category: string;
+// Personality question data
+const questions = [
+  {
+    id: 1,
+    text: "In social situations, do you:",
+    options: [
+      { text: "Feel energized and stimulated by being around other people", dimension: "E", value: 1 },
+      { text: "Feel drained and need to recharge after spending time with other people", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 2,
+    text: "When trying to understand something new, do you:",
+    options: [
+      { text: "Prefer to look at the big picture and make connections between ideas", dimension: "N", value: 1 },
+      { text: "Prefer to focus on the details and practical aspects", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 3,
+    text: "When making decisions, do you:",
+    options: [
+      { text: "Rely on logic and reasoning", dimension: "T", value: 1 },
+      { text: "Consider the impact on people and their feelings", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 4,
+    text: "Do you:",
+    options: [
+      { text: "Prefer to have a plan and stick to it", dimension: "J", value: 1 },
+      { text: "Prefer to be flexible and adaptable to changing circumstances", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 5,
+    text: "When faced with a problem, do you:",
+    options: [
+      { text: "Prefer to discuss it with others and get their input", dimension: "E", value: 1 },
+      { text: "Prefer to reflect on it and come up with your own solution", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 6,
+    text: "Do you:",
+    options: [
+      { text: "Enjoy brainstorming and generating new ideas", dimension: "N", value: 1 },
+      { text: "Prefer to work with established methods and procedures", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 7,
+    text: "Do you:",
+    options: [
+      { text: "Tend to analyze things objectively", dimension: "T", value: 1 },
+      { text: "Tend to consider the emotional impact on yourself and others", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 8,
+    text: "When given a task, do you:",
+    options: [
+      { text: "Prefer to complete it as soon as possible", dimension: "J", value: 1 },
+      { text: "Prefer to work on it in a more spontaneous and free-flowing manner", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 9,
+    text: "Do you:",
+    options: [
+      { text: "Prefer to have a lot of social interaction in your day-to-day life", dimension: "E", value: 1 },
+      { text: "Prefer to have more quiet and alone time in your day-to-day life", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 10,
+    text: "Do you:",
+    options: [
+      { text: "Tend to rely on your instincts and hunches", dimension: "N", value: 1 },
+      { text: "Tend to rely on factual information and concrete evidence", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 11,
+    text: "When someone comes to you with a problem, do you:",
+    options: [
+      { text: "Focus on finding a solution that makes logical sense", dimension: "T", value: 1 },
+      { text: "Focus on listening to the person's feelings and providing emotional support", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 12,
+    text: "Do you:",
+    options: [
+      { text: "Enjoy having a set schedule and routine", dimension: "J", value: 1 },
+      { text: "Prefer to keep your options open and have more freedom in your schedule", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 13,
+    text: "In a group setting, do you:",
+    options: [
+      { text: "Like to be in the center of attention", dimension: "E", value: 1 },
+      { text: "Prefer to stay in the background and observe", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 14,
+    text: "When approaching a problem, do you:",
+    options: [
+      { text: "Consider multiple possibilities and hypothetical scenarios", dimension: "N", value: 1 },
+      { text: "Focus on the present situation and what is immediately relevant", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 15,
+    text: "Do you:",
+    options: [
+      { text: "Value fairness and impartiality", dimension: "T", value: 1 },
+      { text: "Value harmony and empathy", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 16,
+    text: "When faced with a deadline, do you:",
+    options: [
+      { text: "Prefer to start working on it well in advance to ensure you have enough time to complete it", dimension: "J", value: 1 },
+      { text: "Prefer to wait until closer to the deadline to start working on it", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 17,
+    text: "When making a decision, do you:",
+    options: [
+      { text: "Prefer to talk it out with others before deciding", dimension: "E", value: 1 },
+      { text: "Prefer to make your own decision without outside input", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 18,
+    text: "Do you:",
+    options: [
+      { text: "Tend to see patterns and underlying meanings in things", dimension: "N", value: 1 },
+      { text: "Tend to take things at face value and as they are presented", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 19,
+    text: "When giving feedback to someone, do you:",
+    options: [
+      { text: "Focus on objective facts and areas for improvement", dimension: "T", value: 1 },
+      { text: "Consider the person's feelings and try to deliver feedback in a constructive way", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 20,
+    text: "Do you:",
+    options: [
+      { text: "Prefer to have a clear structure and order in your life", dimension: "J", value: 1 },
+      { text: "Prefer to be more spontaneous and go with the flow", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 21,
+    text: "Do you feel more comfortable:",
+    options: [
+      { text: "Meeting new people and making small talk", dimension: "E", value: 1 },
+      { text: "Spending time with close friends and having deeper conversations", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 22,
+    text: "Do you:",
+    options: [
+      { text: "Enjoy exploring new ideas and concepts", dimension: "N", value: 1 },
+      { text: "Prefer to stick to what you know and are familiar with", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 23,
+    text: "Do you:",
+    options: [
+      { text: "Enjoy debating and arguing a point", dimension: "T", value: 1 },
+      { text: "Prefer to avoid conflict and maintain harmony", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 24,
+    text: "Do you:",
+    options: [
+      { text: "Enjoy making decisions and taking action", dimension: "J", value: 1 },
+      { text: "Prefer to delay making decisions until you have more information or options", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 25,
+    text: "Do you:",
+    options: [
+      { text: "Prefer to work in a group or team setting", dimension: "E", value: 1 },
+      { text: "Prefer to work independently", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 26,
+    text: "Do you:",
+    options: [
+      { text: "Tend to be more abstract and theoretical in your thinking", dimension: "N", value: 1 },
+      { text: "Tend to be more practical and concrete in your thinking", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 27,
+    text: "Do you:",
+    options: [
+      { text: "Tend to be more analytical and critical in your thinking", dimension: "T", value: 1 },
+      { text: "Tend to be more empathetic and compassionate in your thinking", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 28,
+    text: "When making plans with friends, do you:",
+    options: [
+      { text: "Prefer to have a set time and place to meet", dimension: "J", value: 1 },
+      { text: "Prefer to keep it more open and flexible", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 29,
+    text: "Do you feel energized by:",
+    options: [
+      { text: "Going out and being in social situations", dimension: "E", value: 1 },
+      { text: "Spending time alone doing activities you enjoy", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 30,
+    text: "Do you:",
+    options: [
+      { text: "Trust your intuition and insights when making decisions", dimension: "N", value: 1 },
+      { text: "Prefer to rely on facts and data when making decisions", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 31,
+    text: "Do you:",
+    options: [
+      { text: "Value efficiency and productivity", dimension: "T", value: 1 },
+      { text: "Value relationships and personal connections", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 32,
+    text: "Do you:",
+    options: [
+      { text: "Prefer to have everything in its place and organized", dimension: "J", value: 1 },
+      { text: "Tend to be more relaxed about clutter and disorder", dimension: "P", value: 1 }
+    ]
+  },
+  {
+    id: 33,
+    text: "When it comes to expressing your thoughts and feelings, do you:",
+    options: [
+      { text: "Tend to speak your mind openly and directly", dimension: "E", value: 1 },
+      { text: "Tend to keep your thoughts and feelings to yourself until you are comfortable with someone", dimension: "I", value: 1 }
+    ]
+  },
+  {
+    id: 34,
+    text: "Do you:",
+    options: [
+      { text: "Tend to think about the future and possibilities", dimension: "N", value: 1 },
+      { text: "Tend to focus on the present and what is happening now", dimension: "S", value: 1 }
+    ]
+  },
+  {
+    id: 35,
+    text: "Do you:",
+    options: [
+      { text: "Tend to be more direct and straightforward in your communication", dimension: "T", value: 1 },
+      { text: "Tend to be more diplomatic and considerate of others' feelings", dimension: "F", value: 1 }
+    ]
+  },
+  {
+    id: 36,
+    text: "Do you:",
+    options: [
+      { text: "Tend to be more decisive and assertive in your actions", dimension: "J", value: 1 },
+      { text: "Tend to be more open-minded and willing to consider different options", dimension: "P", value: 1 }
+    ]
+  }
+];
+
+// Personality type descriptions
+// Define personality type keys for TypeScript
+type PersonalityTypeKey = 'ISTJ' | 'ISFJ' | 'INFJ' | 'INTJ' | 'ISTP' | 'ISFP' | 'INFP' | 'INTP' | 'ESTP' | 'ESFP' | 'ENFP' | 'ENTP' | 'ESTJ' | 'ESFJ' | 'ENFJ' | 'ENTJ';
+
+// Personality descriptions object
+const personalityDescriptions: Record<PersonalityTypeKey, { title: string; description: string }> = {
+  ISTJ: {
+    title: "The Inspector",
+    description: "Practical, detail-oriented, and reliable. You value tradition, stability, and living life according to your standards. You are organized and thorough, with strong attention to detail."
+  },
+  ISFJ: {
+    title: "The Protector",
+    description: "Warm, considerate, and dedicated. You are committed to meeting obligations and helping others. You tend to be practical, loyal, and traditions-minded, valuing security and stability."
+  },
+  INFJ: {
+    title: "The Counselor",
+    description: "Insightful, creative, and idealistic. You are guided by your values and vision. You seek meaning in connections and strive to contribute to the well-being of others and society."
+  },
+  INTJ: {
+    title: "The Mastermind",
+    description: "Strategic, independent, and analytical. You are driven by your own original ideas to achieve improvements. You have high standards and a natural gift for creating solutions to complex problems."
+  },
+  ISTP: {
+    title: "The Craftsman",
+    description: "Observant, logical, and adaptable. You enjoy hands-on problem-solving and value efficiency. You're calm under pressure and pride yourself on your ability to use what's available to find workable solutions."
+  },
+  ISFP: {
+    title: "The Composer",
+    description: "Gentle, sensitive, and spontaneous. You value authenticity and deeply appreciate aesthetic beauty. You enjoy living in the present moment and are often in tune with sensory experiences."
+  },
+  INFP: {
+    title: "The Healer",
+    description: "Idealistic, compassionate, and creative. You're guided by your core personal values and seek to make the world a better place. You see potential for growth in almost everything."
+  },
+  INTP: {
+    title: "The Architect",
+    description: "Analytical, objective, and innovative. You enjoy theoretical and abstract concepts and are driven to understand how things work. You excel at logical analysis and finding unique solutions."
+  },
+  ESTP: {
+    title: "The Dynamo",
+    description: "Energetic, pragmatic, and spontaneous. You enjoy taking risks and making things happen. You're observant about the details of the world around you and adapt quickly to new situations."
+  },
+  ESFP: {
+    title: "The Performer",
+    description: "Enthusiastic, friendly, and spontaneous. You enjoy people, experiences, and material comforts. You learn best by trying new skills with other people and bring a playful energy to your work."
+  },
+  ENFP: {
+    title: "The Champion",
+    description: "Enthusiastic, creative, and sociable. You see life as full of possibilities and connect easily with others. You value inspiration and strive to bring innovative ideas to life."
+  },
+  ENTP: {
+    title: "The Visionary",
+    description: "Quick, ingenious, and outspoken. You enjoy challenges and see connections between seemingly unrelated things. You're curious about the world and enjoy exploring possibilities and theoretical concepts."
+  },
+  ESTJ: {
+    title: "The Supervisor",
+    description: "Organized, logical, and decisive. You value tradition and security, thriving on making order from chaos. You take a practical approach to achieving goals and are detail-oriented and systematic."
+  },
+  ESFJ: {
+    title: "The Provider",
+    description: "Warm-hearted, cooperative, and responsible. You value harmony and are generous with your time and energy. You're attentive to the practical needs of others and take your responsibilities seriously."
+  },
+  ENFJ: {
+    title: "The Teacher",
+    description: "Charismatic, empathetic, and responsible. You're driven to help others fulfill their potential. You're aware of others' motivations and can inspire people to take action and achieve their goals."
+  },
+  ENTJ: {
+    title: "The Commander",
+    description: "Strategic, logical, and efficient. You're a natural leader who sees the big picture and enjoys developing effective systems. You're decisive and value competence and intellectual discussions."
+  }
+};
+
+// Interface for personality scores
+interface PersonalityScores {
+  E: number;
+  I: number;
+  N: number;
+  S: number;
+  T: number;
+  F: number;
+  J: number;
+  P: number;
+  [key: string]: number; // Allow string indexing
 }
 
-// Define the personality test component
-export default function PersonalityTest() {
-  const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [testCompleted, setTestCompleted] = useState(false);
+// Function to determine personality type from scores
+const determinePersonalityType = (scores: PersonalityScores): PersonalityTypeKey => {
+  const { E, I, N, S, T, F, J, P } = scores;
+  
+  let type = "";
+  type += E > I ? "E" : "I";
+  type += N > S ? "N" : "S";
+  type += T > F ? "T" : "F";
+  type += J > P ? "J" : "P";
+  
+  return type as PersonalityTypeKey;
+};
 
-  // Questions based on the image shared
-  const questions: Question[] = [
-    { id: 1, text: "I'm social character, by you:", category: "extraversion" },
-    { id: 2, text: "I often enjoy going out and being around other people.", category: "extraversion" },
-    { id: 3, text: "I prefer being in a group rather than being alone.", category: "extraversion" },
-    { id: 4, text: "I am strong in a technical/analytical way, for you:", category: "analytical" },
-    { id: 5, text: "I tend to look at the big picture and make connections between ideas.", category: "analytical" },
-    { id: 6, text: "I am a strong decision, for you:", category: "decisiveness" },
-    { id: 7, text: "I enjoy taking risks.", category: "risk-taking" },
-    { id: 8, text: "I am confident in my abilities and know my own feelings.", category: "self-awareness" },
-    { id: 9, text: "I'm calm.", category: "emotional-stability" },
-    { id: 10, text: "I handle stress well and remain in control.", category: "emotional-stability" },
-    { id: 11, text: "I am logical and a problem solver.", category: "analytical" },
-    { id: 12, text: "I enjoy brainstorming and generating new ideas.", category: "creativity" },
-    { id: 13, text: "I am good at motivating others.", category: "leadership" },
-    { id: 14, text: "I find it easy to connect with people on a personal level.", category: "empathy" },
-    { id: 15, text: "I have a good work ethic, for you:", category: "work-ethic" },
-    { id: 16, text: "I tend to stick to it if I have performance and have strong morals.", category: "conscientiousness" },
-    { id: 17, text: "I am a common sense or practical, for you:", category: "practicality" },
-    { id: 18, text: "I tend to have more grit and down time to your day to day life.", category: "resilience" },
-    { id: 19, text: "I have common sense and practicality and function.", category: "practicality" },
-    { id: 20, text: "I tend to rely on factual information and concrete evidence.", category: "analytical" },
-    { id: 21, text: "I have common sense or practical, for you:", category: "practicality" },
-    { id: 22, text: "I focus on listening to the person's feelings and providing emotional support.", category: "empathy" },
-    { id: 23, text: "I have a good work ethic, for you:", category: "work-ethic" },
-    { id: 24, text: "I make sure your values align and have more freedom in your schedule.", category: "values-alignment" },
-    { id: 25, text: "I have a good work ethic, for you:", category: "work-ethic" },
-    { id: 26, text: "I tend to put in the background and observe.", category: "introversion" },
-    { id: 27, text: "I have a good work ethic, for you:", category: "work-ethic" },
-    { id: 28, text: "I consider multiple possibilities and hypothetical scenarios.", category: "abstract-thinking" },
-    { id: 29, text: "I tend to focus on what is real and what is immediately relevant.", category: "concrete-thinking" },
-    { id: 30, text: "I'm you:", category: "self-perception" },
-    { id: 31, text: "I focus on facts and objectivity.", category: "analytical" },
-    { id: 32, text: "I'm you:", category: "self-perception" },
-    { id: 33, text: "I prefer to be calm/cooling or I want to articulate to ensure you have enough time to remember things and I am able to look at your working on it.", category: "communication-style" },
-    { id: 34, text: "I have a good work ethic, for you:", category: "work-ethic" },
-    { id: 35, text: "I prefer to look just stick where before deciding.", category: "decision-making" },
-    { id: 36, text: "I'm you:", category: "self-perception" },
-    { id: 37, text: "I tend to be efficient and advertising meaning in things.", category: "efficiency" },
-    { id: 38, text: "I tend to focus on things and feel they are important.", category: "values-focus" },
-    { id: 39, text: "I have a good feedback to someone, for you:", category: "feedback" },
-    { id: 40, text: "I consider multiple possibilities and hypothetical scenarios.", category: "abstract-thinking" },
-    { id: 41, text: "I tend to focus on what is real and what is immediately relevant.", category: "concrete-thinking" },
-    { id: 42, text: "I'm you:", category: "self-perception" },
-    { id: 43, text: "I tend to have a clear structure and order in your life.", category: "organization" },
-    { id: 44, text: "I prefer to be more spontaneous and go with the flow.", category: "spontaneity" },
-    { id: 45, text: "I'm you find more comfortable:", category: "comfort-zone" },
-    { id: 46, text: "I spending time with close friends and having deeper conversations.", category: "intimate-relationships" },
-    { id: 47, text: "I'm you:", category: "self-perception" },
-    { id: 48, text: "I prefer to stick to what you know and are familiar with.", category: "familiarity" },
-    { id: 49, text: "I'm you:", category: "self-perception" },
-    { id: 50, text: "I prefer to seek conflict and maintain harmony.", category: "conflict-avoidance" },
-    { id: 51, text: "I'm you:", category: "self-perception" },
-    { id: 52, text: "I prefer to be data-seeking decisions and you have more information to explore.", category: "data-driven" },
-    { id: 53, text: "I'm you:", category: "self-perception" },
-    { id: 54, text: "I prefer to work independently.", category: "independence" },
-    { id: 55, text: "I'm you:", category: "self-perception" },
-    { id: 56, text: "I tend to seek more abstract and theoretical in your thinking.", category: "abstract-thinking" },
-    { id: 57, text: "I'm you:", category: "self-perception" },
-    { id: 58, text: "I tend to be more analytical and concrete in your thinking.", category: "analytical" },
-    { id: 59, text: "I am for making others with friends, for you:", category: "social-orientation" },
-    { id: 60, text: "I prefer to learn it warm and friendly.", category: "warmth" },
-    { id: 61, text: "I'm you:", category: "self-perception" },
-    { id: 62, text: "I spending time alone doing activities you enjoy.", category: "solitary-activities" },
-    { id: 63, text: "I'm you:", category: "self-perception" },
-    { id: 64, text: "I prefer to set up facts and data when making decisions.", category: "data-driven" },
-    { id: 65, text: "I'm you:", category: "self-perception" },
-    { id: 66, text: "I value relationships and personal connections.", category: "relationship-value" },
-    { id: 67, text: "I'm you:", category: "self-perception" },
-    { id: 68, text: "I tend to be more rational about it feels and decide.", category: "rational-decision-making" },
-    { id: 69, text: "I'm you:", category: "self-perception" },
-    { id: 70, text: "I tend to make your mind quickly and friendly.", category: "quick-decisions" },
-    { id: 71, text: "I prefer to keep your thoughts and feelings to yourself until you are comfortable with someone.", category: "privacy" },
-    { id: 72, text: "I'm you:", category: "self-perception" },
-    { id: 73, text: "I tend to think about the future and possibilities.", category: "future-orientation" },
-    { id: 74, text: "I tend to focus on the present and what is happening now.", category: "present-focus" },
-    { id: 75, text: "I'm you:", category: "self-perception" },
-    { id: 76, text: "I tend to be more deliberate and considerate of other's feelings.", category: "consideration" },
-    { id: 77, text: "I tend to more open-minded and willing to consider different options.", category: "open-mindedness" }
-  ];
-
-  // Handle selecting an answer
-  const handleSelectAnswer = (questionId: number, value: number) => {
-    setAnswers({
-      ...answers,
-      [questionId]: value,
-    });
+// Component for personality traits breakdown
+const PersonalityTraits = ({ scores }: { scores: PersonalityScores }) => {
+  const totalQuestions = {
+    EI: scores.E + scores.I,
+    NS: scores.N + scores.S,
+    TF: scores.T + scores.F,
+    JP: scores.J + scores.P
   };
-
-  // Handle moving to the next question
-  const handleNext = () => {
-    if (currentStep < questions.length - 1) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
-    } else {
-      handleSubmit();
-    }
-  };
-
-  // Handle moving to the previous question
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  // Handle submitting the test
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    
-    try {
-      // Here you would typically send the answers to your backend
-      // For now, we'll just simulate a submission
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Calculate results (simplified for demo)
-      const results = calculateResults();
-      
-      // Show success message
-      toast.success("Personality test completed successfully!");
-      
-      // Set test as completed
-      setTestCompleted(true);
-      
-      // In a real implementation, you would save the results to the user's profile
-      // and then redirect to a results page
-    } catch (error) {
-      toast.error("There was an error submitting your test. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Calculate test results
-  const calculateResults = () => {
-    const categories: Record<string, { total: number, count: number }> = {};
-    
-    // Initialize categories
-    questions.forEach(question => {
-      if (!categories[question.category]) {
-        categories[question.category] = { total: 0, count: 0 };
-      }
-    });
-    
-    // Sum up scores by category
-    Object.entries(answers).forEach(([questionId, score]) => {
-      const question = questions.find(q => q.id === parseInt(questionId));
-      if (question) {
-        categories[question.category].total += score;
-        categories[question.category].count += 1;
-      }
-    });
-    
-    // Calculate average for each category
-    const results: Record<string, number> = {};
-    Object.entries(categories).forEach(([category, data]) => {
-      results[category] = data.count > 0 ? data.total / data.count : 0;
-    });
-    
-    return results;
-  };
-
-  // Check if current question has been answered
-  const isCurrentQuestionAnswered = () => {
-    return answers[questions[currentStep].id] !== undefined;
-  };
-
-  // Calculate progress percentage
-  const progressPercentage = (Object.keys(answers).length / questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
-      {!testCompleted ? (
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Progress bar */}
-          <div className="mb-8">
-            <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[#245D66] transition-all duration-300 ease-in-out"
-                style={{ width: `${progressPercentage}%` }}
-              ></div>
-            </div>
-            <div className="flex justify-between mt-2 text-sm text-gray-500">
-              <span>{Object.keys(answers).length} of {questions.length} questions answered</span>
-              <span>{Math.round(progressPercentage)}% complete</span>
-            </div>
-          </div>
+    <div className="space-y-6 my-6">
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Extraversion ({scores.E})</span>
+          <span className="font-medium">Introversion ({scores.I})</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-2 bg-[#245D66] rounded-full" style={{ width: `${(scores.E / totalQuestions.EI) * 100}%` }}></div>
+          <div className="h-2 bg-gray-300 rounded-full" style={{ width: `${(scores.I / totalQuestions.EI) * 100}%` }}></div>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Intuition ({scores.N})</span>
+          <span className="font-medium">Sensing ({scores.S})</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-2 bg-[#245D66] rounded-full" style={{ width: `${(scores.N / totalQuestions.NS) * 100}%` }}></div>
+          <div className="h-2 bg-gray-300 rounded-full" style={{ width: `${(scores.S / totalQuestions.NS) * 100}%` }}></div>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Thinking ({scores.T})</span>
+          <span className="font-medium">Feeling ({scores.F})</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-2 bg-[#245D66] rounded-full" style={{ width: `${(scores.T / totalQuestions.TF) * 100}%` }}></div>
+          <div className="h-2 bg-gray-300 rounded-full" style={{ width: `${(scores.F / totalQuestions.TF) * 100}%` }}></div>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="font-medium">Judging ({scores.J})</span>
+          <span className="font-medium">Perceiving ({scores.P})</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-2 bg-[#245D66] rounded-full" style={{ width: `${(scores.J / totalQuestions.JP) * 100}%` }}></div>
+          <div className="h-2 bg-gray-300 rounded-full" style={{ width: `${(scores.P / totalQuestions.JP) * 100}%` }}></div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-          {/* Question card */}
-          <motion.div
-            key={currentStep}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="bg-white rounded-xl shadow-xl p-8 mb-8"
-          >
-            <div className="mb-8">
-              <span className="text-sm text-gray-500">Question {currentStep + 1} of {questions.length}</span>
-              <h2 className="text-2xl font-bold text-gray-800 mt-2">
-                {questions[currentStep].text}
-              </h2>
-            </div>
+// Main assessment component
+export default function PersonalityAssessment() {
+  const [currentStep, setCurrentStep] = useState<"intro" | "questions" | "results">("intro");
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [scores, setScores] = useState<PersonalityScores>({
+    E: 0,
+    I: 0,
+    N: 0,
+    S: 0,
+    T: 0,
+    F: 0,
+    J: 0,
+    P: 0,
+  });
+  const [personalityType, setPersonalityType] = useState<PersonalityTypeKey | "">("");
+  const [progress, setProgress] = useState(0);
+  
+  // Proceed to next question or results
+  const handleNextQuestion = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setProgress(((currentQuestion + 1) / questions.length) * 100);
+    } else {
+      // Calculate final scores and determine personality type
+      const finalPersonalityType: PersonalityTypeKey = determinePersonalityType(scores);
+      setPersonalityType(finalPersonalityType);
+      setCurrentStep("results");
+    }
+  };
+  
+  // Go back to previous question
+  const handlePreviousQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+      setProgress((currentQuestion - 1) / questions.length * 100);
+      
+      // Remove score for the question we're going back to
+      const prevQuestion = questions[currentQuestion];
+      const prevAnswer = selectedAnswers[currentQuestion];
+      
+      if (prevAnswer !== undefined) {
+        const dimension = prevQuestion.options[prevAnswer].dimension as keyof PersonalityScores;
+        setScores(prev => ({
+          ...prev,
+          [dimension]: prev[dimension] - 1
+        }));
+        
+        // Remove the answer
+        const newSelectedAnswers = { ...selectedAnswers };
+        delete newSelectedAnswers[currentQuestion];
+        setSelectedAnswers(newSelectedAnswers);
+      }
+    }
+  };
+  
+  // Handle answer selection
+  const handleSelectAnswer = (optionIndex: number) => {
+    const question = questions[currentQuestion];
+    const selectedOption = question.options[optionIndex];
+    const dimension = selectedOption.dimension as keyof PersonalityScores;
+    
+    // Update scores
+    setScores(prev => ({
+      ...prev,
+      [dimension]: prev[dimension] + 1
+    }));
+    
+    // Save selected answer
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [currentQuestion]: optionIndex
+    }));
+    
+    // Automatically go to next question
+    setTimeout(handleNextQuestion, 300);
+  };
+  
+  // Reset the assessment
+  const handleRestart = () => {
+    setCurrentStep("intro");
+    setCurrentQuestion(0);
+    setSelectedAnswers({});
+    setScores({
+      E: 0,
+      I: 0,
+      N: 0,
+      S: 0,
+      T: 0,
+      F: 0,
+      J: 0,
+      P: 0,
+    });
+    setPersonalityType("");
+    setProgress(0);
+  };
+  
+  // Start the assessment
+  const handleStart = () => {
+    setCurrentStep("questions");
+  };
 
-            {/* Rating scale */}
-            <div className="mb-8">
-              <div className="flex flex-col space-y-4">
-                <div className="grid grid-cols-5 gap-2 mb-2">
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <button
-                      key={value}
-                      onClick={() => handleSelectAnswer(questions[currentStep].id, value)}
-                      className={`
-                        h-14 rounded-lg flex items-center justify-center transition-all
-                        ${
-                          answers[questions[currentStep].id] === value
-                            ? "bg-[#245D66] text-white ring-2 ring-offset-2 ring-[#245D66]"
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                        }
-                      `}
-                    >
-                      <span className="font-medium text-lg">{value}</span>
-                    </button>
-                  ))}
+  return (
+    <div className="w-full">
+      {/* Background elements - fixed position to cover the entire viewport */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(36,93,102,0.15),transparent_70%)] animate-pulse-slow"></div>
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_left,_rgba(36,93,102,0.15),transparent_70%)] animate-pulse-slower"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#245D66]/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-[#245D66]/10 rounded-full blur-3xl animate-float-slow"></div>
+      </div>
+
+      {/* Main content container */}
+      <div className="relative z-10 min-h-[calc(100vh-4rem)] w-full bg-gradient-to-b from-black via-gray-900 to-black text-white pt-8 pb-16">      
+        {/* Content wrapper to center the test content */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        {/* Introduction Screen */}
+        {currentStep === "intro" && (
+          <div className="relative bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group animate-fade-in max-w-6xl mx-auto transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+            {/* Animated gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/20 via-black/0 to-[#245D66]/10 opacity-70 group-hover:opacity-100 transition-opacity duration-700"></div>
+            <div className="absolute -inset-[100px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse-slow"></div>
+            
+            {/* Top gradient border */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+            
+            {/* Content container */}
+            <div className="relative z-10 p-10">
+              {/* Icon with animated background */}
+              <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#245D66] to-[#245D66]/80 text-white mb-8 shadow-lg overflow-hidden group-hover:-translate-y-1 transition-all duration-500">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <Brain size={36} className="relative z-10 group-hover:scale-110 transition-transform duration-500" />
+              </div>
+              
+              {/* Title with animated gradient */}
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/80 animate-gradient-x">
+                Unlock Your Mind
+              </h1>
+              
+              <p className="text-white/80 text-lg mb-8 max-w-2xl">
+                Discover the unique patterns of your personality with our premium assessment. Gain insights that will transform how you understand yourself and others.
+              </p>
+              
+              {/* Feature cards with hover effects */}
+              <div className="grid md:grid-cols-3 gap-6 mb-10">
+                <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-15px_rgba(36,93,102,0.3)]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-[#245D66]/20 p-2 rounded-full">
+                      <CheckCircle size={18} className="text-[#245D66]" />
+                    </div>
+                    <h3 className="font-semibold text-white">Myers-Briggs Based</h3>
+                  </div>
+                  <p className="text-white/60 text-sm">Inspired by the MBTI framework, one of the most widely used personality assessments worldwide.</p>
                 </div>
-                <div className="flex justify-between text-sm text-gray-500 px-2">
-                  <span>Strongly Disagree</span>
-                  <span>Strongly Agree</span>
+                
+                <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-15px_rgba(36,93,102,0.3)]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-[#245D66]/20 p-2 rounded-full">
+                      <CheckCircle size={18} className="text-[#245D66]" />
+                    </div>
+                    <h3 className="font-semibold text-white">Scientifically Validated</h3>
+                  </div>
+                  <p className="text-white/60 text-sm">Questions designed based on decades of psychological research and rigorous testing methodologies.</p>
+                </div>
+                
+                <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-15px_rgba(36,93,102,0.3)]">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-[#245D66]/20 p-2 rounded-full">
+                      <CheckCircle size={18} className="text-[#245D66]" />
+                    </div>
+                    <h3 className="font-semibold text-white">Personalized Insights</h3>
+                  </div>
+                  <p className="text-white/60 text-sm">Receive detailed analysis about how your personality influences your behaviors, preferences, and interactions.</p>
                 </div>
               </div>
+              
+              {/* Start button with animated gradient effect */}
+              <Button 
+                onClick={handleStart} 
+                className="relative w-full py-7 bg-black border border-white/20 rounded-xl text-white font-medium text-lg overflow-hidden group-hover:border-white/30 transition-all duration-500 hover:shadow-[0_0_30px_rgba(36,93,102,0.5)] hover:-translate-y-1"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-[#245D66] via-[#245D66]/80 to-[#245D66] opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[length:200%_100%] animate-gradient-x"></div>
+                <span className="relative z-10 flex items-center justify-center gap-3">
+                  <span>Begin Your Journey</span>
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-300" />
+                </span>
+              </Button>
+              
+              {/* Bottom text with subtle animation */}
+              <p className="text-center text-white/40 text-sm mt-8 group-hover:text-white/60 transition-colors duration-500">
+                Your responses are completely private and only used to generate your personalized insights.
+              </p>
             </div>
+            
+            {/* Bottom gradient border */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+          </div>
+        )}
 
+        {/* Questions Screen */}
+        {currentStep === "questions" && (
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in max-w-6xl mx-auto">
+            {/* Progress bar */}
+            <div className="mb-8">
+              <div className="flex justify-between text-sm text-white/60 mb-2">
+                <span>Question {currentQuestion + 1} of {questions.length}</span>
+                <span>{Math.round(progress)}% Complete</span>
+              </div>
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-[#245D66] rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            {/* Question */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-6">{questions[currentQuestion].text}</h2>
+              
+              <div className="space-y-4">
+                {questions[currentQuestion].options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSelectAnswer(index)}
+                    className={`w-full text-left p-6 rounded-xl border transition-all ${
+                      selectedAnswers[currentQuestion] === index
+                        ? "border-[#245D66] bg-[#245D66]/20"
+                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                    }`}
+                  >
+                    <span>{option.text}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
             {/* Navigation buttons */}
             <div className="flex justify-between">
               <Button
+                onClick={handlePreviousQuestion}
+                disabled={currentQuestion === 0}
                 variant="outline"
-                onClick={handlePrevious}
-                disabled={currentStep === 0}
-                className="flex items-center gap-2"
+                className={`flex items-center gap-2 ${
+                  currentQuestion === 0 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
-                <ArrowLeft size={16} />
+                <ArrowLeft className="h-4 w-4" />
                 Previous
               </Button>
-              
               <Button
-                onClick={handleNext}
-                disabled={!isCurrentQuestionAnswered() || isSubmitting}
-                className="bg-[#245D66] hover:bg-[#1a474e] text-white flex items-center gap-2"
+                onClick={handleNextQuestion}
+                disabled={currentQuestion === questions.length - 1 || !selectedAnswers[currentQuestion]}
+                className="flex items-center gap-2"
               >
-                {currentStep === questions.length - 1 ? (
-                  isSubmitting ? "Submitting..." : "Complete Test"
-                ) : (
-                  <>
-                    Next
-                    <ArrowRight size={16} />
-                  </>
-                )}
+                Next
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
-          </motion.div>
-
-          {/* Tips */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-blue-800 text-sm">
-            <p className="font-medium mb-1">Tips for accurate results:</p>
-            <ul className="list-disc list-inside space-y-1 text-blue-700">
-              <li>Answer based on how you typically behave, not how you wish to behave</li>
-              <li>Try not to overthink your responses - your first instinct is often best</li>
-              <li>Be honest with yourself for the most accurate insights</li>
-            </ul>
           </div>
+        )}
+
+        {/* Results Screen */}
+        {currentStep === "results" && (
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in text-center max-w-6xl mx-auto">
+            {personalityType ? (
+              <>
+                <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#245D66] text-white mx-auto mb-6">
+                  <BarChart3 size={40} />
+                </div>
+                <h2 className="text-3xl font-bold mb-2">Your Personality Type: {personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].title}</h2>
+                <p className="text-xl text-[#245D66] font-semibold mb-6">{personalityType}</p>
+                <p className="text-white/80 mb-6 max-w-xl mx-auto">{personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].description}</p>
+                
+                <PersonalityTraits scores={scores} />
+
+                <div className="flex flex-col sm:flex-row gap-4 mt-10">
+                  <Button
+                    onClick={handleRestart}
+                    variant="outline"
+                    className="flex-1 py-4"
+                  >
+                    <RefreshCw size={16} className="mr-2" />
+                    Retake Test
+                  </Button>
+                  <Button className="flex-1 py-4 bg-[#245D66] hover:bg-[#245D66]/90">
+                    <Download size={16} className="mr-2" />
+                    Download Results
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p>Loading results...</p>
+            )}
+          </div>
+        )}
         </div>
-      ) : (
-        // Test completed view
-        <div className="max-w-4xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-xl p-8 text-center"
-          >
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 size={40} className="text-green-600" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Test Completed!
-            </h2>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Thank you for completing the personality assessment. Your results are being processed and will be available shortly.
-            </p>
-            <Button
-              onClick={() => router.push('/dashboard/assessments')}
-              className="bg-[#245D66] hover:bg-[#1a474e] text-white"
-            >
-              Return to Assessments
-            </Button>
-          </motion.div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

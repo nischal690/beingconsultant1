@@ -78,7 +78,8 @@ export default function StandalonePaymentSuccessPage() {
   }, [paymentId, userId])
   
   const handleGoToDashboard = () => {
-    router.push('/dashboard')
+    // Use replace instead of push to avoid history stacking
+    router.replace('/dashboard')
   }
   
   const handleViewOrder = () => {

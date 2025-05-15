@@ -198,77 +198,50 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               </SidebarHeader>
               <SidebarContent className="px-2 py-4">
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={pathname === "/dashboard"} 
-                      className="hover-lift"
-                      tooltip="Dashboard"
-                    >
-                      <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                        <Home className="h-5 w-5" />
-                        <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton 
-                      asChild 
-                      isActive={pathname === "/dashboard/profile"} 
-                      className="hover-lift"
-                      tooltip="Profile"
-                    >
-                      <Link href="/dashboard/profile" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                        <User className="h-5 w-5" />
-                        <span className="group-data-[collapsible=icon]:hidden">Profile</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-
+  <SidebarMenu>
+    <SidebarMenuItem>
+      <SidebarMenuButton 
+        asChild 
+        isActive={pathname === "/dashboard"} 
+        className="hover-lift"
+        tooltip="Dashboard"
+      >
+        <Link href="/dashboard" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+          <Home className="h-5 w-5" />
+          <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  </SidebarMenu>
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    Coaching
+                    Offerings
                   </SidebarGroupLabel>
-                  <SidebarGroupContent className="coaching-section space-y-1">
+                  <SidebarGroupContent className="offerings-section space-y-1">
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname === "/dashboard/coaching"} 
+                          isActive={pathname === "/dashboard/coaching" || pathname.includes("/dashboard/coaching/one-on-one")} 
                           className="hover-lift"
-                          tooltip="Land a job"
+                          tooltip="One on One Coaching"
                         >
                           <Link href="/dashboard/coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Briefcase className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Land a job</span>
+                            <UserRound className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">One on One Coaching</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname === "/dashboard/coaching/career-excellence"} 
+                          isActive={pathname.includes("/dashboard/group-coaching")} 
                           className="hover-lift"
-                          tooltip="Career excellence"
+                          tooltip="Group Coaching"
                         >
-                          <Link href="/dashboard/coaching/career-excellence" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Award className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Career excellence</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={pathname === "/dashboard/coaching/career-transition"} 
-                          className="hover-lift"
-                          tooltip="Career transition"
-                        >
-                          <Link href="/dashboard/coaching/career-transition" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <FileCheck className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Career transition</span>
+                          <Link href="/dashboard/group-coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Users className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Group Coaching</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -278,34 +251,47 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    AI Coach
+                    Tools
                   </SidebarGroupLabel>
-                  <SidebarGroupContent className="ai-coach-section space-y-1">
+                  <SidebarGroupContent className="tools-section space-y-1">
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname === "/dashboard/ai-coach/case-interview"} 
+                          isActive={pathname.includes("/dashboard/ai-coach")} 
                           className="hover-lift"
-                          tooltip="Mock Case Interview"
+                          tooltip="AI Coach"
                         >
-                          <a href="https://app.consultify-ai.com/" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Brain className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Mock Case Interview</span>
-                          </a>
+                          <Link href="/dashboard/ai-coach" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Bot className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">AI Coach</span>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname === "/dashboard/ai-coach/cv-evaluator"} 
+                          isActive={pathname.includes("/dashboard/job-board")} 
                           className="hover-lift"
-                          tooltip="CV Evaluator"
+                          tooltip="Job Board"
                         >
-                          <a href="https://app.consultify-ai.com/" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                          <Link href="/dashboard/job-board" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Briefcase className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Job Board</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.includes("/dashboard/assessments")} 
+                          className="hover-lift"
+                          tooltip="Assessments"
+                        >
+                          <Link href="/dashboard/assessments" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                             <FileCheck className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">CV Evaluator</span>
-                          </a>
+                            <span className="group-data-[collapsible=icon]:hidden">Assessments</span>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
@@ -314,33 +300,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    Resources
+                    Resources Library
                   </SidebarGroupLabel>
                   <SidebarGroupContent className="resources-section space-y-1">
                     <SidebarMenu>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/resources/free")} 
+                          isActive={pathname.includes("/dashboard/video-courses")} 
                           className="hover-lift"
-                          tooltip="Free"
+                          tooltip="Video Courses"
                         >
-                          <Link href="/dashboard/resources/free" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Unlock className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Free</span>
+                          <Link href="/dashboard/video-courses" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <Video className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Video Courses</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/resources/premium")} 
+                          isActive={pathname.includes("/dashboard/ebooks")} 
                           className="hover-lift"
-                          tooltip="Premium"
+                          tooltip="Ebooks/Guides"
                         >
-                          <Link href="/dashboard/resources/premium" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Lock className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Premium</span>
+                          <Link href="/dashboard/ebooks" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <BookOpen className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Ebooks/Guides</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -357,7 +343,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/community/events")} 
+                          isActive={pathname.includes("/dashboard/community/events")} 
                           className="hover-lift"
                           tooltip="Events"
                         >
@@ -370,12 +356,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.startsWith("/dashboard/community/stories")} 
+                          isActive={pathname.includes("/dashboard/community/stories")} 
                           className="hover-lift"
                           tooltip="Stories"
                         >
                           <Link href="/dashboard/community/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Sparkles className="h-5 w-5" />
+                            <MessageSquare className="h-5 w-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Stories</span>
                           </Link>
                         </SidebarMenuButton>
@@ -386,18 +372,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </SidebarContent>
               <SidebarFooter className="border-t border-sidebar-border p-4">
                 <div className="flex flex-col space-y-4">
-                  <SettingsDialog 
-                    trigger={
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-start gap-2 hover-lift group-data-[collapsible=icon]:justify-center"
-                        title="Settings"
-                      >
-                        <Settings className="h-4 w-4 text-white" />
-                        <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-                      </Button>
-                    } 
-                  />
+                  <Link 
+                    href="/dashboard/membership"
+                    className="relative group overflow-hidden"
+                  >
+                    <Button 
+                      variant="default" 
+                      className="w-full justify-start gap-2 bg-primary hover:bg-primary/90 border-none text-white shadow-lg hover:shadow-xl transition-all duration-300 group-data-[collapsible=icon]:justify-center group-hover:scale-[1.02]"
+                      title="Become a Member"
+                    >
+                      <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
+                      <span className="group-data-[collapsible=icon]:hidden font-bold">Become a Member</span>
+                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full animate-shimmer"></span>
+                    </Button>
+                  </Link>
                   <Button 
                     variant="outline" 
                     className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"
@@ -472,14 +460,14 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           
           {/* Center navigation with dropdown menus - adjusted to be truly centered and responsive to sidebar state */}
           <nav className={`flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${sidebarState === "collapsed" ? "ml-[1rem]" : "ml-[3.5rem]"}`}>
-            {/* Coaching Dropdown */}
+            {/* Offering Dropdown */}
             <div className="relative group"
                  onMouseEnter={() => {
                    if (dropdownTimeout) {
                      clearTimeout(dropdownTimeout);
                      setDropdownTimeout(null);
                    }
-                   setActiveDropdown('coaching');
+                   setActiveDropdown('offering');
                  }}
                  onMouseLeave={() => {
                    const timeout = setTimeout(() => {
@@ -489,21 +477,21 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                  }}>
               <button onClick={(e) => {
                 e.preventDefault();
-                setActiveDropdown(activeDropdown === 'coaching' ? null : 'coaching');
+                setActiveDropdown(activeDropdown === 'offering' ? null : 'offering');
               }} className="focus:outline-none">
-                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'coaching' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
-                  <span>Coaching</span>
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'offering' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                  <span>Offering</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
               </button>
-              {activeDropdown === 'coaching' && (
-                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[900px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
+              {activeDropdown === 'offering' && (
+                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[450px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
                      onMouseEnter={() => {
                        if (dropdownTimeout) {
                          clearTimeout(dropdownTimeout);
                          setDropdownTimeout(null);
                        }
-                       setActiveDropdown('coaching');
+                       setActiveDropdown('offering');
                      }}
                      onMouseLeave={() => {
                        const timeout = setTimeout(() => {
@@ -511,104 +499,69 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                        }, 300); // 300ms delay before hiding
                        setDropdownTimeout(timeout);
                      }}>
-                  <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                  <div className="p-4 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     <div className="flex gap-4">
                       <div className="flex-1">
-                        <div className="grid grid-cols-3 gap-4">
-                          {/* First column */}
-                          <div>
-                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
-                              <Briefcase className="h-4 w-4 mr-2 text-primary" />
-                              Crack Consulting Interview
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-3">Everything you need to break into top consulting firms.</p>
-                            <div className="space-y-2">
-                              <Link href="/dashboard/coaching/break-into-consulting" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <ArrowUpRight className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Break into Consulting
-                              </Link>
-                              <Link href="/dashboard/coaching/unlimited-program" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Infinity className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Unlimited Coaching Program
-                              </Link>
-                              <Link href="/dashboard/coaching/one-on-one-programs" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <CircleUser className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                1:1 Specific Programs
-                              </Link>
-                              <Link href="/dashboard/coaching/group-programs" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Users className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Group Coaching Program
-                              </Link>
+                        <div className="space-y-3">
+                          {/* One-on-One Coaching */}
+                          <Link href="/dashboard/coaching/one-on-one" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium text-black !text-black">One-on-One Coaching</h3>
+                                <p className="text-xs text-gray-500">Personalized Case Coaching</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
                             </div>
-                          </div>
+                          </Link>
                           
-                          {/* Second column */}
-                          <div>
-                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
-                              <Award className="h-4 w-4 mr-2 text-primary" />
-                              Excel Consulting Career
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-3">Take your consulting career to the next level.</p>
-                            <div className="space-y-2">
-                              <Link href="/dashboard/coaching/star-consultant-mastery" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Star className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                STAR Consultant Mastery
-                              </Link>
-                              <Link href="/dashboard/coaching/one-on-one-career" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <CircleUser className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                1:1 Specific Programs
-                              </Link>
-                              <Link href="/dashboard/coaching/consulting-toolkit" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Briefcase className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Consulting Toolkit
-                              </Link>
+                          {/* Group Coaching */}
+                          <Link href="/dashboard/coaching/group" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium text-black !text-black">Group Coaching</h3>
+                                <p className="text-xs text-gray-500">Collaborative group Learning Sessions</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
                             </div>
-                          </div>
+                          </Link>
                           
-                          {/* Third column */}
-                          <div>
-                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
-                              <ArrowRightLeft className="h-4 w-4 mr-2 text-primary" />
-                              Consulting Migration
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-3">Plan your next career move after consulting.</p>
-                            <div className="space-y-2">
-                              <Link href="/dashboard/coaching/exit-planning" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <LogOut className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Exit Planning & Readiness
-                              </Link>
-                              <Link href="/dashboard/coaching/career-transition" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <MoveRight className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Career Transition
-                              </Link>
+                          {/* Workshops */}
+                          <Link href="/dashboard/coaching/workshops" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium text-black !text-black">Workshops</h3>
+                                <p className="text-xs text-gray-500">Hands-on Case Workshops</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
                             </div>
-                          </div>
+                          </Link>
                         </div>
                       </div>
                       
-                      {/* Promotional Banner - Now Vertical */}
-                      <div className="w-[200px] border-l border-gray-200 pl-4">
-                        <Link href="/dashboard/coaching" className="block group h-full">
-                          <div className="relative overflow-hidden rounded-md h-full">
-                            <div className="aspect-[2/3] relative h-full">
+                      {/* Promotional Banner */}
+                      <div className="w-[180px] border-l border-gray-200 pl-4">
+                        <div className="flex flex-col h-full">
+                          <div className="flex-1">
+                            <div className="relative overflow-hidden rounded-md h-[100px]">
                               <Image 
                                 src="https://framerusercontent.com/images/AjRKyR2dPa4q3GuHOle8Vz37jl0.png" 
                                 alt="Premium Coaching" 
                                 fill
-                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                className="object-cover"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4">
-                                <div>
-                                  <h3 className="text-base font-semibold text-white mb-1">Get premium 1-1 Coaching</h3>
-                                  <div className="flex items-center">
-                                    <span className="text-sm text-white/90 font-medium">Buy</span>
-                                    <ArrowRight className="h-4 w-4 ml-2 text-primary transition-transform duration-300 group-hover:translate-x-1" />
-                                  </div>
-                                </div>
-                              </div>
                             </div>
                           </div>
-                        </Link>
+                          <div className="mt-2 flex justify-between items-center">
+                            <span className="text-[10px] font-medium text-black">Get premium 1-1 Coaching</span>
+                            <Button variant="outline" size="sm" className="h-6 text-xs px-2">BUY</Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -616,14 +569,126 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
               )}
             </div>
 
-            {/* Practice Dropdown - Updated to "Practice with AI Coach" with FREE TRIAL badge */}
-            <div className="relative">
-              <Link href="https://app.consultify-ai.com/">
-                <div className="flex items-center gap-2 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 text-white/80 hover:text-white group">
-                  <Bot className="h-4 w-4 text-[#7BA7AE]" />
-                  <span>Practice with AI Coach</span>
+            {/* Tools & Guides Dropdown */}
+            <div className="relative"
+                 onMouseEnter={() => {
+                   if (dropdownTimeout) {
+                     clearTimeout(dropdownTimeout);
+                     setDropdownTimeout(null);
+                   }
+                   setActiveDropdown('tools');
+                 }}
+                 onMouseLeave={() => {
+                   const timeout = setTimeout(() => {
+                     setActiveDropdown(null);
+                   }, 300); // 300ms delay before hiding
+                   setDropdownTimeout(timeout);
+                 }}>
+              <Link href="/dashboard/resources" onClick={(e) => {
+                if (activeDropdown === 'tools') {
+                  e.preventDefault();
+                }
+              }}>
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'tools' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                  <span>Tools & Guides</span>
+                  <ChevronDown className="h-4 w-4" />
                 </div>
               </Link>
+              {activeDropdown === 'tools' && (
+                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[450px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
+                     onMouseEnter={() => {
+                       if (dropdownTimeout) {
+                         clearTimeout(dropdownTimeout);
+                         setDropdownTimeout(null);
+                       }
+                       setActiveDropdown('tools');
+                     }}
+                     onMouseLeave={() => {
+                       const timeout = setTimeout(() => {
+                         setActiveDropdown(null);
+                       }, 300); // 300ms delay before hiding
+                       setDropdownTimeout(timeout);
+                     }}>
+                  <div className="p-4 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <div className="space-y-3">
+                          {/* AI Coach */}
+                          <Link href="https://app.consultify-ai.com/" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">AI Coach</h3>
+                                <p className="text-xs text-gray-500">Practice with AI Tutor</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
+                            </div>
+                          </Link>
+                          
+                          {/* Job Board */}
+                          <Link href="/dashboard/resources/job-board" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Job Board</h3>
+                                <p className="text-xs text-gray-500">Consulting Openings Hub</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
+                            </div>
+                          </Link>
+                          
+                          {/* Assessments */}
+                          <Link href="/dashboard/resources/assessments" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Assessments</h3>
+                                <p className="text-xs text-gray-500">Skill Tests & Quizzes</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
+                            </div>
+                          </Link>
+                          
+                          {/* Ebooks/Guide */}
+                          <Link href="/dashboard/resources/ebooks" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Ebooks/Guide</h3>
+                                <p className="text-xs text-gray-500">Downloadable Learning Guides</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      </div>
+                      
+                      {/* Promotional Banner */}
+                      <div className="w-[180px] border-l border-gray-200 pl-4">
+                        <div className="flex flex-col h-full">
+                          <div className="flex-1">
+                            <div className="relative overflow-hidden rounded-md h-[100px]">
+                              <Image 
+                                src="https://framerusercontent.com/images/AjRKyR2dPa4q3GuHOle8Vz37jl0.png" 
+                                alt="Practice Mock Case" 
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-2 flex justify-between items-center">
+                            <span className="text-[10px] font-medium text-black">Practice Mock Case Interview with AI Coach</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Resources Dropdown */}
@@ -652,7 +717,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                 </div>
               </Link>
               {activeDropdown === 'resources' && (
-                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[900px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
+                <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[450px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
                      onMouseEnter={() => {
                        if (dropdownTimeout) {
                          clearTimeout(dropdownTimeout);
@@ -666,93 +731,105 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                        }, 300); // 300ms delay before hiding
                        setDropdownTimeout(timeout);
                      }}>
-                  <div className="p-6 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                  <div className="p-4 max-h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                     <div className="flex gap-4">
                       <div className="flex-1">
-                        <div className="grid grid-cols-2 gap-4">
-                          {/* First column */}
-                          <div>
-                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
-                              <FileText className="h-4 w-4 mr-2 text-primary" />
-                              Toolkits & Products
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-3">Essential tools to help you prepare for consulting interviews.</p>
-                            <div className="space-y-2">
-                              <Link href="/dashboard/resources/personality" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <User className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Personality Assessment
-                              </Link>
-                              <Link href="/dashboard/resources/cheatsheet" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <FileCheck className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Cheatsheet
-                              </Link>
-                              <Link href="/dashboard/resources/meditation" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Smile className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Meditation
-                              </Link>
-                              <Link href="/dashboard/resources/workshop" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Users className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Workshop
-                              </Link>
-                              <Link href="/dashboard/resources/ebooks" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <BookOpen className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                E-books
-                              </Link>
-                              <Link href="/dashboard/resources/cv-guide" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <FileText className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                CV Guide
-                              </Link>
+                        <div className="space-y-3">
+                          {/* Upcoming Events */}
+                          <Link href="/dashboard/resources/events" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Upcoming Events</h3>
+                                <p className="text-xs text-gray-500">Live Prep Events</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
                             </div>
-                          </div>
+                          </Link>
                           
-                          {/* Second column */}
-                          <div>
-                            <h3 className="text-sm font-bold !text-[#245D66] mb-3 flex items-center">
-                              <Unlock className="h-4 w-4 mr-2 text-primary" />
-                              FREE
-                            </h3>
-                            <p className="text-xs text-gray-500 mb-3">Free content to help you on your consulting journey.</p>
-                            <div className="space-y-2">
-                              <Link href="/dashboard/resources/blogs" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <BookOpen className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Blogs & articles
-                              </Link>
-                              <Link href="/dashboard/resources/social" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <MessageSquare className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Social feeds
-                              </Link>
-                              <Link href="/dashboard/resources/community" className="block px-3 py-2 text-xs font-bold text-black hover:text-white hover:bg-black/90 rounded-sm transition-colors duration-200 flex items-center">
-                                <Users className="h-3.5 w-3.5 mr-2 text-gray-500" />
-                                Community feeds
-                              </Link>
+                          {/* Blogs */}
+                          <Link href="/dashboard/resources/blogs" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Blogs</h3>
+                                <p className="text-xs text-gray-500">Insights & Strategies</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
                             </div>
-                          </div>
+                          </Link>
+                          
+                          {/* Social Feeds */}
+                          <Link href="/dashboard/resources/social" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Social Feeds</h3>
+                                <p className="text-xs text-gray-500">Community Updates</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
+                            </div>
+                          </Link>
+                          
+                          {/* Podcast */}
+                          <Link href="/dashboard/resources/podcast" className="block group">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="text-sm font-medium !text-black">Podcast</h3>
+                                <p className="text-xs text-gray-500">Expert Talks & Tips</p>
+                              </div>
+                              <div className="text-gray-400">
+                                <ChevronDown className="h-4 w-4" />
+                              </div>
+                            </div>
+                          </Link>
                         </div>
                       </div>
                       
-                      {/* Promotional Banner - Now Vertical */}
-                      <div className="w-[200px] border-l border-gray-200 pl-4">
-                        <Link href="/dashboard/resources" className="block group h-full">
-                          <div className="relative overflow-hidden rounded-md h-full">
-                            <div className="aspect-[2/3] relative h-full">
-                              <Image 
-                                src="https://framerusercontent.com/images/UDGnefgJnsYAmnMMkYUWp0rFFm4.png?scale-down-to=512" 
-                                alt="Premium Resources" 
-                                fill
-                                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-4">
-                                <div>
-                                  <h3 className="text-base font-semibold text-white mb-1">Get premium resources</h3>
-                                  <div className="flex items-center">
-                                    <span className="text-sm text-white/90 font-medium">Buy</span>
-                                    <ArrowRight className="h-4 w-4 ml-2 text-primary transition-transform duration-300 group-hover:translate-x-1" />
-                                  </div>
-                                </div>
+                      {/* Articles Section */}
+                      <div className="w-[180px] border-l border-gray-200 pl-4">
+                        <div className="flex flex-col h-full space-y-3">
+                          {/* First Article */}
+                          <div className="bg-[#e8f0f0] rounded-md p-2 flex flex-col">
+                            <div className="flex gap-2 items-start mb-1">
+                              <div className="relative w-12 h-12 flex-shrink-0">
+                                <Image 
+                                  src="https://framerusercontent.com/images/AjRKyR2dPa4q3GuHOle8Vz37jl0.png" 
+                                  alt="Consulting Career" 
+                                  fill
+                                  className="object-cover rounded-sm"
+                                />
                               </div>
+                              <p className="text-[10px] font-medium text-black">Launching Your Consulting Career: Making the Most of Your First 90 Days</p>
+                            </div>
+                            <div className="flex justify-between items-center mt-auto">
+                              <span className="text-[9px] text-gray-500">Read latest article</span>
+                              <ChevronDown className="h-3 w-3 text-gray-500 transform -rotate-90" />
                             </div>
                           </div>
-                        </Link>
+                          
+                          {/* Second Article */}
+                          <div className="bg-[#e8f0f0] rounded-md p-2 flex flex-col">
+                            <div className="flex gap-2 items-start mb-1">
+                              <div className="relative w-12 h-12 flex-shrink-0">
+                                <Image 
+                                  src="https://framerusercontent.com/images/AjRKyR2dPa4q3GuHOle8Vz37jl0.png" 
+                                  alt="Negotiating Salary" 
+                                  fill
+                                  className="object-cover rounded-sm"
+                                />
+                              </div>
+                              <p className="text-[10px] font-medium text-black">Negotiating Salary in Consulting: Are You Really Pushing?</p>
+                            </div>
+                            <div className="flex justify-between items-center mt-auto">
+                              <span className="text-[9px] text-gray-500">Read latest article</span>
+                              <ChevronDown className="h-3 w-3 text-gray-500 transform -rotate-90" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -808,8 +885,8 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
             
             <SettingsDialog 
               trigger={
-                <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white hover:bg-white/10 hover:border-white transition-colors duration-200">
-                  <Settings className="h-4 w-4 text-white" />
+                <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white hover:bg-white hover:border-white transition-colors duration-200 header-icon-button">
+                  <Settings className="h-4 w-4 text-white [.header-icon-button:hover_&]:text-black transition-colors duration-200" />
                   <span className="sr-only">Settings</span>
                 </Button>
               } 
@@ -837,20 +914,20 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/profile')} className="hover:text-[#245D66] transition-colors duration-200">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/order-history')}>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/order-history')} className="hover:text-[#245D66] transition-colors duration-200">
                     <FileCheck className="mr-2 h-4 w-4" />
                     <span>Order History</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/settings')} className="hover:text-[#245D66] transition-colors duration-200">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive hover:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
