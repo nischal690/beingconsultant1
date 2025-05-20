@@ -51,12 +51,12 @@ function TestimonialCard({ quote, author, role }: { quote: string, author: strin
           <Star className="h-5 w-5 text-white" />
           <Star className="h-5 w-5 text-white" />
         </div>
-        <p className="italic text-gray-400">{quote}</p>
+        <p className="italic text-white/60">{quote}</p>
         <div className="flex items-center gap-3 pt-2">
           <div className="h-8 w-8 rounded-full bg-[#245D66]/20 flex items-center justify-center text-[#245D66] font-medium">{author.charAt(0)}</div>
           <div>
             <p className="font-medium text-white">{author}</p>
-            <p className="text-xs text-gray-400">{role}</p>
+            <p className="text-xs text-white/60">{role}</p>
           </div>
         </div>
       </CardContent>
@@ -341,19 +341,17 @@ export default function CoachingPage() {
             src="/herosection.jpg"
             alt="Hero Background"
             fill
-            className="object-cover opacity-50" // Added opacity for better text contrast
+            className="object-cover"
             priority
           />
-           <div className="absolute inset-0 bg-transparent"></div> {/* Removed dark overlay for transparency */}
+          {/* No overlay to allow full background visibility */}
         </div>
 
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#245D66]/20 blur-[100px] animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-72 h-72 rounded-full bg-white/5 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+        {/* Blur effects removed */}
 
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0vjZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNmgtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+        {/* Pattern overlay removed */}
 
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        {/* Gradient lines removed */}
 
         <div className="relative p-10 md:p-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
@@ -364,7 +362,7 @@ export default function CoachingPage() {
                 transition={{ duration: 0.6 }}
                 className="inline-block"
               >
-                <span className="px-4 py-1.5 text-sm bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white">
+                <span className="px-4 py-1.5 text-sm bg-black/10 backdrop-blur-md rounded-full border border-black/20 text-black font-medium">
                   Group Coaching Programs
                 </span>
               </motion.div>
@@ -375,8 +373,8 @@ export default function CoachingPage() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight"
               >
-                <span className="block text-white">Transform Your Career</span>
-                <span className="text-white">
+                <span className="block text-black">Transform Your Career</span>
+                <span className="text-black">
                   With Expert Coaching
                 </span>
               </motion.h1>
@@ -385,7 +383,7 @@ export default function CoachingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base md:text-lg text-gray-300 max-w-2xl leading-relaxed"
+                className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
               >
                 Learn and grow alongside peers in our dynamic group coaching programs.
                 Benefit from collaborative learning, shared experiences, and cost-effective
@@ -401,17 +399,17 @@ export default function CoachingPage() {
               >
                 <Button
                   size="lg"
-                  className="relative overflow-hidden bg-white/10 text-white border border-white/20 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-white/20"
+                  className="relative overflow-hidden bg-black/10 text-black border border-black/30 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-black/20"
                   onClick={scrollToPrograms}
                 >
-                  <span className="relative z-10 text-white">Explore Programs</span>
-                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 text-white" />
+                  <span className="relative z-10 text-black font-medium">Explore Programs</span>
+                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 text-black" />
                   <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="absolute inset-0 bg-transparent opacity-100 group-hover:opacity-0 transition-opacity duration-300"></span>
                   <span className="absolute inset-0 mix-blend-overlay bg-gradient-to-br from-white/10 to-white/20 group-hover:from-white/20 group-hover:to-white/30 transition-colors duration-300"></span>
                    <style jsx>{`
                     .group:hover span {
-                      color: white !important;
+                      color: black !important;
                     }
                   `}</style>
                 </Button>
@@ -424,16 +422,16 @@ export default function CoachingPage() {
                 className="flex flex-wrap gap-6 pt-4"
               >
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">1250+</span>
-                  <span className="text-sm text-gray-300">Successful Placements</span>
+                  <span className="text-2xl font-bold text-black">1250+</span>
+                  <span className="text-sm text-gray-700">Successful Placements</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">98%</span>
-                  <span className="text-sm text-gray-300">Success Rate</span>
+                  <span className="text-2xl font-bold text-black">98%</span>
+                  <span className="text-sm text-gray-700">Success Rate</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-white">4.9/5</span>
-                  <span className="text-sm text-gray-300">Client Rating</span>
+                  <span className="text-2xl font-bold text-black">4.9/5</span>
+                  <span className="text-sm text-gray-700">Client Rating</span>
                 </div>
               </motion.div>
             </div>
@@ -501,7 +499,7 @@ export default function CoachingPage() {
       {/* What Sets Us Apart Section */}
       <section className="py-16">
         <div className="text-center mb-10">
-          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
+          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70 animate-gradient-x">
             What sets us apart
           </h2>
           <div className="mx-auto w-24 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent mt-4"></div>
@@ -512,7 +510,7 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gray-900 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
+            className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4 mb-4">
               <div className="bg-black p-3 rounded-lg">
@@ -520,7 +518,7 @@ export default function CoachingPage() {
               </div>
               <h3 className="text-xl font-bold mt-1 text-white">Learn From a Consulting Legend</h3>
             </div>
-            <p className="text-gray-400 text-sm">
+            <p className="text-white/60 text-sm">
               Gaurav Bhosle personally leads every session, bringing his McKinsey background and global recruiting experience directly to your preparation. His unique 360° perspective combines consultant, coach, and recruiter insights that simply cannot be found elsewhere.
             </p>
           </motion.div>
@@ -529,7 +527,7 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-gray-900 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
+            className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4 mb-4">
               <div className="bg-black p-3 rounded-lg">
@@ -537,7 +535,7 @@ export default function CoachingPage() {
               </div>
               <h3 className="text-xl font-bold mt-1 text-white">Proven Success Across Backgrounds</h3>
             </div>
-            <p className="text-gray-400 text-sm">
+            <p className="text-white/60 text-sm">
               From opera singers to military officers to scientists—Gaurav has guided professionals from the most unconventional backgrounds to MBB offers. His methodology adapts to your unique story, transforming diverse experiences into consulting strengths.
             </p>
           </motion.div>
@@ -546,7 +544,7 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-gray-900 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
+            className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4 mb-4">
               <div className="bg-black p-3 rounded-lg">
@@ -554,7 +552,7 @@ export default function CoachingPage() {
               </div>
               <h3 className="text-xl font-bold mt-1 text-white">Maximum Value, Accessible Investment</h3>
             </div>
-            <p className="text-gray-400 text-sm">
+            <p className="text-white/60 text-sm">
               We've architected this program to deliver premium coaching at a fraction of typical costs. By combining expert-led group sessions with comprehensive resources and peer practice, you receive the complete consulting preparation system without the prohibitive investment.
             </p>
           </motion.div>
@@ -565,17 +563,17 @@ export default function CoachingPage() {
       <section ref={programsSectionRef} className="mt-8">
         <div className="flex flex-col md:flex-row items-start justify-between mb-12">
           <div className="relative">
-            <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
+            <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70 animate-gradient-x">
               Group Programs
             </h2>
             <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-            <p className="text-gray-400 mt-4 max-w-xl">
+            <p className="text-white/60 mt-4 max-w-xl">
               Learn with peers and save on costs
             </p>
           </div>
           <div className="flex items-center gap-2 mt-4 md:mt-0">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-gray-800 to-gray-900 px-3 py-1.5 rounded-full border border-gray-700 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300 backdrop-blur-sm">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-black/80 to-black px-3 py-1.5 rounded-full border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300 backdrop-blur-sm">
                 <Globe className="h-4 w-4 text-white/80" />
                 <Select
                   value={selectedCurrency}
@@ -584,30 +582,30 @@ export default function CoachingPage() {
                   <SelectTrigger className="w-[120px] h-7 bg-transparent border-0 text-white hover:text-white focus:ring-0 focus:ring-offset-0 pl-0">
                     <SelectValue placeholder="Currency" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/90 border border-gray-700 text-white backdrop-blur-xl shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                    <SelectItem value="USD" className="hover:bg-gray-800 focus:bg-gray-800 rounded-sm my-1 cursor-pointer text-white">
+                  <SelectContent className="bg-black/90 border border-white/10 text-white backdrop-blur-xl shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <SelectItem value="USD"  className="hover:bg-black/50 focus:bg-black/50 rounded-sm my-1 cursor-pointer text-white">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">USD</span>
-                        <span className="text-gray-400">($)</span>
+                        <span className="text-white/60">($)</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="EUR" className="hover:bg-gray-800 focus:bg-gray-800 rounded-sm my-1 cursor-pointer text-white">
+                    <SelectItem value="EUR"  className="hover:bg-black/50 focus:bg-black/50 rounded-sm my-1 cursor-pointer text-white">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">EUR</span>
-                        <span className="text-gray-400">(€)</span>
+                        <span className="text-white/60">(€)</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="INR" className="hover:bg-gray-800 focus:bg-gray-800 rounded-sm my-1 cursor-pointer text-white">
+                    <SelectItem value="INR"  className="hover:bg-black/50 focus:bg-black/50 rounded-sm my-1 cursor-pointer text-white">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">INR</span>
-                        <span className="text-gray-400">(₹)</span>
+                        <span className="text-white/60">(₹)</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            <span className="text-sm text-gray-400 ml-2">
+            <span className="text-sm text-white/60 ml-2">
               {isLoading ? "Loading programs..." : `${filteredPrograms.length} programs available`}
             </span>
           </div>
@@ -618,7 +616,7 @@ export default function CoachingPage() {
             .filter(program => program.category === "group")
             .map((program) => (
               <motion.div key={program.id} variants={itemVariants} className="group">
-                <div className="flex flex-col overflow-hidden rounded-xl border border-gray-700 bg-gray-900 h-full text-white"> {/* bg-card replaced */}
+                <div className="flex flex-col overflow-hidden rounded-xl border border-white/10 bg-black/80 h-full text-white"> {/* bg-card replaced */}
                   <div className="relative w-full aspect-[3/1] bg-black flex items-center justify-center"> {/* Simplified background */}
                     {program.iconName === "briefcase" && <Briefcase className="h-8 w-8 text-[#245D66]" />}
                     {program.iconName === "clock" && <Clock className="h-8 w-8 text-[#245D66]" />}
@@ -634,7 +632,7 @@ export default function CoachingPage() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="text-base font-bold text-white">{program.title}</h3>
-                        <p className="text-gray-400 text-xs">{program.shortDescription.substring(0, 60)}...</p>
+                        <p className="text-white/60 text-xs">{program.shortDescription.substring(0, 60)}...</p>
                       </div>
                       {program.sessionLength && (
                         <Badge className="bg-[#245D66] text-white border-none text-xs">
@@ -652,7 +650,7 @@ export default function CoachingPage() {
                       {program.features?.slice(0, 2).map((feature, index) => (
                         <div key={index} className="flex items-start gap-1.5">
                           <CheckCircle className="h-3 w-3 text-[#245D66] mt-0.5 flex-shrink-0" />
-                          <span className="text-xs text-gray-300">{feature}</span>
+                          <span className="text-xs text-white/70">{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -674,12 +672,12 @@ export default function CoachingPage() {
                         <div className="flex items-baseline gap-1.5">
                           <span className="text-base font-bold text-white">{formatPrice(program.price || 0)}</span>
                           {program.originalPrice && (
-                            <span className="text-xs text-gray-500 line-through"> {/* Darker gray for line-through */}
+                            <span className="text-xs text-white/40 line-through"> {/* Darker gray for line-through */}
                               {formatPrice(program.originalPrice)}
                             </span>
                           )}
                           {program.privateOption && program.category === "group" && (
-                            <span className="text-xs text-gray-400 ml-1">
+                            <span className="text-xs text-white/60 ml-1">
                               / {formatPrice(program.privatePrice || 0)} (private)
                             </span>
                           )}
@@ -703,10 +701,10 @@ export default function CoachingPage() {
       {/* Program Comparison Table */}
       <section className="py-16">
         <div className="text-center mb-10">
-          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
+          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70 animate-gradient-x">
             Program Comparison
           </h2>
-          <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+          <p className="text-white/60 mt-4 max-w-2xl mx-auto">
             Choose the program that best fits your needs and goals
           </p>
           <div className="mx-auto w-24 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent mt-4"></div>
@@ -714,7 +712,7 @@ export default function CoachingPage() {
 
         <div className="overflow-x-auto">
           <div className="min-w-[800px] mx-auto">
-            <div className="grid grid-cols-4 gap-0.5 bg-gray-700 rounded-lg overflow-hidden border border-gray-700">
+            <div className="grid grid-cols-4 gap-0.5 bg-white/10 rounded-lg overflow-hidden border border-white/10">
               {/* Header Row */}
               <div className="bg-black p-4 font-bold text-white">
                 Topic
@@ -730,12 +728,12 @@ export default function CoachingPage() {
               </div>
 
               {/* Focus Row */}
-              <div className="bg-gray-900 p-4 font-semibold text-white"> {/* Darker shade of black */}
+              <div className="bg-black/90 p-4 font-semibold text-white"> {/* Darker shade of black */}
                 Focus
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white"> {/* Lighter shade of black */}
+              <div className="bg-black/70 p-4 text-sm text-white"> {/* Lighter shade of black */}
                 <p className="font-semibold text-[#245D66] mb-2">Complete consulting preparation system with emphasis on recruitment</p>
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Case interview techniques</li>
                   <li>FIT interview preparation</li>
                   <li>CV & cover letter optimization</li>
@@ -744,9 +742,9 @@ export default function CoachingPage() {
                   <li>Post-offer guidance</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
+              <div className="bg-black/70 p-4 text-sm text-white">
                 <p className="font-semibold text-[#245D66] mb-2">Specialized case interview preparation and problem-solving methodology</p>
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Full case cycle mastery</li>
                   <li>Framework development</li>
                   <li>Quantitative analysis</li>
@@ -755,9 +753,9 @@ export default function CoachingPage() {
                   <li>Various case types</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
+              <div className="bg-black/70 p-4 text-sm text-white">
                 <p className="font-semibold text-[#245D66] mb-2">Strategic narrative development for behavioral interviews</p>
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Personal narrative development</li>
                   <li>MBB-specific FIT questions</li>
                   <li>Leadership & teamwork stories</li>
@@ -768,49 +766,49 @@ export default function CoachingPage() {
               </div>
 
               {/* Time Commitment Row */}
-              <div className="bg-gray-900 p-4 font-semibold text-white">
+              <div className="bg-black/90 p-4 font-semibold text-white">
                 Time Commitment
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>5 weekly sessions (10 hours)</li>
                   <li>12 hours pre-program material</li>
                   <li>Ongoing support</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>4 weekly sessions (8 hours)</li>
                   <li>6 hours pre-program material</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>3 weekly sessions (6 hours)</li>
                   <li>4 hours pre-program material</li>
                 </ul>
               </div>
 
               {/* Ideal For Row */}
-              <div className="bg-gray-900 p-4 font-semibold text-white">
+              <div className="bg-black/90 p-4 font-semibold text-white">
                 Ideal For
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Serious candidates targeting top firms</li>
                   <li>Those needing comprehensive preparation</li>
                   <li>Candidates starting from scratch</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Those struggling specifically with cases</li>
                   <li>Candidates with strong resumes but weak case skills</li>
                   <li>Analytical thinkers needing structure</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Strong case performers with weaker personal narratives</li>
                   <li>Candidates with unconventional backgrounds</li>
                   <li>Those with upcoming final rounds</li>
@@ -818,27 +816,27 @@ export default function CoachingPage() {
               </div>
 
               {/* Expected Outcomes Row */}
-              <div className="bg-gray-900 p-4 font-semibold text-white">
+              <div className="bg-black/90 p-4 font-semibold text-white">
                 Expected Outcomes
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Complete interview readiness</li>
                   <li>Structured approach for interview types</li>
                   <li>Optimized application materials</li>
                   <li>Strategic career planning</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Confident case handling</li>
                   <li>Clear structured thinking</li>
                   <li>Improved quantitative skills</li>
                   <li>Compelling recommendation delivery</li>
                 </ul>
               </div>
-              <div className="bg-gray-800 p-4 text-sm text-white">
-                <ul className="space-y-1 text-gray-300 list-disc pl-5">
+              <div className="bg-black/70 p-4 text-sm text-white">
+                <ul className="space-y-1 text-white/70 list-disc pl-5">
                   <li>Authentic, compelling personal stories</li>
                   <li>Confident delivery</li>
                   <li>Clear distinction between experience and consulting fit</li>
@@ -847,20 +845,20 @@ export default function CoachingPage() {
               </div>
 
               {/* Investment Row */}
-              <div className="bg-gray-900 p-4 font-semibold text-white">
+              <div className="bg-black/90 p-4 font-semibold text-white">
                 Investment
               </div>
-              <div className="bg-gray-800 p-4 text-sm font-bold text-white">
+              <div className="bg-black/70 p-4 text-sm font-bold text-white">
                 <p>{formatPrice(599)}</p>
-                <p className="text-xs text-gray-400 mt-1">{formatPrice(1199)} (private)</p>
+                <p className="text-xs text-white/60 mt-1">{formatPrice(1199)} (private)</p>
               </div>
-              <div className="bg-gray-800 p-4 text-sm font-bold text-white">
+              <div className="bg-black/70 p-4 text-sm font-bold text-white">
                 <p>{formatPrice(399)}</p>
-                <p className="text-xs text-gray-400 mt-1">{formatPrice(799)} (private)</p>
+                <p className="text-xs text-white/60 mt-1">{formatPrice(799)} (private)</p>
               </div>
-              <div className="bg-gray-800 p-4 text-sm font-bold text-white">
+              <div className="bg-black/70 p-4 text-sm font-bold text-white">
                 <p>{formatPrice(299)}</p>
-                <p className="text-xs text-gray-400 mt-1">{formatPrice(599)} (private)</p>
+                <p className="text-xs text-white/60 mt-1">{formatPrice(599)} (private)</p>
               </div>
             </div>
           </div>
@@ -887,15 +885,15 @@ export default function CoachingPage() {
         >
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold relative inline-block">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-[#245D66] animate-gradient-x">
                 Your Personal AI Coach to Ace Case Interviews
               </span>
-              <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+              <div className="absolute -bottom-2 left-0 right-0 h-px bg-[#245D66]"></div>
             </h2>
-            <p className="mt-4 text-gray-300 max-w-2xl mx-auto"> {/* Changed from gray-400 for slightly more pop */}
+            <p className="mt-4 text-white max-w-2xl mx-auto">
               Select your Practice Mode
             </p>
-            <p className="text-sm text-gray-500"> {/* This gray is fine for very subtle text */}
+            <p className="text-sm text-white/40">
               Choose a mode that fits your goals
             </p>
           </div>
@@ -1258,7 +1256,7 @@ export default function CoachingPage() {
                     Ready to Transform Your Career?
                   </span>
                 </h2>
-                <p className="text-gray-700"> {/* Darker gray for readability on light bg */}
+                <p className="text-black/70"> {/* Darker gray for readability on light bg */}
                   Choose the program that fits your needs and take the first step toward your dream consulting career. Special pricing available for a limited time.
                 </p>
                 <div className="flex flex-wrap gap-4 pt-2">
