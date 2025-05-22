@@ -38,7 +38,6 @@ import { useAuth } from "@/lib/firebase/auth-context";
 import { PaymentModal, PaymentItem } from "@/components/payment/payment-modal"
 import { getProductsByCategory, addCoachingToUserProfile, createTransactionRecord } from "@/lib/firebase/firestore"
 import { CoachingProgram, coachingPrograms, getProgramsByCategory } from "@/data/coaching-programs"
-import HeroSection from "./hero-section"
 
 // Helper component for testimonials
 function TestimonialCard({ quote, author, role }: { quote: string, author: string, role: string }) {
@@ -118,7 +117,7 @@ export default function CoachingPage() {
     INR: 83.5  // 1 USD = 83.5 INR
   }
   
-  // Currency symbols for display
+  // Currency symbols
   const currencySymbols = {
     USD: "$",
     EUR: "€",
@@ -374,55 +373,163 @@ export default function CoachingPage() {
 
   return (
     <div className="w-full space-y-10 pb-20 px-4 md:px-6 lg:px-8">
-      {/* Hero Section - The Gaurav Advantage */}
-      <HeroSection />
-
-      {/* Coaching Programs */}
-      <section ref={programsSectionRef} className="mt-8">
-        <div className="flex flex-col md:flex-row items-start justify-between mb-12">
-          <div className="relative">
-            <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
-              {activeFilter === "group" ? "Group Programs" : "One on One Programs"}
-            </h2>
-            <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-            <p className="text-gray-400 mt-4 max-w-xl">
-              {activeFilter === "group" 
-                ? "Learn with peers and save on costs" 
-                : "Focused coaching for specific needs"}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 mt-4 md:mt-0">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 px-3 py-1.5 rounded-full border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-300 backdrop-blur-sm">
-                <Globe className="h-4 w-4 text-white/80" />
-                <Select
-                  value={selectedCurrency}
-                  onValueChange={(value) => setSelectedCurrency(value as "USD" | "EUR" | "INR")}
+      {/* Hero Section - 1:1 Personalized Coaching */}
+      <section className="relative overflow-hidden rounded-3xl text-gray-800">
+        {/* Background image with enhanced styling */}
+        <div className="absolute inset-0">
+          <Image 
+            src="/herosection.jpg" 
+            alt="Hero Background" 
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        
+        {/* Animated glow effects */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-teal-500/20 blur-[100px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/3 w-72 h-72 rounded-full bg-blue-500/20 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+        
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0vjZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNmgtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+        
+        {/* Premium border effect */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        
+        {/* Content wrapper with increased padding and backdrop blur */}
+        <div className="relative p-10 md:p-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            {/* Left content column - takes 2/3 of the space */}
+            <div className="md:col-span-2 space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="inline-block"
+              >
+                <span className="px-4 py-1.5 text-sm bg-gray-800/10 backdrop-blur-md rounded-full border border-gray-800/20">
+                  Elite Coaching Programs
+                </span>
+              </motion.div>
+              
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-4xl md:text-5xl font-bold tracking-tight leading-tight"
+              >
+                <span className="block text-black">Transform Your Career</span>
+                <span className="text-black">
+                  With Expert Coaching
+                </span>
+              </motion.h1>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
+              >
+                Elevate your professional journey with our comprehensive coaching programs tailored 
+                to your unique career goals. Our expert coaches provide personalized guidance, 
+                actionable frameworks, and insider knowledge to help you navigate the consulting 
+                landscape with confidence. Join the 1,250+ professionals who've accelerated their 
+                careers through our structured, results-driven approach.
+              </motion.p>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <Button 
+                  size="lg" 
+                  className="relative overflow-hidden bg-black text-white border border-black/20 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-black/30"
                 >
-                  <SelectTrigger className="w-[120px] h-7 bg-transparent border-0 text-white hover:text-white focus:ring-0 focus:ring-offset-0 pl-0">
-                    <SelectValue placeholder="Currency" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-black/90 border border-white/20 text-white backdrop-blur-xl shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                    <SelectItem value="USD" className="hover:bg-white/10 focus:bg-white/10 rounded-sm my-1 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">USD</span>
-                        <span className="text-white/70">($)</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="EUR" className="hover:bg-white/10 focus:bg-white/10 rounded-sm my-1 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">EUR</span>
-                        <span className="text-white/70">(€)</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="INR" className="hover:bg-white/10 focus:bg-white/10 rounded-sm my-1 cursor-pointer">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">INR</span>
-                        <span className="text-white/70">(₹)</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  <span className="relative z-10 text-white" onClick={scrollToPrograms}>Explore Programs</span>
+                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 text-white" />
+                  <span className="absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-black opacity-100 group-hover:opacity-0 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 mix-blend-overlay bg-gradient-to-br from-black/10 to-black/30 group-hover:from-gray-700/10 group-hover:to-gray-900/30 transition-colors duration-300"></span>
+                  <style jsx>{`
+                    .group:hover span {
+                      color: white !important;
+                    }
+                  `}</style>
+                </Button>
+              </motion.div>
+              
+              {/* Stats with animated counters */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="flex flex-wrap gap-6 pt-4"
+              >
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-gray-800">1250+</span>
+                  <span className="text-sm text-gray-600">Successful Placements</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-gray-800">98%</span>
+                  <span className="text-sm text-gray-600">Success Rate</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-gray-800">4.9/5</span>
+                  <span className="text-sm text-gray-600">Client Rating</span>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Right content column - coach profiles with enhanced styling */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="flex justify-center items-center"
+            >
+              <div className="relative">
+                {/* Coach profiles in oval frames with enhanced styling */}
+                <div className="flex flex-wrap justify-center gap-4">
+                  <motion.div 
+                    className="relative"
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=250&fit=crop" 
+                        alt="Coach" 
+                        width={200} 
+                        height={250}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    className="relative -mt-10"
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&h=250&fit=crop" 
+                        alt="Coach" 
+                        width={200} 
+                        height={250}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    className="relative"
+                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
+                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
+                      <Image 
+                        src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=200&h=250&fit=crop" 
                         alt="Coach" 
                         width={200} 
                         height={250}
@@ -1079,46 +1186,68 @@ export default function CoachingPage() {
 
       {/* CTA Section */}
       <section className="mt-16">
-        <div className="relative">
-            
-            <div className="absolute top-1/2 right-1/4 transform translate-x-1/2 -translate-y-1/2 h-[180px] w-[180px] md:h-[200px] md:w-[200px] rounded-full bg-[#D8A7A7]/70 flex items-center justify-center text-center p-4">
-              <div>
-                <p className="font-bold text-sm md:text-base">BOTH SIDES OF THE TABLE</p>
-              </div>
-            </div>
-            
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[180px] w-[180px] md:h-[200px] md:w-[200px] rounded-full bg-[#C2B280]/70 flex items-center justify-center text-center p-4">
-              <div>
-                <p className="font-bold text-sm md:text-base">GLOBAL EXCELLENCE STANDARD</p>
-              </div>
-            </div>
-          </div>
+        <div className="relative overflow-hidden rounded-3xl">
+          {/* Background gradient and effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white to-[#E5EFF1]"></div>
+          <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)]"></div>
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#E5EFF1] rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#E5EFF1] rounded-full blur-3xl"></div>
           
-          {/* Advantage Descriptions */}
-          <div className="space-y-10">
-            <div className="space-y-2">
-              <h2 className="text-xl md:text-2xl font-semibold bg-[#8BA89F]/20 p-2">360° Coaching Perspective</h2>
-              <p className="text-white/80">
-                Unlike coaches who replicate their singular path, I identify and amplify your unique strengths. As a certified career coach with McKinsey experience, I architect personalized strategies that showcase your authentic value to firms.
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <h2 className="text-xl md:text-2xl font-semibold bg-[#D8A7A7]/20 p-2">Both Sides of the Table</h2>
-              <p className="text-white/80">
-                My active role in consulting recruitment provides rare insight into what firms truly seek beyond standard frameworks. This dual perspective ensures your preparation aligns precisely with current evaluation practices and market demands.
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <h2 className="text-xl md:text-2xl font-semibold bg-[#C2B280]/20 p-2">Global Excellence Standard</h2>
-              <p className="text-white/80">
-                Having worked across 25+ countries and coached professionals from 55+ nations, I bring a truly global perspective to your preparation. This international insight translates into versatile approaches that succeed across diverse consulting environments.
-              </p>
+          <div className="relative p-8 md:p-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-6">
+                <Badge className="bg-[#245D66] hover:bg-[#1A444B] text-white border-none">
+                  Limited Time Offer
+                </Badge>
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#245D66] to-[#1A444B] animate-gradient-x">
+                    Ready to Transform Your Career?
+                  </span>
+                </h2>
+                <p className="text-gray-700">
+                  Choose the program that fits your needs and take the first step toward your dream consulting career. Special pricing available for a limited time.
+                </p>
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <Button size="lg" className="bg-[#245D66] text-white hover:bg-[#1A444B] transition-all duration-300 group hover:-translate-y-[2px] shadow-lg hover:shadow-[#245D66]/10">
+                    Browse All Programs
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                  <Button size="lg" variant="outline" className="border-[#245D66]/70 text-[#245D66] hover:bg-[#245D66]/5 transition-all duration-300">
+                    Schedule a Call
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="space-y-4 bg-[#245D66]/5 backdrop-blur-sm p-6 rounded-xl border border-[#245D66]/10 shadow-lg hover:shadow-[#245D66]/10 transition-all duration-300">
+                <div className="text-xl font-bold" style={{color: 'rgb(36, 93, 102)'}}><span style={{opacity: 0.9}}>Why Choose Our Coaching?</span></div>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
+                    <span className="text-[#245D66]/90">Expert coaches from top consulting firms</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
+                    <span className="text-[#245D66]/90">Proven track record with 1250+ placements</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
+                    <span className="text-[#245D66]/90">Personalized approach for your unique needs</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
+                    <span className="text-[#245D66]/90">Flexible programs to fit your schedule</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
+                    <span className="text-[#245D66]/90">Money-back guarantee if not satisfied</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
       {/* Additional sections can be added here */}
       
       {/* Payment Dialog */}

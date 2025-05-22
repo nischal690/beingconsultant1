@@ -56,7 +56,7 @@ export const jumpstart100: Course = {
   instructorAvatar: "/api/placeholder/150/150",
   rating: 4.9,
   enrolled: true,
-  progress: 15,
+  progress: 0,
   students: 1243,
   sections: [
     {
@@ -69,8 +69,8 @@ export const jumpstart100: Course = {
           title: "About the Course",
           description: "Overview of what you'll learn in the JumpStart 100 program.",
           duration: "15m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          completed: true,
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FIntro.mp4?alt=media&token=8a978237-5d2e-4089-a136-0907fa7235c8",
+          completed: false,
           locked: false,
           resources: [
             {
@@ -87,7 +87,7 @@ export const jumpstart100: Course = {
           description: "Learn why the first 100 days are critical for your consulting career success.",
           duration: "20m",
           videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-          completed: true,
+          completed: false,
           locked: false
         },
         {
@@ -119,7 +119,7 @@ export const jumpstart100: Course = {
           title: "Fast Track Promotion by Maximum Utilization",
           description: "Learn how to maximize your potential and position yourself for rapid advancement.",
           duration: "30m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJumpstart%20-%20Chapter%201%20Fast%20Track%20Promotion.mp4?alt=media&token=055383da-ff27-42d3-99e2-5d88cf863cf6",
           completed: false,
           locked: false
         },
@@ -128,7 +128,7 @@ export const jumpstart100: Course = {
           title: "In the Early Stages of Your Career Go for Breadth",
           description: "Why developing a broad skill set is crucial in your early consulting career.",
           duration: "25m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJumpstart%20-%20Chapter%205%20Blow%20your%20own%20trumpet.mp4?alt=media&token=a9ef62fd-08ec-4cb9-87e3-88bf26316389",
           completed: false,
           locked: false
         },
@@ -154,7 +154,7 @@ export const jumpstart100: Course = {
           title: "Leveraging Feedback Culture",
           description: "How to use feedback effectively to accelerate your professional growth.",
           duration: "30m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJumpstart%20-%20Chapter%204%20Take%20maximum%20advantage%20of%20Feedback%20culture.mp4?alt=media&token=61950632-1d06-4913-8826-7a64494cdd89",
           completed: false,
           locked: false
         },
@@ -163,7 +163,7 @@ export const jumpstart100: Course = {
           title: "Blowing Your Trumpet and Gaining Recognition for Your Work",
           description: "Strategies for ensuring your contributions are visible and valued.",
           duration: "25m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJumpstart%20-%20Chapter%205%20Blow%20your%20own%20trumpet.mp4?alt=media&token=a9ef62fd-08ec-4cb9-87e3-88bf26316389",
           completed: false,
           locked: false
         }
@@ -179,7 +179,7 @@ export const jumpstart100: Course = {
           title: "Time Management: Optimize Every Process and Personal Habits",
           description: "Essential time management techniques for consultants.",
           duration: "40m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FChapter%206-%20Time%20management.mp4?alt=media&token=25d2f6e9-b63e-436c-a354-b0603d7c74b3",
           completed: false,
           locked: false,
           resources: [
@@ -196,7 +196,7 @@ export const jumpstart100: Course = {
           title: "Optimising Health: Travel, Sleep",
           description: "How to maintain your health and energy during demanding consulting work.",
           duration: "35m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2010%20Master%20Excel%20functions.mp4?alt=media&token=05a9335a-a2d8-4040-8abd-909dcf664dba",
           completed: false,
           locked: false
         },
@@ -205,7 +205,7 @@ export const jumpstart100: Course = {
           title: "Pre-project Homework and Building a Knowledge Bank",
           description: "Preparing effectively for new projects and building your personal knowledge repository.",
           duration: "45m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%208%20Do%20pre-project%20homework.mp4?alt=media&token=6c2e6c8a-9900-491f-b66b-23361d5fc30d",
           completed: false,
           locked: false
         },
@@ -214,7 +214,7 @@ export const jumpstart100: Course = {
           title: "Hunt Projects Proactively",
           description: "Strategies for finding and securing the most valuable project opportunities.",
           duration: "30m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%209%20Hunt%20projects%20proactively.mp4?alt=media&token=9da21b3c-0ccd-409e-bb9b-08daedd885a5",
           completed: false,
           locked: false
         },
@@ -223,7 +223,7 @@ export const jumpstart100: Course = {
           title: "Master Excel Functions",
           description: "Essential Excel skills every consultant needs to know.",
           duration: "50m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2010%20Master%20Excel%20functions.mp4?alt=media&token=05a9335a-a2d8-4040-8abd-909dcf664dba",
           completed: false,
           locked: false,
           resources: [
@@ -240,7 +240,7 @@ export const jumpstart100: Course = {
           title: "Familiarizing PowerPoint and Functionalities",
           description: "Creating impactful presentations that impress clients and stakeholders.",
           duration: "45m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2011%20PPT%20functionalities.mp4?alt=media&token=7fa93cb5-74c5-40c4-bf77-109ea457e2c5",
           completed: false,
           locked: false,
           resources: [
@@ -282,7 +282,7 @@ export const jumpstart100: Course = {
           title: "Setting and Agreeing on Right Expectations",
           description: "How to establish clear expectations with clients and team members.",
           duration: "30m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2014%20Agree%20on%20expectation%20with%20Manager.mp4?alt=media&token=2ceb167c-aa33-4dc6-a4ff-2ccc10aa3a82",
           completed: false,
           locked: false
         },
@@ -291,7 +291,7 @@ export const jumpstart100: Course = {
           title: "Engage Early with Teammates and Leveraging the Ecosystem",
           description: "Building relationships and utilizing the full resources of your organization.",
           duration: "35m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2015%20Engage%20with%20team%20Mem.mp4?alt=media&token=173e7d0b-12ca-46c1-9800-ac6104bcf3be",
           completed: false,
           locked: false
         },
@@ -300,7 +300,7 @@ export const jumpstart100: Course = {
           title: "Demonstrate a 'Can-Do Attitude'",
           description: "How a positive, solution-oriented mindset can accelerate your consulting career.",
           duration: "25m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2016%20Can%20do%20Attitude.mp4?alt=media&token=f706f0a4-a25c-4a1c-b013-505dccd48247",
           completed: false,
           locked: false
         },
@@ -334,7 +334,7 @@ export const jumpstart100: Course = {
           title: "5 Commandments of Problem Solving",
           description: "Essential principles for solving complex client problems effectively.",
           duration: "45m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%20%2019%20Leverage%20the%20power%20of%20Ghost%20deck%20technique.mp4?alt=media&token=0c511a30-527a-41dc-aef5-cc70b7425878",
           completed: false,
           locked: false,
           resources: [
@@ -351,7 +351,7 @@ export const jumpstart100: Course = {
           title: "5 Golden Rules of Communication",
           description: "Mastering the art of clear, impactful communication with clients.",
           duration: "40m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FChapter%2023%20Golden%20communication%20rule.mp4?alt=media&token=80770ed1-56a6-437a-8bf0-dc4cc7408f62",
           completed: false,
           locked: false
         },
@@ -360,7 +360,7 @@ export const jumpstart100: Course = {
           title: "Mastering the Art of Client Interview",
           description: "How to conduct effective client interviews to gather crucial information.",
           duration: "50m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FJump%20Start%20-%20Chapter%2022%20Master%20the%20client%20interview.mp4?alt=media&token=ac78df0e-61c4-48de-85fb-f0761874af8d",
           completed: false,
           locked: false,
           resources: [
@@ -393,7 +393,7 @@ export const jumpstart100: Course = {
           title: "Embracing Continuous Improvement",
           description: "Cultivating a growth mindset and commitment to ongoing development.",
           duration: "30m",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+          videoUrl: "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/jumpstart%20100%2FChapter%2024%20Continuous%20Improvement.mp4?alt=media&token=a56e019b-b47e-48f7-a55b-c52a60ca1254",
           completed: false,
           locked: false
         },

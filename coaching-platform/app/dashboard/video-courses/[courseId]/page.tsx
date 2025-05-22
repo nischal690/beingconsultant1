@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useState, useEffect, use } from "react"
+import { useRouter } from "next/navigation"
 import { 
   ChevronLeft,
   Play,
@@ -68,9 +68,14 @@ import {
 
 // No need for mock data as it's imported from the separate file
 
-export default function CoursePlayerPage({ params }: { params: { courseId: string } }) {
+interface CoursePageParams {
+  courseId: string;
+}
+
+export default function CoursePlayerPage({ params }: { params: CoursePageParams }) {
   const router = useRouter();
-  const courseId = params.courseId as string;
+  const unwrappedParams = use(params);
+  const courseId = unwrappedParams.courseId as string;
   
   // Add custom animations
   useEffect(() => {
@@ -140,6 +145,7 @@ export default function CoursePlayerPage({ params }: { params: { courseId: strin
   const [course, setCourse] = useState<Course | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
   const [activeSection, setActiveSection] = useState<string>("");
+  const [openSections, setOpenSections] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("content");
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -160,6 +166,7 @@ export default function CoursePlayerPage({ params }: { params: { courseId: strin
             if (foundCourse.sections.length > 0 && foundCourse.sections[0].chapters.length > 0) {
               setSelectedChapter(foundCourse.sections[0].chapters[0]);
               setActiveSection(foundCourse.sections[0].id);
+              setOpenSections([foundCourse.sections[0].id]);
             }
           }
           setLoading(false);
@@ -175,16 +182,25 @@ export default function CoursePlayerPage({ params }: { params: { courseId: strin
     }
   }, [courseId]);
 
-  // Mark chapter as completed
-  const markAsCompleted = (chapterId: string) => {
-    if (!course) return;
+  // Toggle chapter completion status
+  const toggleChapterCompletion = (chapterId: string) => {
+    if (!course || !selectedChapter) return;
+    
+    // Update the selected chapter state immediately for instant visual feedback
+    if (selectedChapter.id === chapterId) {
+      setSelectedChapter({
+        ...selectedChapter,
+        completed: !selectedChapter.completed
+      });
+    }
     
     // Create a deep copy of the course sections
     const updatedSections = course.sections.map(section => {
       // Update chapters in the current section
       const updatedChapters = section.chapters.map(chapter => {
         if (chapter.id === chapterId) {
-          return { ...chapter, completed: true };
+          // Toggle the completed status
+          return { ...chapter, completed: !chapter.completed };
         }
         return chapter;
       });
@@ -476,12 +492,10 @@ export default function CoursePlayerPage({ params }: { params: { courseId: strin
                   <div className="max-h-[60vh] overflow-y-auto">
                     <Accordion 
                       type="multiple" 
-                      defaultValue={[activeSection]} 
-                      value={[activeSection]}
+                      defaultValue={openSections} 
+                      value={openSections}
                       onValueChange={(value) => {
-                        if (value.length > 0) {
-                          setActiveSection(value[0]);
-                        }
+                        setOpenSections(value);
                       }}
                       className="w-full"
                     >
@@ -545,7 +559,7 @@ export default function CoursePlayerPage({ params }: { params: { courseId: strin
                                   <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start">
                                       <h3 className={cn(
-                                        "font-medium truncate",
+                                        "font-medium truncate text-sm",
                                         selectedChapter?.id === chapter.id ? "text-primary" : "",
                                         chapter.locked ? "text-muted-foreground" : ""
                                       )}>
@@ -651,24 +665,15 @@ export default function CoursePlayerPage({ params }: { params: { courseId: strin
                       Previous
                     </Button>
                     
-                    {selectedChapter.completed ? (
-                      <Button 
-                        variant="outline" 
-                        disabled 
-                        className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30"
-                      >
-                        <CheckCircle className="mr-2 h-4 w-4 fill-green-200 dark:fill-green-900/30" />
-                        Completed
-                      </Button>
-                    ) : (
-                      <Button 
-                        onClick={() => markAsCompleted(selectedChapter.id)}
-                        className="bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90 transition-all duration-300 hover:shadow-md"
-                      >
-                        <CheckCircle className="mr-2 h-4 w-4" />
-                        Mark as Completed
-                      </Button>
-                    )}
+                    <button 
+                      onClick={() => toggleChapterCompletion(selectedChapter.id)}
+                      className={`flex items-center justify-center px-4 py-2 rounded-md font-medium transition-all duration-300 hover:shadow-md ${selectedChapter.completed ? 
+                        "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30 dark:hover:bg-green-900/30" : 
+                        "bg-black text-white hover:bg-gray-800 border border-white/20"}`}
+                    >
+                      <CheckCircle className={`mr-2 h-4 w-4 ${selectedChapter.completed ? "fill-green-200 dark:fill-green-900/30" : ""}`} />
+                      {selectedChapter.completed ? "Completed" : "Mark as Completed"}
+                    </button>
                     
                     <Button
                       variant="outline"

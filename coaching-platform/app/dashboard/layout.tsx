@@ -88,6 +88,7 @@ import { getUserProfile } from "@/lib/firebase/firestore"
 import { useRouter } from "next/navigation"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
+import { HeaderProvider, useHeader } from "@/lib/context/header-context"
 
 // Custom component for the sidebar logo that hides text when collapsed
 function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" }) {
@@ -122,10 +123,19 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <HeaderProvider>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </HeaderProvider>
+  );
+}
+
+function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isMounted, setIsMounted] = useState(false)
   const { user, logout } = useAuth()
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const { isHeaderVisible } = useHeader();
   const [sidebarState, setSidebarState] = useState<"expanded" | "collapsed">("collapsed");
   const router = useRouter()
 
@@ -178,12 +188,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen bg-black text-white">
-          <DashboardHeader 
-            activeDropdown={activeDropdown} 
-            setActiveDropdown={setActiveDropdown} 
-            sidebarState={sidebarState}
-          />
-          
+         {/* Dashboard header - conditionally rendered based on context */}
+      {isHeaderVisible && (
+        <DashboardHeader activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} sidebarState={sidebarState} />
+      )}
           <div className="flex-1 flex">
             <Sidebar 
               className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md z-50"
@@ -479,7 +487,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                 e.preventDefault();
                 setActiveDropdown(activeDropdown === 'offering' ? null : 'offering');
               }} className="focus:outline-none">
-                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'offering' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'offering' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Offering</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
@@ -589,7 +597,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                   e.preventDefault();
                 }
               }}>
-                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'tools' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'tools' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Tools & Guides</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
@@ -711,7 +719,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                   e.preventDefault();
                 }
               }}>
-                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'resources' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'resources' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Resources</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
@@ -853,7 +861,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                    setDropdownTimeout(timeout);
                  }}>
               <Link href="/dashboard/community">
-                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 ${activeDropdown === 'community' ? 'text-white' : 'text-white/80 hover:text-white'}`}>
+                <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'community' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Community</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>

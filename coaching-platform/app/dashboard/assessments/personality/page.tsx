@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useHeader } from "@/lib/context/header-context";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -464,6 +465,7 @@ const PersonalityTraits = ({ scores }: { scores: PersonalityScores }) => {
 
 // Main assessment component
 export default function PersonalityAssessment() {
+  const { setHeaderVisible } = useHeader();
   const [currentStep, setCurrentStep] = useState<"intro" | "questions" | "results">("intro");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -542,6 +544,7 @@ export default function PersonalityAssessment() {
   
   // Reset the assessment
   const handleRestart = () => {
+    setHeaderVisible(true); // Show header when restarting
     setCurrentStep("intro");
     setCurrentQuestion(0);
     setSelectedAnswers({});
@@ -559,13 +562,80 @@ export default function PersonalityAssessment() {
     setProgress(0);
   };
   
+  // Handle downloading the personality report PDF
+  const handleDownloadReport = () => {
+    if (!personalityType) return;
+    
+    let reportUrl = "";
+    
+    // Set the appropriate report URL based on personality type
+    switch (personalityType) {
+      case "ENFJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FENFJ%2C%20Charismatic%20Altruist.pdf?alt=media&token=cfec62a8-9b60-4f7c-943b-c6b6e1ca794b";
+        break;
+      case "ENFP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FENFP%2C%20Agile%20Storyteller.pdf?alt=media&token=9ad37ed5-4e35-4c16-ac0d-79d326dccc1f";
+        break;
+      case "ENTJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FENTJ%2C%20Strategic%20Leader.pdf?alt=media&token=d8b7c5ae-1a0e-400e-a0e7-fae8d5fed254";
+        break;
+      case "ENTP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FENTP%2C%20Persuasive%20Strategist.pdf?alt=media&token=629e0946-6207-4d79-becc-70bd1fe9ae72";
+        break;
+      case "ESFJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FESFJ%2C%20Gregarious%20Guardian.pdf?alt=media&token=45be02f2-4eb9-4300-ad8b-61788454cfac";
+        break;
+      case "ESFP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FESFP%2C%20Playful%20Performer.pdf?alt=media&token=fc185ba5-3145-44ae-998d-58f2a0ff5845";
+        break;
+      case "ESTJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FESTJ%2C%20Proactive%20Implementor.pdf?alt=media&token=f164ba70-956d-4dd5-9826-48a139e8e475";
+        break;
+      case "ESTP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FESTP%2C%20Dynamic%20Doer.pdf?alt=media&token=9d24b59b-b9e7-4dad-8152-e306390dd32f";
+        break;
+      case "INFJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FINFJ%2C%20Organized%20Creator.pdf?alt=media&token=fbcd2ee0-3fcc-4730-ac81-33e3f15b3285";
+        break;
+      case "INFP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FINFP%2C%20Creative%20Empathiser.pdf?alt=media&token=ad16bc63-5570-4ac9-bddf-8caab3ab06ae";
+        break;
+      case "INTJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FINTJ%2C%20Efficient%20Strategist.pdf?alt=media&token=2ae42849-4d0c-4202-8607-d3e1a477bc52";
+        break;
+      case "INTP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FINTP%2C%20Innovative%20Analyst.pdf?alt=media&token=103a82a3-439b-4128-8460-d9b76b6aaf11";
+        break;
+      case "ISFJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FISFJ%2C%20Industrious%20Nurturer.pdf?alt=media&token=1c69dd6a-e34f-462f-8c8f-c861caaec4a9";
+        break;
+      case "ISFP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FISFP%2C%20Artistic%20Explorer.pdf?alt=media&token=2e399bbe-160a-4989-ac6e-dc0c77ad1f00";
+        break;
+      case "ISTJ":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FISTJ%2C%20Dependable%20Realist.pdf?alt=media&token=eaf3e95f-b551-4170-b56b-a4e80ed44e21";
+        break;
+      case "ISTP":
+        reportUrl = "https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/personality%20report%2FISTP%2C%20Artistic%20Troubleshooter.pdf?alt=media&token=396aeba4-9c69-4ab7-b1eb-569b4502da0f";
+        break;
+      default:
+        // For other personality types, you can add more cases as needed
+        alert("Report not available for this personality type yet.");
+        return;
+    }
+    
+    // Open the report URL in a new tab
+    window.open(reportUrl, "_blank");
+  };
+  
   // Start the assessment
   const handleStart = () => {
+    setHeaderVisible(false); // Hide header when assessment starts
     setCurrentStep("questions");
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full" style={{ minWidth: '100vw' }}>
       {/* Background elements - fixed position to cover the entire viewport */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -575,13 +645,13 @@ export default function PersonalityAssessment() {
         <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-[#245D66]/10 rounded-full blur-3xl animate-float-slow"></div>
       </div>
 
-      {/* Main content container */}
-      <div className="relative z-10 min-h-[calc(100vh-4rem)] w-full bg-gradient-to-b from-black via-gray-900 to-black text-white pt-8 pb-16">      
-        {/* Content wrapper to center the test content */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      {/* Main content container with fixed width */}
+      <div className="relative z-10 min-h-[calc(100vh-4rem)] w-full bg-gradient-to-b from-black via-gray-900 to-black text-white pt-8 pb-16 flex justify-center">      
+        {/* Fixed width container that won't resize */}
+        <div className="w-full" style={{ width: '100%', maxWidth: '1200px' }}>
         {/* Introduction Screen */}
         {currentStep === "intro" && (
-          <div className="relative bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group animate-fade-in max-w-6xl mx-auto transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+          <div className="relative bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group animate-fade-in w-full transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
             {/* Animated gradient background */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/20 via-black/0 to-[#245D66]/10 opacity-70 group-hover:opacity-100 transition-opacity duration-700"></div>
             <div className="absolute -inset-[100px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse-slow"></div>
@@ -662,9 +732,9 @@ export default function PersonalityAssessment() {
           </div>
         )}
 
-        {/* Questions Screen */}
+        {/* Questions Screen - Fixed width container */}
         {currentStep === "questions" && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in max-w-6xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in w-full">
             {/* Progress bar */}
             <div className="mb-8">
               <div className="flex justify-between text-sm text-white/60 mb-2">
@@ -679,11 +749,11 @@ export default function PersonalityAssessment() {
               </div>
             </div>
             
-            {/* Question */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-6">{questions[currentQuestion].text}</h2>
+            {/* Question with fixed width */}
+            <div className="mb-8 w-full">
+              <h2 className="text-2xl font-bold mb-6 w-full">{questions[currentQuestion].text}</h2>
               
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 {questions[currentQuestion].options.map((option, index) => (
                   <button
                     key={index}
@@ -725,9 +795,9 @@ export default function PersonalityAssessment() {
           </div>
         )}
 
-        {/* Results Screen */}
+        {/* Results Screen - Fixed width */}
         {currentStep === "results" && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in text-center max-w-6xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in text-center w-full">
             {personalityType ? (
               <>
                 <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#245D66] text-white mx-auto mb-6">
@@ -748,7 +818,10 @@ export default function PersonalityAssessment() {
                     <RefreshCw size={16} className="mr-2" />
                     Retake Test
                   </Button>
-                  <Button className="flex-1 py-4 bg-[#245D66] hover:bg-[#245D66]/90">
+                  <Button 
+                    onClick={handleDownloadReport}
+                    className="flex-1 py-4 bg-[#245D66] hover:bg-[#245D66]/90"
+                  >
                     <Download size={16} className="mr-2" />
                     Download Results
                   </Button>
