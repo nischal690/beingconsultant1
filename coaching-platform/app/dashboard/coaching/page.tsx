@@ -373,172 +373,149 @@ export default function CoachingPage() {
 
   return (
     <div className="w-full space-y-10 pb-20 px-4 md:px-6 lg:px-8">
-      {/* Hero Section - 1:1 Personalized Coaching */}
-      <section className="relative overflow-hidden rounded-3xl text-gray-800">
-        {/* Background image with enhanced styling */}
-        <div className="absolute inset-0">
-          <Image 
-            src="/herosection.jpg" 
-            alt="Hero Background" 
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+      {/* Hero Section - Our Coaching Advantage */}
+      <section className="relative overflow-hidden rounded-3xl bg-white shadow-xl border border-gray-100 mb-16">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:24px_24px] opacity-30"></div>
         
-        {/* Animated glow effects */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-teal-500/20 blur-[100px] animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/3 w-72 h-72 rounded-full bg-blue-500/20 blur-[100px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#245D66]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#245D66]/5 rounded-full blur-3xl"></div>
         
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0vjZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNmgtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
-        
-        {/* Premium border effect */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-        
-        {/* Content wrapper with increased padding and backdrop blur */}
+        {/* Content container */}
         <div className="relative p-10 md:p-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-            {/* Left content column - takes 2/3 of the space */}
-            <div className="md:col-span-2 space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="inline-block"
-              >
-                <span className="px-4 py-1.5 text-sm bg-gray-800/10 backdrop-blur-md rounded-full border border-gray-800/20">
-                  Elite Coaching Programs
-                </span>
-              </motion.div>
-              
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl md:text-5xl font-bold tracking-tight leading-tight"
-              >
-                <span className="block text-black">Transform Your Career</span>
-                <span className="text-black">
-                  With Expert Coaching
-                </span>
-              </motion.h1>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
-              >
-                Elevate your professional journey with our comprehensive coaching programs tailored 
-                to your unique career goals. Our expert coaches provide personalized guidance, 
-                actionable frameworks, and insider knowledge to help you navigate the consulting 
-                landscape with confidence. Join the 1,250+ professionals who've accelerated their 
-                careers through our structured, results-driven approach.
-              </motion.p>
-              
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-              >
-                <Button 
-                  size="lg" 
-                  className="relative overflow-hidden bg-black text-white border border-black/20 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-black/30"
-                >
-                  <span className="relative z-10 text-white" onClick={scrollToPrograms}>Explore Programs</span>
-                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1 text-white" />
-                  <span className="absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  <span className="absolute inset-0 bg-black opacity-100 group-hover:opacity-0 transition-opacity duration-300"></span>
-                  <span className="absolute inset-0 mix-blend-overlay bg-gradient-to-br from-black/10 to-black/30 group-hover:from-gray-700/10 group-hover:to-gray-900/30 transition-colors duration-300"></span>
-                  <style jsx>{`
-                    .group:hover span {
-                      color: white !important;
-                    }
-                  `}</style>
-                </Button>
-              </motion.div>
-              
-              {/* Stats with animated counters */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex flex-wrap gap-6 pt-4"
-              >
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gray-800">1250+</span>
-                  <span className="text-sm text-gray-600">Successful Placements</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gray-800">98%</span>
-                  <span className="text-sm text-gray-600">Success Rate</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-gray-800">4.9/5</span>
-                  <span className="text-sm text-gray-600">Client Rating</span>
-                </div>
-              </motion.div>
-            </div>
-            
-            {/* Right content column - coach profiles with enhanced styling */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-12 text-gray-900"
+          >
+            Our Coaching <span className="text-[#245D66]">Advantage</span>
+          </motion.h1>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Venn Diagram */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex justify-center items-center"
+              transition={{ duration: 0.8 }}
+              className="relative order-2 lg:order-1"
             >
-              <div className="relative">
-                {/* Coach profiles in oval frames with enhanced styling */}
-                <div className="flex flex-wrap justify-center gap-4">
-                  <motion.div 
-                    className="relative"
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=250&fit=crop" 
-                        alt="Coach" 
-                        width={200} 
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </motion.div>
-                  <motion.div 
-                    className="relative -mt-10"
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&h=250&fit=crop" 
-                        alt="Coach" 
-                        width={200} 
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </motion.div>
-                  <motion.div 
-                    className="relative"
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-gray-800/30 bg-white/5 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-teal-500/20 to-blue-500/20 mix-blend-overlay"></div>
-                      <Image 
-                        src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=200&h=250&fit=crop" 
-                        alt="Coach" 
-                        width={200} 
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </motion.div>
-                </div>
+              <div className="relative w-full max-w-md mx-auto h-[320px]">
+                {/* 360° Coaching Perspective Circle */}
+                <motion.div 
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="absolute top-0 left-0 w-[200px] h-[200px] rounded-full bg-[#8BA89B]/80 flex items-center justify-center text-center p-4 shadow-lg backdrop-blur-sm border border-white/20 hover:scale-105 transition-transform duration-300"
+                >
+                  <div className="text-white font-semibold text-sm">
+                    <div className="uppercase tracking-wider">360° COACHING</div>
+                    <div className="uppercase tracking-wider">PERSPECTIVE</div>
+                  </div>
+                </motion.div>
+                
+                {/* Both Sides of the Table Circle */}
+                <motion.div 
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="absolute top-0 right-0 w-[200px] h-[200px] rounded-full bg-[#C49799]/80 flex items-center justify-center text-center p-4 shadow-lg backdrop-blur-sm border border-white/20 hover:scale-105 transition-transform duration-300"
+                >
+                  <div className="text-white font-semibold text-sm">
+                    <div className="uppercase tracking-wider">BOTH SIDES</div>
+                    <div className="uppercase tracking-wider">OF THE TABLE</div>
+                  </div>
+                </motion.div>
+                
+                {/* Global Excellence Standard Circle */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="absolute bottom-0 left-[50%] transform -translate-x-1/2 w-[200px] h-[200px] rounded-full bg-[#D0C99B]/80 flex items-center justify-center text-center p-4 shadow-lg backdrop-blur-sm border border-white/20 hover:scale-105 transition-transform duration-300"
+                >
+                  <div className="text-white font-semibold text-sm">
+                    <div className="uppercase tracking-wider">GLOBAL EXCELLENCE</div>
+                    <div className="uppercase tracking-wider">STANDARD</div>
+                  </div>
+                </motion.div>
               </div>
+            </motion.div>
+            
+            {/* Right side - Descriptions */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-8 order-1 lg:order-2"
+            >
+              {/* 360° Coaching Perspective */}
+              <motion.div 
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-white to-[#8BA89B]/10 border border-[#8BA89B]/20 shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <div className="bg-[#8BA89B] text-white px-4 py-1.5 rounded-full inline-block font-medium text-sm shadow-sm">
+                  360° Coaching Perspective
+                </div>
+                <p className="text-gray-700">
+                  Unlike coaches who replicate their singular path, I identify and amplify your unique strengths. As
+                  a certified career coach with McKinsey experience, I architect personalized strategies that
+                  showcase your authentic value to firms.
+                </p>
+              </motion.div>
+              
+              {/* Both Sides of the Table */}
+              <motion.div 
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-white to-[#C49799]/10 border border-[#C49799]/20 shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <div className="bg-[#C49799] text-white px-4 py-1.5 rounded-full inline-block font-medium text-sm shadow-sm">
+                  Both Sides of the Table
+                </div>
+                <p className="text-gray-700">
+                  My active role in consulting recruitment provides rare insight into what firms truly seek beyond
+                  standard frameworks. This dual perspective ensures your preparation aligns precisely with
+                  current evaluation practices and market demands.
+                </p>
+              </motion.div>
+              
+              {/* Global Excellence Standard */}
+              <motion.div 
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="space-y-3 p-6 rounded-xl bg-gradient-to-br from-white to-[#D0C99B]/10 border border-[#D0C99B]/20 shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <div className="bg-[#D0C99B] text-white px-4 py-1.5 rounded-full inline-block font-medium text-sm shadow-sm">
+                  Global Excellence Standard
+                </div>
+                <p className="text-gray-700">
+                  Having worked across 25+ countries and coached professionals from 55+ nations, I bring a truly
+                  global perspective to your preparation. This international insight translates into versatile
+                  approaches that succeed across diverse consulting environments.
+                </p>
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="pt-4"
+              >
+                <Button 
+                  size="lg" 
+                  className="bg-[#245D66] text-white hover:bg-[#1A444B] transition-all duration-300 group hover:-translate-y-[2px] shadow-lg hover:shadow-[#245D66]/20 rounded-full px-8"
+                  onClick={scrollToPrograms}
+                >
+                  <span>Explore Programs</span>
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
         </div>
