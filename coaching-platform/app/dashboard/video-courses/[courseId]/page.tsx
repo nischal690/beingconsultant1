@@ -1,6 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useEffect, use } from "react"
+// This is the page component that Next.js will use for the route
+// It should be a server component in Next.js App Router
+export default function Page({ params }: { params: { courseId: string } }) {
+  return <CoursePlayerClient courseId={params.courseId} />;
+}
+
+// This is the client component that contains all the interactive functionality
+
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { 
   ChevronLeft,
@@ -66,16 +74,9 @@ import {
   getNextUnlockedChapter
 } from "../data/jumpstart-100"
 
-// No need for mock data as it's imported from the separate file
-
-interface CoursePageParams {
-  courseId: string;
-}
-
-export default function CoursePlayerPage({ params }: { params: CoursePageParams }) {
+// Client component that contains all the interactive functionality
+function CoursePlayerClient({ courseId }: { courseId: string }) {
   const router = useRouter();
-  const unwrappedParams = use(params);
-  const courseId = unwrappedParams.courseId as string;
   
   // Add custom animations
   useEffect(() => {

@@ -5,21 +5,15 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   UserCircle2,
-  Brain,
-  Lightbulb,
-  BarChart3,
   Activity,
   Dna,
   ArrowRight,
-  Star,
-  ChevronDown,
-  Shield,
-  Compass,
-  PieChart
+  Brain
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import WiredYouDialog from "@/components/assessments/wired-you-dialog";
 
 export default function AssessmentsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -44,91 +38,23 @@ export default function AssessmentsPage() {
   // Assessment categories
   const categories = [
     { id: "all", name: "All Tests" },
-    { id: "personality", name: "Personality" },
-    { id: "career", name: "Career" },
-    { id: "cognitive", name: "Cognitive" },
-    { id: "relationship", name: "Relationship" }
+    { id: "personality", name: "Personality" }
   ];
 
   // Assessment data
   const assessments = [
     {
       id: "personality",
-      title: "Personality Explorer",
-      subtitle: "Discover your unique traits and drivers",
+      title: "WIRED YOU",
+      subtitle: "The Only Personality Assessment Calibrated for Consulting Success",
       icon: <UserCircle2 />,
       category: "personality",
-      description: "Uncover your personality profile based on the Big Five traits. Get personalized insights on your strengths, communication style, and relationship patterns.",
+      description: "Uncover how your natural traits align with consulting demands and identify strengths that set you apart in interviews and on client engagements.",
       duration: "15 min",
-      questions: 45,
+      questions: 36,
       popularity: "Most popular",
       color: "from-[#245D66] to-[#245D66]",
       available: true
-    },
-    {
-      id: "career-aptitude",
-      title: "Career Compass",
-      subtitle: "Find your professional direction",
-      icon: <Compass />,
-      category: "career",
-      description: "Identify career paths that align with your skills, interests and values. Receive tailored recommendations for industries and roles that match your profile.",
-      duration: "12 min",
-      questions: 40,
-      popularity: "",
-      color: "from-[#245D66] to-[#245D66]",
-      available: false
-    },
-    {
-      id: "emotional-intelligence",
-      title: "Emotional Intelligence",
-      subtitle: "Assess your emotional awareness",
-      icon: <Brain />,
-      category: "cognitive",
-      description: "Measure your ability to recognize, understand and manage emotions. Learn strategies to enhance your social interactions and leadership capabilities.",
-      duration: "10 min",
-      questions: 35,
-      popularity: "",
-      color: "from-[#245D66] to-[#245D66]",
-      available: false
-    },
-    {
-      id: "strengths-finder",
-      title: "Strengths Finder",
-      subtitle: "Leverage what makes you exceptional",
-      icon: <Star />,
-      category: "personality",
-      description: "Identify your top strengths and learn how to apply them more effectively. Discover opportunities for personal growth based on your natural talents.",
-      duration: "18 min",
-      questions: 50,
-      popularity: "",
-      color: "from-[#245D66] to-[#245D66]",
-      available: false
-    },
-    {
-      id: "conflict-style",
-      title: "Conflict Resolution Style",
-      subtitle: "How you handle disagreements",
-      icon: <Shield />,
-      category: "relationship",
-      description: "Understand your typical approach to resolving conflicts. Gain insights on how to navigate challenging conversations and build stronger relationships.",
-      duration: "8 min",
-      questions: 30,
-      popularity: "",
-      color: "from-[#245D66] to-[#245D66]",
-      available: false
-    },
-    {
-      id: "cognitive-abilities",
-      title: "Cognitive Profile",
-      subtitle: "Map your mental aptitudes",
-      icon: <PieChart />,
-      category: "cognitive",
-      description: "Measure different aspects of your cognitive functioning including memory, attention, reasoning and problem-solving. Discover your mental strengths.",
-      duration: "25 min",
-      questions: 60,
-      popularity: "",
-      color: "from-[#245D66] to-[#245D66]",
-      available: false
     }
   ];
 
@@ -158,7 +84,9 @@ export default function AssessmentsPage() {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-black">
+    <div className="relative w-full min-h-screen bg-black overflow-x-hidden">
+      {/* WIRED YOU Assessment Dialog */}
+      <WiredYouDialog trigger={<button id="wired-you-dialog-trigger" className="hidden" />} />
       {/* Simplified background */}
       <div className="fixed inset-0 z-0 overflow-hidden bg-black">
         {/* Subtle grid */}
@@ -181,12 +109,12 @@ export default function AssessmentsPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative w-full flex flex-col items-center justify-center pt-40 pb-32 px-6">
+      <section className="relative w-full flex flex-col items-center justify-center pt-40 pb-32 px-4 md:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 text-center"
+          className="relative z-10 text-center w-full"
         >
           {/* Small badge */}
           <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md rounded-full px-4 py-1.5 mb-8 border border-white/20">
@@ -250,7 +178,7 @@ export default function AssessmentsPage() {
 
       {/* Assessments List Section */}
       <section id="assessments-list" className="relative z-10 w-full py-20">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="w-full px-4 md:px-6 lg:px-8">
           {/* Section header */}
           <div className="mb-16 text-center">
             <motion.div
@@ -261,11 +189,11 @@ export default function AssessmentsPage() {
             >
               <h2 className="text-4xl font-extrabold text-white mb-4 tracking-tight">
                 <span className="text-[#245D66]">
-                  Explore Assessments
+                  WIRED YOU Assessment
                 </span>
               </h2>
               <p className="text-xl text-white/60 max-w-2xl mx-auto">
-                Find the assessment that resonates with your current goals and discover actionable insights about yourself.
+                The Only Personality Assessment Calibrated for Consulting Success. Uncover how your natural traits align with consulting demands and identify strengths that set you apart.
               </p>
             </motion.div>
           </div>
@@ -367,19 +295,37 @@ export default function AssessmentsPage() {
                       </div>
                     </div>
                     
-                    {/* Button */}
+                    {/* Buttons */}
                     {assessment.available ? (
-                      <Link href={`/dashboard/assessments/${assessment.id}`}>
-                        <Button className={cn(
-                          "w-full rounded-xl py-6 font-semibold text-white transition-all bg-[#245D66] hover:shadow-lg",
-                          hoveredCard === assessment.id ? "shadow-lg shadow-[#245D66]/20" : ""
-                        )}>
+                      <div className="flex flex-col space-y-3">
+                        <Link href={`/dashboard/assessments/${assessment.id}`}>
+                          <Button className={cn(
+                            "w-full rounded-xl py-6 font-semibold text-white transition-all bg-[#245D66] hover:shadow-lg",
+                            hoveredCard === assessment.id ? "shadow-lg shadow-[#245D66]/20" : ""
+                          )}>
+                            <span className="flex items-center gap-2">
+                              Start Assessment
+                              <ArrowRight size={18} className={hoveredCard === assessment.id ? "translate-x-1" : ""} />
+                            </span>
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="outline" 
+                          className={cn(
+                            "w-full rounded-xl py-6 font-semibold border-[#245D66] text-[#245D66] hover:bg-[#245D66]/10 transition-all",
+                            hoveredCard === assessment.id ? "shadow-sm" : ""
+                          )}
+                          onClick={() => {
+                            // Open dialog via the DialogTrigger component
+                            const dialogTrigger = document.getElementById('wired-you-dialog-trigger');
+                            if (dialogTrigger) dialogTrigger.click();
+                          }}
+                        >
                           <span className="flex items-center gap-2">
-                            Start Assessment
-                            <ArrowRight size={18} className={hoveredCard === assessment.id ? "translate-x-1" : ""} />
+                            Learn More
                           </span>
                         </Button>
-                      </Link>
+                      </div>
                     ) : (
                       <Button disabled className="w-full rounded-xl py-6 font-semibold text-white transition-all bg-black/50 cursor-not-allowed">
                         <span className="flex items-center gap-2">

@@ -12,8 +12,10 @@ import {
   CheckCircle,
   BarChart3,
   RefreshCw,
-  Download
+  Download,
+  ChevronLeft
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Personality question data
 const questions = [
@@ -466,6 +468,7 @@ const PersonalityTraits = ({ scores }: { scores: PersonalityScores }) => {
 // Main assessment component
 export default function PersonalityAssessment() {
   const { setHeaderVisible } = useHeader();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<"intro" | "questions" | "results">("intro");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -479,8 +482,11 @@ export default function PersonalityAssessment() {
     J: 0,
     P: 0,
   });
-  const [personalityType, setPersonalityType] = useState<PersonalityTypeKey | "">("");
+  const [personalityType, setPersonalityType] = useState<PersonalityTypeKey | "">("")
   const [progress, setProgress] = useState(0);
+  const [completionTime, setCompletionTime] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<string>("");
+  const [canDownload, setCanDownload] = useState(false);
   
   // Proceed to next question or results
   const handleNextQuestion = () => {
@@ -492,6 +498,13 @@ export default function PersonalityAssessment() {
       const finalPersonalityType: PersonalityTypeKey = determinePersonalityType(scores);
       setPersonalityType(finalPersonalityType);
       setCurrentStep("results");
+      
+      // Record completion time
+      const now = Date.now();
+      setCompletionTime(now);
+      
+      // Save completion time to localStorage for persistence across sessions
+      localStorage.setItem('personalityTestCompletionTime', now.toString());
     }
   };
   
@@ -560,11 +573,62 @@ export default function PersonalityAssessment() {
     });
     setPersonalityType("");
     setProgress(0);
+    setCompletionTime(null);
+    setTimeRemaining("");
+    setCanDownload(false);
+    
+    // Clear the saved completion time
+    localStorage.removeItem('personalityTestCompletionTime');
   };
+  
+  // Check if 6 hours have passed since completion
+  useEffect(() => {
+    if (!completionTime) return;
+    
+    const checkTimeRemaining = () => {
+      // 6 hours in milliseconds
+      const waitTime = 6 * 60 * 60 * 1000;
+      const now = Date.now();
+      const timePassed = now - completionTime;
+      
+      // If 6 hours have passed, allow download
+      if (timePassed >= waitTime) {
+        setTimeRemaining("");
+        setCanDownload(true);
+        return;
+      }
+      
+      // Calculate remaining milliseconds
+      const remainingMs = waitTime - timePassed;
+      
+      // If somehow negative, reset
+      if (remainingMs < 0) {
+        setTimeRemaining("");
+        setCanDownload(true);
+        return;
+      }
+      
+      // Calculate remaining hours, minutes, seconds
+      const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+      const minutes = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remainingMs % (1000 * 60)) / 1000);
+      
+      setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+      setCanDownload(false);
+    };
+    
+    // Initial check
+    checkTimeRemaining();
+    
+    // Update every second
+    const interval = setInterval(checkTimeRemaining, 1000);
+    
+    return () => clearInterval(interval);
+  }, [completionTime]);
   
   // Handle downloading the personality report PDF
   const handleDownloadReport = () => {
-    if (!personalityType) return;
+    if (!personalityType || !canDownload) return;
     
     let reportUrl = "";
     
@@ -635,7 +699,7 @@ export default function PersonalityAssessment() {
   };
 
   return (
-    <div className="w-full" style={{ minWidth: '100vw' }}>
+    <div className="w-full min-h-screen fixed inset-0 overflow-hidden">
       {/* Background elements - fixed position to cover the entire viewport */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -645,10 +709,10 @@ export default function PersonalityAssessment() {
         <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-[#245D66]/10 rounded-full blur-3xl animate-float-slow"></div>
       </div>
 
-      {/* Main content container with fixed width */}
-      <div className="relative z-10 min-h-[calc(100vh-4rem)] w-full bg-gradient-to-b from-black via-gray-900 to-black text-white pt-8 pb-16 flex justify-center">      
-        {/* Fixed width container that won't resize */}
-        <div className="w-full" style={{ width: '100%', maxWidth: '1200px' }}>
+      {/* Main content container */}
+      <div className="relative z-10 w-full bg-gradient-to-b from-black via-gray-900 to-black text-white flex justify-center pt-8 pb-8 sm:pt-12 sm:pb-12 md:pt-16 md:pb-16">
+        {/* Fixed width centered content container */}
+        <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 h-full">
         {/* Introduction Screen */}
         {currentStep === "intro" && (
           <div className="relative bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden group animate-fade-in w-full transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
@@ -672,7 +736,7 @@ export default function PersonalityAssessment() {
                 Unlock Your Mind
               </h1>
               
-              <p className="text-white/80 text-lg mb-8 max-w-2xl">
+              <p className="text-white/80 text-lg mb-8 w-full">
                 Discover the unique patterns of your personality with our premium assessment. Gain insights that will transform how you understand yourself and others.
               </p>
               
@@ -734,9 +798,17 @@ export default function PersonalityAssessment() {
 
         {/* Questions Screen - Fixed width container */}
         {currentStep === "questions" && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in w-full">
+          <div className="w-full bg-white/10 backdrop-blur-lg p-4 sm:p-6 md:p-8 pt-12 pb-12 sm:pt-16 sm:pb-16 md:pt-20 md:pb-20 rounded-xl border border-white/10 animate-fade-in relative">
+            {/* Back button - positioned at the top left */}
+            <button 
+              onClick={() => router.push('/dashboard/assessments')} 
+              className="absolute top-6 left-6 sm:top-8 sm:left-8 md:top-10 md:left-10 flex items-center gap-2 text-white/60 hover:text-white transition-colors duration-200"
+            >
+              <ChevronLeft className="h-5 w-5" />
+              <span>Back to Assessments</span>
+            </button>
             {/* Progress bar */}
-            <div className="mb-8">
+            <div className="w-full mb-8">
               <div className="flex justify-between text-sm text-white/60 mb-2">
                 <span>Question {currentQuestion + 1} of {questions.length}</span>
                 <span>{Math.round(progress)}% Complete</span>
@@ -749,9 +821,9 @@ export default function PersonalityAssessment() {
               </div>
             </div>
             
-            {/* Question with fixed width */}
-            <div className="mb-8 w-full">
-              <h2 className="text-2xl font-bold mb-6 w-full">{questions[currentQuestion].text}</h2>
+            {/* Question container */}
+            <div className="w-full mb-8">
+              <h2 className="text-2xl font-bold mb-8 text-center">{questions[currentQuestion].text}</h2>
               
               <div className="space-y-4 w-full">
                 {questions[currentQuestion].options.map((option, index) => (
@@ -797,7 +869,7 @@ export default function PersonalityAssessment() {
 
         {/* Results Screen - Fixed width */}
         {currentStep === "results" && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 animate-fade-in text-center w-full">
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 md:p-8 border border-white/20 animate-fade-in text-center w-full">
             {personalityType ? (
               <>
                 <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#245D66] text-white mx-auto mb-6">
@@ -805,10 +877,18 @@ export default function PersonalityAssessment() {
                 </div>
                 <h2 className="text-3xl font-bold mb-2">Your Personality Type: {personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].title}</h2>
                 <p className="text-xl text-[#245D66] font-semibold mb-6">{personalityType}</p>
-                <p className="text-white/80 mb-6 max-w-xl mx-auto">{personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].description}</p>
+                <p className="text-white/80 mb-6 w-full mx-auto">{personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].description}</p>
                 
                 <PersonalityTraits scores={scores} />
 
+                {/* Time remaining indicator */}
+                {completionTime && !canDownload && (
+                  <div className="mb-6 p-4 bg-white/5 rounded-lg border border-white/10">
+                    <p className="text-white/70 text-sm mb-1">Your detailed report will be available in:</p>
+                    <p className="text-xl font-semibold text-[#245D66]">{timeRemaining}</p>
+                  </div>
+                )}
+                
                 <div className="flex flex-col sm:flex-row gap-4 mt-10">
                   <Button
                     onClick={handleRestart}
@@ -820,10 +900,11 @@ export default function PersonalityAssessment() {
                   </Button>
                   <Button 
                     onClick={handleDownloadReport}
-                    className="flex-1 py-4 bg-[#245D66] hover:bg-[#245D66]/90"
+                    disabled={!canDownload}
+                    className={`flex-1 py-4 ${canDownload ? 'bg-[#245D66] hover:bg-[#245D66]/90' : 'bg-gray-600 cursor-not-allowed'}`}
                   >
                     <Download size={16} className="mr-2" />
-                    Download Results
+                    {canDownload ? 'Download Results' : 'Report Preparing...'}
                   </Button>
                 </div>
               </>

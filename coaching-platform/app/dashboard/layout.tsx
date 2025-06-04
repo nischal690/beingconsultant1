@@ -184,19 +184,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return null
   }
 
+  // Check if current route is the personality assessment
+  const isPersonalityAssessment = pathname.includes('/assessments/personality');
+
   return (
     <ProtectedRoute>
       <SidebarProvider defaultOpen={false}>
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen w-full bg-black text-white">
          {/* Dashboard header - conditionally rendered based on context */}
-      {isHeaderVisible && (
-        <DashboardHeader activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} sidebarState={sidebarState} />
-      )}
-          <div className="flex-1 flex">
-            <Sidebar 
-              className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md z-50"
-              collapsible="icon"
-            >
+         {!isPersonalityAssessment && isHeaderVisible && (
+           <DashboardHeader activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} sidebarState={sidebarState} />
+         )}
+          <div className="flex-1 flex w-full">
+            {!isPersonalityAssessment && (
+              <Sidebar 
+                className="sidebar-nav shadow-xl border-r border-sidebar-border bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md z-50"
+                collapsible="icon"
+              >
               <div className="absolute top-4 right-0 translate-x-1/2 z-50">
                 <SidebarTrigger className="text-white hover:text-white transition-colors duration-200 shadow-lg bg-black/80 border border-white/30" />
               </div>
@@ -351,11 +355,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
-                          isActive={pathname.includes("/dashboard/community/events")} 
+                          isActive={pathname.includes("/dashboard/events")} 
                           className="hover-lift"
                           tooltip="Events"
                         >
-                          <Link href="/dashboard/community/events" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                          <Link href="/dashboard/events" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                             <CalendarDays className="h-5 w-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Events</span>
                           </Link>
@@ -405,8 +409,9 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                   </Button>
                 </div>
               </SidebarFooter>
-            </Sidebar>
-            <main className="flex-1 min-h-[calc(100vh-4rem)] p-8">
+              </Sidebar>
+            )}
+            <main className={`flex-1 ${!isPersonalityAssessment ? 'min-h-[calc(100vh-4rem)]' : 'min-h-screen'}`}>
               {children}
             </main>
           </div>
@@ -512,7 +517,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                       <div className="flex-1">
                         <div className="space-y-3">
                           {/* One-on-One Coaching */}
-                          <Link href="/dashboard/coaching/one-on-one" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium text-black !text-black">One-on-One Coaching</h3>
@@ -522,10 +527,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                           
                           {/* Group Coaching */}
-                          <Link href="/dashboard/coaching/group" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium text-black !text-black">Group Coaching</h3>
@@ -535,10 +540,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                           
                           {/* Workshops */}
-                          <Link href="/dashboard/coaching/workshops" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium text-black !text-black">Workshops</h3>
@@ -548,7 +553,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                         </div>
                       </div>
                       
@@ -592,16 +597,15 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                    }, 300); // 300ms delay before hiding
                    setDropdownTimeout(timeout);
                  }}>
-              <Link href="/dashboard/resources" onClick={(e) => {
-                if (activeDropdown === 'tools') {
-                  e.preventDefault();
-                }
+              <button onClick={(e) => {
+                e.preventDefault();
+                setActiveDropdown(activeDropdown === 'tools' ? null : 'tools');
               }}>
                 <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'tools' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Tools & Guides</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
-              </Link>
+              </button>
               {activeDropdown === 'tools' && (
                 <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[450px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
                      onMouseEnter={() => {
@@ -622,7 +626,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                       <div className="flex-1">
                         <div className="space-y-3">
                           {/* AI Coach */}
-                          <Link href="https://app.consultify-ai.com/" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium !text-black">AI Coach</h3>
@@ -632,10 +636,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                           
                           {/* Job Board */}
-                          <Link href="/dashboard/resources/job-board" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium !text-black">Job Board</h3>
@@ -645,10 +649,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                           
                           {/* Assessments */}
-                          <Link href="/dashboard/resources/assessments" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium !text-black">Assessments</h3>
@@ -658,10 +662,10 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                           
                           {/* Ebooks/Guide */}
-                          <Link href="/dashboard/resources/ebooks" className="block group">
+                          <button className="block group w-full text-left">
                             <div className="flex items-center justify-between">
                               <div>
                                 <h3 className="text-sm font-medium !text-black">Ebooks/Guide</h3>
@@ -671,7 +675,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </div>
-                          </Link>
+                          </button>
                         </div>
                       </div>
                       
@@ -714,16 +718,15 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                    }, 300); // 300ms delay before hiding
                    setDropdownTimeout(timeout);
                  }}>
-              <Link href="/dashboard/resources" onClick={(e) => {
-                if (activeDropdown === 'resources') {
-                  e.preventDefault();
-                }
+              <button onClick={(e) => {
+                e.preventDefault();
+                setActiveDropdown(activeDropdown === 'resources' ? null : 'resources');
               }}>
                 <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'resources' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Resources</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
-              </Link>
+              </button>
               {activeDropdown === 'resources' && (
                 <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[450px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
                      onMouseEnter={() => {
@@ -860,12 +863,15 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                    }, 300); // 300ms delay before hiding
                    setDropdownTimeout(timeout);
                  }}>
-              <Link href="/dashboard/community">
+              <button onClick={(e) => {
+                e.preventDefault();
+                setActiveDropdown(activeDropdown === 'community' ? null : 'community');
+              }}>
                 <div className={`flex items-center gap-1 cursor-pointer py-2 px-4 text-sm font-medium transition-colors duration-200 rounded-md ${activeDropdown === 'community' ? 'bg-[#245D66] text-white' : 'text-white/80 hover:text-white hover:bg-[#245D66]'}`}>
                   <span>Community</span>
                   <ChevronDown className="h-4 w-4" />
                 </div>
-              </Link>
+              </button>
               {activeDropdown === 'community' && (
                 <div className="fixed top-[64px] left-1/2 -translate-x-1/2 mt-1 w-[300px] rounded-md bg-white border border-gray-100 shadow-lg shadow-black/10 overflow-hidden z-[150]"
                      onMouseEnter={() => setActiveDropdown('community')}
