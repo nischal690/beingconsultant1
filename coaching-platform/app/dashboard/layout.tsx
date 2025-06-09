@@ -19,6 +19,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -90,13 +91,14 @@ import { SettingsDialog } from "@/components/settings/settings-dialog"
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
 import { HeaderProvider, useHeader } from "@/lib/context/header-context"
 
-// Custom component for the sidebar logo that hides text when collapsed
+// Custom component for the sidebar logo that hides name logo when collapsed
 function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" }) {
   const isCollapsed = sidebarState === "collapsed";
   
   return (
     <Link href="/dashboard" className="flex items-center gap-2 w-full">
       <div className="flex items-center justify-center w-full">
+        {/* Main logo icon - always visible */}
         <svg width="30" height="28" viewBox="-1 -1 147 139" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
           <path d="M85.2707 20.2907V113.5L134.797 122.377V74.6627H144.702V136.802L75.9635 123.487V12.5233L144.702 1.42695V62.4568H134.797V12.5233L85.2707 20.2907Z" fill="url(#paint0_linear_12_122)"/>
           <path fillRule="evenodd" clipRule="evenodd" d="M70.4129 123.487V12.5233L0.0859375 0.317322V135.693L70.4129 123.487ZM59.5171 20.2907L9.99114 12.5233V121.267L59.5171 113.5V73.5531H24.8489V62.4568H59.5171V20.2907Z" fill="url(#paint1_linear_12_122)"/>
@@ -111,10 +113,13 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
             </linearGradient>
           </defs>
         </svg>
+        
+        {/* Name logo - only visible when sidebar is expanded */}
         {!isCollapsed && (
-          <div className="flex flex-col font-medium text-white uppercase tracking-wide text-xs leading-tight ml-2">
-            <span>BEING</span>
-            <span>CONSULTANT</span>
+          <div className="ml-3">
+            <div className="text-white font-semibold text-lg tracking-tight">
+              BeingConsultant
+            </div>
           </div>
         )}
       </div>
@@ -225,6 +230,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       </SidebarMenuButton>
     </SidebarMenuItem>
   </SidebarMenu>
+                <SidebarSeparator className="my-2 hidden group-data-[collapsible=icon]:block" />
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
                     Offerings
@@ -260,7 +266,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroup>
-
+                <SidebarSeparator className="my-2 hidden group-data-[collapsible=icon]:block" />
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
                     Tools
@@ -309,7 +315,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroup>
-
+                <SidebarSeparator className="my-2 hidden group-data-[collapsible=icon]:block" />
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
                     Resources Library
@@ -332,6 +338,19 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 
+                          isActive={pathname.includes("/dashboard/masterclass")} 
+                          className="hover-lift"
+                          tooltip="Masterclass"
+                        >
+                          <Link href="/dashboard/masterclass" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <GraduationCap className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Masterclass</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
                           isActive={pathname.includes("/dashboard/ebooks")} 
                           className="hover-lift"
                           tooltip="Ebooks/Guides"
@@ -345,7 +364,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroup>
-
+                <SidebarSeparator className="my-2 hidden group-data-[collapsible=icon]:block" />
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
                     Community
@@ -375,6 +394,19 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           <Link href="/dashboard/community/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
                             <MessageSquare className="h-5 w-5" />
                             <span className="group-data-[collapsible=icon]:hidden">Stories</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          asChild 
+                          isActive={pathname.includes("/dashboard/community/peers")} 
+                          className="hover-lift"
+                          tooltip="Learn with Peers"
+                        >
+                          <Link href="/dashboard/community/peers" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
+                            <UsersRound className="h-5 w-5" />
+                            <span className="group-data-[collapsible=icon]:hidden">Learn with Peers</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
