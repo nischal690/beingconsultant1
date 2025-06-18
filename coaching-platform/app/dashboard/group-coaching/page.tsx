@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import "@/styles/auto-scroll-carousel.css"
 import {
   ArrowRight,
   CheckCircle,
@@ -31,6 +33,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { toast } from "sonner"
 import { processRazorpayPayment } from "@/lib/payment/razorpay"
 import { processStripePayment } from "@/lib/payment/stripe"
@@ -373,9 +376,9 @@ export default function CoachingPage() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight"
               >
-                <span className="block text-black">Transform Your Career</span>
+                <span className="block text-black">Master Consulting Skill with</span>
                 <span className="text-black">
-                  With Expert Coaching
+                Our Elite Group Programs
                 </span>
               </motion.h1>
 
@@ -385,11 +388,9 @@ export default function CoachingPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-base md:text-lg text-gray-700 max-w-2xl leading-relaxed"
               >
-                Learn and grow alongside peers in our dynamic group coaching programs.
-                Benefit from collaborative learning, shared experiences, and cost-effective
-                training designed specifically for consulting careers. Our expert-led group
-                sessions provide the perfect balance of personalized attention and peer
-                interaction to help you achieve your professional goals.
+                Join an exclusive circle of top-tier professionals. 
+
+Learn, collaborate, and grow with the best.
               </motion.p>
 
               <motion.div
@@ -440,57 +441,96 @@ export default function CoachingPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex justify-center items-center"
+              className="flex flex-col justify-center items-center w-full gap-6"
             >
-              <div className="relative">
-                <div className="flex flex-wrap justify-center gap-4">
-                  <motion.div
-                    className="relative"
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-white/10 bg-transparent shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#245D66]/20 to-white/5 mix-blend-overlay"></div>
-                      <Image
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=250&fit=crop"
-                        alt="Coach"
-                        width={200}
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </motion.div>
-                  <motion.div
-                    className="relative -mt-10"
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-white/10 bg-black/20 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#245D66]/20 to-white/5 mix-blend-overlay"></div>
-                      <Image
-                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&h=250&fit=crop"
-                        alt="Coach"
-                        width={200}
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </motion.div>
-                  <motion.div
-                    className="relative"
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="w-32 h-40 rounded-full overflow-hidden border-2 border-white/10 bg-black/20 shadow-xl backdrop-blur-sm" style={{ borderRadius: '40% 40% 40% 40% / 60% 60% 40% 40%' }}>
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#245D66]/20 to-white/5 mix-blend-overlay"></div>
-                      <Image
-                        src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=200&h=250&fit=crop"
-                        alt="Coach"
-                        width={200}
-                        height={250}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
+              {/* First carousel - auto scrolling right to left */}
+              <Carousel 
+                className="w-full max-w-md"
+                opts={{
+                  align: "center",
+                  loop: true,
+                  dragFree: true,
+                  containScroll: false,
+                  watchDrag: false,
+                }}
+              >
+                <CarouselContent className="auto-scroll-rtl">
+                  {[
+                    "https://framerusercontent.com/images/VSdkkcPxdO7ltSZCcQgzyaHzcY.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/xrJYv8fvgRqsSZBV3mPpXDYufU.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/TaafOm26QvxdeXrUNpKISNbQrZo.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/64l3Qidyw4y3D5wng0mTJwvxA.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/gDYDO50VR5mntl3uihRNYiE7Ew.jpg?scale-down-to=512",
+                    // Duplicate images for infinite scroll effect
+                    "https://framerusercontent.com/images/VSdkkcPxdO7ltSZCcQgzyaHzcY.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/xrJYv8fvgRqsSZBV3mPpXDYufU.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/TaafOm26QvxdeXrUNpKISNbQrZo.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/64l3Qidyw4y3D5wng0mTJwvxA.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/gDYDO50VR5mntl3uihRNYiE7Ew.jpg?scale-down-to=512"
+                  ].map((src, index) => (
+                    <CarouselItem key={`top-${index}`} className="md:basis-1/2 lg:basis-1/2" style={{ minWidth: '200px' }}>
+                      <div className="p-1">
+                        <div className="overflow-hidden rounded-xl border-2 border-black shadow-xl">
+                          <div className="relative overflow-hidden" style={{ height: '200px', width: '200px' }}>
+                            <Image
+                              src={src}
+                              alt={`Coaching image top ${index + 1}`}
+                              fill
+                              className="object-cover transition-all hover:scale-105 duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+              
+              {/* Second carousel - auto scrolling left to right */}
+              <Carousel 
+                className="w-full max-w-md"
+                opts={{
+                  align: "center",
+                  loop: true,
+                  dragFree: true,
+                  containScroll: false,
+                  watchDrag: false,
+                }}
+              >
+                <CarouselContent className="auto-scroll-ltr">
+                  {[
+                    "https://framerusercontent.com/images/VSdkkcPxdO7ltSZCcQgzyaHzcY.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/xrJYv8fvgRqsSZBV3mPpXDYufU.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/TaafOm26QvxdeXrUNpKISNbQrZo.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/64l3Qidyw4y3D5wng0mTJwvxA.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/gDYDO50VR5mntl3uihRNYiE7Ew.jpg?scale-down-to=512",
+                    // Duplicate images for infinite scroll effect
+                    "https://framerusercontent.com/images/VSdkkcPxdO7ltSZCcQgzyaHzcY.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/xrJYv8fvgRqsSZBV3mPpXDYufU.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/TaafOm26QvxdeXrUNpKISNbQrZo.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/64l3Qidyw4y3D5wng0mTJwvxA.jpg?scale-down-to=512",
+                    "https://framerusercontent.com/images/gDYDO50VR5mntl3uihRNYiE7Ew.jpg?scale-down-to=512"
+                  ].map((src, index) => (
+                    <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/2" style={{ minWidth: '200px' }}>
+                      <div className="p-1">
+                        <div className="overflow-hidden rounded-xl border-2 border-black shadow-xl">
+                          <div className="relative overflow-hidden" style={{ height: '200px', width: '200px' }}>
+                            <Image
+                              src={src}
+                              alt={`Coaching image ${index + 1}`}
+                              fill
+                              className="object-cover transition-all hover:scale-105 duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {/* Navigation arrows removed */}
+              </Carousel>
             </motion.div>
           </div>
         </div>
@@ -510,15 +550,15 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
+            className="bg-white backdrop-blur-sm border border-black/10 rounded-xl p-6 hover:shadow-lg hover:shadow-black/5 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4 mb-4">
-              <div className="bg-black p-3 rounded-lg">
-                <Sparkles className="h-6 w-6 text-white" />
+              <div className="bg-gray-100 p-3 rounded-lg">
+                <Sparkles className="h-6 w-6 text-black" />
               </div>
-              <h3 className="text-xl font-bold mt-1 text-white">Learn From a Consulting Legend</h3>
+              <h3 className="text-xl font-bold mt-1 !text-black">Learn From a Consulting Legend</h3>
             </div>
-            <p className="text-white/60 text-sm">
+            <p className="text-black/70 text-sm">
               Gaurav Bhosle personally leads every session, bringing his McKinsey background and global recruiting experience directly to your preparation. His unique 360° perspective combines consultant, coach, and recruiter insights that simply cannot be found elsewhere.
             </p>
           </motion.div>
@@ -527,15 +567,15 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
+            className="bg-white backdrop-blur-sm border border-black/10 rounded-xl p-6 hover:shadow-lg hover:shadow-black/5 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4 mb-4">
-              <div className="bg-black p-3 rounded-lg">
-                <Award className="h-6 w-6 text-white" />
+              <div className="bg-gray-100 p-3 rounded-lg">
+                <Award className="h-6 w-6 text-black" />
               </div>
-              <h3 className="text-xl font-bold mt-1 text-white">Proven Success Across Backgrounds</h3>
+              <h3 className="text-xl font-bold mt-1 !text-black">Proven Success Across Backgrounds</h3>
             </div>
-            <p className="text-white/60 text-sm">
+            <p className="text-black/70 text-sm">
               From opera singers to military officers to scientists—Gaurav has guided professionals from the most unconventional backgrounds to MBB offers. His methodology adapts to your unique story, transforming diverse experiences into consulting strengths.
             </p>
           </motion.div>
@@ -544,15 +584,15 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:shadow-lg hover:shadow-white/5 transition-all duration-300 hover:-translate-y-1"
+            className="bg-white backdrop-blur-sm border border-black/10 rounded-xl p-6 hover:shadow-lg hover:shadow-black/5 transition-all duration-300 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4 mb-4">
-              <div className="bg-black p-3 rounded-lg">
-                <Zap className="h-6 w-6 text-white" />
+              <div className="bg-gray-100 p-3 rounded-lg">
+                <Zap className="h-6 w-6 text-black" />
               </div>
-              <h3 className="text-xl font-bold mt-1 text-white">Maximum Value, Accessible Investment</h3>
+              <h3 className="text-xl font-bold mt-1 !text-black">Maximum Value, Accessible Investment</h3>
             </div>
-            <p className="text-white/60 text-sm">
+            <p className="text-black/70 text-sm">
               We've architected this program to deliver premium coaching at a fraction of typical costs. By combining expert-led group sessions with comprehensive resources and peer practice, you receive the complete consulting preparation system without the prohibitive investment.
             </p>
           </motion.div>
@@ -875,211 +915,8 @@ export default function CoachingPage() {
         </div>
       </section>
 
-      {/* AI Coach Section - Modern Black and White Aesthetic */}
-      <section className="py-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-5xl mx-auto"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold relative inline-block">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-[#245D66] animate-gradient-x">
-                Your Personal AI Coach to Ace Case Interviews
-              </span>
-              <div className="absolute -bottom-2 left-0 right-0 h-px bg-[#245D66]"></div>
-            </h2>
-            <p className="mt-4 text-white max-w-2xl mx-auto">
-              Select your Practice Mode
-            </p>
-            <p className="text-sm text-white/40">
-              Choose a mode that fits your goals
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Practice Realistic Mock Case Interview with AI */}
-            <motion.div
-              whileHover={{
-                y: -5,
-                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
-                transition: { duration: 0.2 }
-              }}
-              className="relative group bg-black border border-gray-700 rounded-3xl" // Explicit bg and border
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-[#245D66]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
-              <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)] rounded-3xl"></div>
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0vjZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNmgtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20 rounded-3xl"></div>
-              
-              <div className="relative p-8 backdrop-blur-sm rounded-3xl h-full flex flex-col">
-                <div className="text-2xl font-bold mb-6 text-white">Practice Realistic Mock Case Interview with AI</div>
-
-                <div className="flex-1 mb-6">
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="col-span-1">
-                      <Image
-                        src="/ai-coach-portrait.jpg"
-                        alt="AI Coach Portrait"
-                        width={200}
-                        height={250}
-                        className="rounded-xl object-cover w-full h-auto shadow-lg border border-gray-700"
-                      />
-                    </div>
-                    <div className="col-span-1">
-                      <Image
-                        src="/ai-coach-charts.jpg"
-                        alt="AI Coach Charts"
-                        width={200}
-                        height={250}
-                        className="rounded-xl object-cover w-full h-auto shadow-lg border border-gray-700"
-                      />
-                    </div>
-                  </div>
-
-                  <p className="text-gray-300 mb-4">
-                    Engage in realistic, low-latency voice interaction with slide sharing and on-demand case test introduction - perfect for real interview simulation.
-                  </p>
-
-                  <ul className="space-y-2 text-sm text-gray-300"> {/* text-gray-400 to text-gray-300 */}
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 mr-2 text-white" />
-                      Engage in realistic, low-latency voice interaction with slide sharing and on-demand case test introduction
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 mr-2 text-white" />
-                      Get personalized Gap Analysis scorecards for every practice
-                    </li>
-                  </ul>
-                </div>
-
-                <Button
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-white/5 relative overflow-hidden"
-                  onClick={() => window.open('https://app.consultify-ai.com/', '_self')}
-                >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transform translate-x-full group-hover:translate-x-0 transition-transform duration-1000"></span>
-                  <span className="relative z-10 flex items-center gap-1">
-                    Start Practice
-                  </span>
-                </Button>
-              </div>
-            </motion.div>
-
-            {/* Guided Case Interview Coaching with AI */}
-            <motion.div
-              whileHover={{
-                y: -5,
-                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)",
-                transition: { duration: 0.2 }
-              }}
-              className="relative group bg-black border border-gray-700 rounded-3xl" // Explicit bg and border
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-[#245D66]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
-              <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)] rounded-3xl"></div>
-               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0vjZoNnYtNmgtNnptNiA2djZoNnYtNmgtNnptLTYgNnYtNmgtNnY2aDZ6bS02IDBoLTZ2Nmg2di02em0xMi02aC02djZoNnYtNmgtNnptLTE4IDZoNnYtNmgtNnY2em0xOCAwdjZoNnYtNmgtNnptLTEyIDBoLTZ2Nmg2di02em0wIDZoNnYtNmgtNnY2eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20 rounded-3xl"></div>
-
-              <div className="relative p-8 backdrop-blur-sm rounded-3xl h-full flex flex-col">
-                <div className="text-2xl font-bold mb-6 text-white">Guided Case Interview Coaching with AI</div>
-
-                <div className="flex-1 mb-6">
-                  <div className="mb-6">
-                    <Image
-                      src="/ai-coach-laptop.jpg"
-                      alt="AI Coach Laptop"
-                      width={400}
-                      height={250}
-                      className="rounded-xl object-cover w-full h-auto shadow-lg border border-gray-700"
-                    />
-                  </div>
-
-                  <p className="text-gray-300 mb-4">
-                    Receive feedback after each interaction - perfect for candidates familiarizing themselves with the case interview format.
-                  </p>
-
-                  <ul className="space-y-2 text-sm text-gray-300"> {/* text-gray-400 to text-gray-300 */}
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 mr-2 text-white" />
-                      Sharpen your response with guided answers, focusing on structuring thought process, and error analysis
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-4 w-4 mr-2 text-white" />
-                      For each stage of case interview, see the ideal response and identify any missing elements
-                    </li>
-                  </ul>
-                </div>
-
-                <Button
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white border border-gray-600 rounded-xl group hover:-translate-y-[2px] transition-all duration-300 shadow-lg hover:shadow-white/5 relative overflow-hidden"
-                >
-                  <span className="relative z-10">Start Practice</span>
-                  <span className="absolute inset-0 w-0 bg-gradient-to-r from-white/5 to-white/20 transition-all duration-300 group-hover:w-full"></span>
-                </Button>
-              </div>
-            </motion.div>
-          </div>
-          <div className="mt-8 text-center">
-            <Button
-              variant="outline"
-              className="rounded-full border-gray-600 text-white hover:bg-gray-700 hover:text-white" // Adjusted outline button
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              Start with a Free 15 minute session
-            </Button>
-            <p className="mt-4 text-sm text-gray-500 italic">
-              "The Most Realistic AI Voice Case Interview Simulator, Offering Expert-Level Rehearsals"
-            </p>
-            <div className="mt-2 flex items-center justify-center">
-              <Badge variant="outline" className="text-xs text-gray-400 border-gray-700 bg-black"> {/* Explicit dark badge */}
-                Created by Experienced Management Consultants and AI Experts for Optimal Results
-              </Badge>
-            </div>
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-gray-700"> {/* Darker border */}
-            <h3 className="text-xl font-semibold text-white mb-6 text-center">
-              Mock Case Interview Simulator: Key Features
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                  <FileText className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-white">Structured Key Points</h4>
-                  <p className="text-sm text-gray-400">Sequential key factor recall of key case facts, solutions</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                  <Users className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-white">Tailored for Case Interviews</h4>
-                  <p className="text-sm text-gray-400">Time-segmented speech recognition</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                  <Clock className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-white">Long Conversations with Slide Sharing</h4>
-                  <p className="text-sm text-gray-400">Don't end up speaking to yourself</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center flex-shrink-0">
-                  <MessageSquare className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-white">Customizable Interviewer Persona</h4>
-                  <p className="text-sm text-gray-400">Control Guidance levels</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      
+      
 
       {/* Testimonials section */}
       <section className="mt-16">
@@ -1136,104 +973,110 @@ export default function CoachingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="mt-16">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-white">Frequently Asked Questions</h2>
-          <p className="text-gray-400">Everything you need to know about our coaching programs</p>
-        </div>
+      <section className="mt-16 relative">
+        {/* Background decorative elements */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#245D66]/10 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#245D66]/10 rounded-full blur-3xl opacity-50"></div>
+        
+        <div className="relative z-10">
+          <div className="text-center mb-12">
+            <Badge className="mb-3 bg-[#245D66]/20 text-[#245D66] hover:bg-[#245D66]/30 border-none">
+              Common Questions
+            </Badge>
+            <h2 className="text-4xl font-bold text-white mb-3">Frequently Asked Questions</h2>
+            <p className="text-gray-400 max-w-xl mx-auto">Everything you need to know about our group coaching program to help you make an informed decision</p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-black to-[#245D66]/10"> {/* Darker gradient */}
-            <CardHeader>
-              <CardTitle className="flex items-start gap-2 text-white">
-                <MessageSquare className="h-5 w-5 text-[#245D66] mt-0.5" />
-                <span>How are the coaching sessions conducted?</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                All coaching sessions are conducted online via Zoom. You'll receive a calendar invite with a link to join the session. Sessions typically last 60-90 minutes depending on the program you choose.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="max-w-3xl mx-auto bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-white/5 shadow-xl">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="item-1" className="border-b border-white/10 pb-4">
+                <AccordionTrigger className="flex items-center gap-3 text-white hover:no-underline hover:text-[#245D66]">
+                  <div className="bg-[#245D66]/10 p-2 rounded-lg">
+                    <Users className="h-5 w-5 text-[#245D66]" />
+                  </div>
+                  <span className="text-lg font-medium">How does group coaching compare to one-on-one coaching?</span>
+                </AccordionTrigger>
+                <AccordionContent className="pl-14 pr-4 mt-2">
+                  <p className="text-gray-300 leading-relaxed">
+                    Group coaching offers three distinct advantages:
+                    <ul className="mt-2 space-y-2 list-disc pl-5">
+                      <li>Peer learning from diverse perspectives and approaches</li>
+                      <li>Practice opportunities with candidates at similar levels</li>
+                      <li>Greater value through shared resources</li>
+                    </ul>
+                    <p className="mt-2">Our small cohort size (4-6) ensures you still receive personalized attention.</p>
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
 
-          <Card className="border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-black to-[#245D66]/10">
-            <CardHeader>
-              <CardTitle className="flex items-start gap-2 text-white">
-                <Clock className="h-5 w-5 text-[#245D66] mt-0.5" />
-                <span>How long does each program last?</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Program durations vary: Break into Consulting is 8 weeks, Unlimited Coaching runs until you receive an offer, Group Coaching is 6 weeks, and 1:1 sessions are scheduled as needed based on your package.
-              </p>
-            </CardContent>
-          </Card>
+              <AccordionItem value="item-2" className="border-b border-white/10 pb-4">
+                <AccordionTrigger className="flex items-center gap-3 text-white hover:no-underline hover:text-[#245D66]">
+                  <div className="bg-[#245D66]/10 p-2 rounded-lg">
+                    <MessageSquare className="h-5 w-5 text-[#245D66]" />
+                  </div>
+                  <span className="text-lg font-medium">What if I'm not comfortable speaking in a group setting?</span>
+                </AccordionTrigger>
+                <AccordionContent className="pl-14 pr-4 mt-2">
+                  <p className="text-gray-300 leading-relaxed">
+                    Our coaches create a supportive environment where everyone participates. Many initially hesitant participants 
+                    find the group format actually builds their confidence more effectively than one-on-one sessions.
+                    <p className="mt-2">For those who strongly prefer private coaching, we offer the Break into Consulting program in a one-on-one format.</p>
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
 
-          <Card className="border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-black to-[#245D66]/10">
-            <CardHeader>
-              <CardTitle className="flex items-start gap-2 text-white">
-                <Users className="h-5 w-5 text-[#245D66] mt-0.5" />
-                <span>What's the difference between group and 1:1 coaching?</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Group coaching provides a collaborative environment where you learn with peers, while 1:1 coaching offers personalized attention focused exclusively on your specific needs and challenges.
-              </p>
-            </CardContent>
-          </Card>
+              <AccordionItem value="item-3" className="border-b border-white/10 pb-4">
+                <AccordionTrigger className="flex items-center gap-3 text-white hover:no-underline hover:text-[#245D66]">
+                  <div className="bg-[#245D66]/10 p-2 rounded-lg">
+                    <Clock className="h-5 w-5 text-[#245D66]" />
+                  </div>
+                  <span className="text-lg font-medium">What happens if I miss a session?</span>
+                </AccordionTrigger>
+                <AccordionContent className="pl-14 pr-4 mt-2">
+                  <p className="text-gray-300 leading-relaxed">
+                    All sessions are recorded and available for replay, so you'll never miss important content. However, we 
+                    encourage live attendance to maximize the interactive benefits.
+                    <p className="mt-2">If you know you'll miss a session, you can submit questions in advance to be addressed during the live session.</p>
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
 
-          <Card className="border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-black to-[#245D66]/10">
-            <CardHeader>
-              <CardTitle className="flex items-start gap-2 text-white">
-                <FileCheck className="h-5 w-5 text-[#245D66] mt-0.5" />
-                <span>Do you offer a satisfaction guarantee?</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Yes! We're confident in our programs and offer a 14-day money-back guarantee if you're not satisfied. For our Unlimited Coaching program, we guarantee coaching until you receive an offer.
-              </p>
-            </CardContent>
-          </Card>
+              <AccordionItem value="item-4" className="border-b border-white/10 pb-4">
+                <AccordionTrigger className="flex items-center gap-3 text-white hover:no-underline hover:text-[#245D66]">
+                  <div className="bg-[#245D66]/10 p-2 rounded-lg">
+                    <FileCheck className="h-5 w-5 text-[#245D66]" />
+                  </div>
+                  <span className="text-lg font-medium">How much time should I expect to spend outside of sessions?</span>
+                </AccordionTrigger>
+                <AccordionContent className="pl-14 pr-4 mt-2">
+                  <p className="text-gray-300 leading-relaxed">
+                    Plan for 4-6 hours per week outside of live sessions for optimal results. This includes:
+                    <ul className="mt-2 space-y-2 list-disc pl-5">
+                      <li>Case practice with peers</li>
+                      <li>Video submissions for feedback</li>
+                      <li>Peer review and feedback</li>
+                      <li>Self-study materials</li>
+                    </ul>
+                    <p className="mt-2">The more you put in, the more you'll get out of the program. Our most successful participants treat the program like a part-time job.</p>
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
 
-          <Card className="border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-black to-[#245D66]/10">
-            <CardHeader>
-              <CardTitle className="flex items-start gap-2 text-white">
-                <Sparkles className="h-5 w-5 text-[#245D66] mt-0.5" />
-                <span>Who are the coaches?</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Our coaches are experienced consultants from top firms like McKinsey, BCG, Bain, and other MBB firms. They have firsthand experience in the recruiting process and can provide insider knowledge.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-gray-700 shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-black to-[#245D66]/10">
-            <CardHeader>
-              <CardTitle className="flex items-start gap-2 text-white">
-                <Briefcase className="h-5 w-5 text-[#245D66] mt-0.5" />
-                <span>What's your success rate?</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-400">
-                Our clients have a 70% higher success rate in securing consulting offers compared to the industry average. Over 1,250 of our clients have successfully landed offers at top consulting firms.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="mt-10 text-center">
-          <p className="text-gray-400 mb-4">Still have questions? We're here to help!</p>
-          <Button variant="outline" className="flex items-center gap-2 mx-auto border-gray-600 text-white hover:bg-gray-700 hover:text-white">
-            Contact Support
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+          <div className="mt-12 text-center">
+            <p className="text-gray-300 mb-5">Still have questions? Our team is ready to help!</p>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button variant="outline" className="flex items-center gap-2 border-[#245D66] text-[#245D66] hover:bg-[#245D66]/10 hover:text-[#245D66] transition-all duration-300">
+                <MessageSquare className="h-4 w-4" />
+                Schedule a Consultation
+              </Button>
+              <Button className="flex items-center gap-2 bg-[#245D66] text-white hover:bg-[#1A444B] transition-all duration-300 group hover:-translate-y-[2px] shadow-lg hover:shadow-[#245D66]/20">
+                Contact Support
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 

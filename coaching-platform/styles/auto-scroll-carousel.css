@@ -1,0 +1,90 @@
+/* Auto-scrolling carousel animations */
+
+/* Right to Left animation */
+@keyframes scroll-rtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100%));
+  }
+}
+
+/* Left to Right animation */
+@keyframes scroll-ltr {
+  0% {
+    transform: translateX(calc(-100%));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Apply animations to carousel content */
+.auto-scroll-rtl {
+  display: flex;
+  animation: scroll-rtl 25s linear infinite;
+  width: auto;
+}
+
+.auto-scroll-ltr {
+  display: flex;
+  animation: scroll-ltr 25s linear infinite;
+  width: auto;
+}
+
+/* Pause animation on hover */
+.auto-scroll-rtl:hover,
+.auto-scroll-ltr:hover {
+  animation-play-state: paused;
+}
+
+/* Make sure items are properly sized */
+.auto-scroll-rtl > *,
+.auto-scroll-ltr > * {
+  flex-shrink: 0;
+}
+
+/* Override Embla carousel default styles for auto-scrolling */
+.embla__container.auto-scroll-rtl,
+.embla__container.auto-scroll-ltr {
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure images look good */
+.auto-scroll-rtl img,
+.auto-scroll-ltr img {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Increase carousel container size */
+[class*="dashboard"] .group-coaching .w-full.max-w-md {
+  max-width: 80% !important; /* Much wider container */
+}
+
+/* Increase image size */
+[class*="dashboard"] .group-coaching .relative.aspect-square {
+  height: 400px !important;
+  width: 400px !important;
+}
+
+/* Make carousel items larger */
+[class*="dashboard"] .group-coaching .md\:basis-1\/3 {
+  flex-basis: 450px !important;
+  min-width: 450px !important;
+}
+
+/* Ensure proper spacing */
+[class*="dashboard"] .group-coaching .p-1 {
+  padding: 0.5rem !important;
+}
+
+/* Make borders more prominent */
+[class*="dashboard"] .group-coaching .border-2.border-black {
+  border-width: 3px !important;
+}

@@ -388,9 +388,10 @@ export default function CoachingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-12 text-gray-900"
+            className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-12"
+            style={{ color: '#245D66' }}
           >
-            Our Coaching <span className="text-[#245D66]">Advantage</span>
+            Our Coaching <span style={{ color: '#245D66' }}>Advantage</span>
           </motion.h1>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -402,44 +403,120 @@ export default function CoachingPage() {
               className="relative order-2 lg:order-1"
             >
               <div className="relative w-full max-w-md mx-auto h-[320px]">
-                {/* 360° Coaching Perspective Circle */}
-                <motion.div 
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="absolute top-0 left-0 w-[200px] h-[200px] rounded-full bg-[#8BA89B]/80 flex items-center justify-center text-center p-4 shadow-lg backdrop-blur-sm border border-white/20 hover:scale-105 transition-transform duration-300"
-                >
-                  <div className="text-white font-semibold text-sm">
-                    <div className="uppercase tracking-wider">360° COACHING</div>
-                    <div className="uppercase tracking-wider">PERSPECTIVE</div>
-                  </div>
-                </motion.div>
-                
-                {/* Both Sides of the Table Circle */}
-                <motion.div 
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="absolute top-0 right-0 w-[200px] h-[200px] rounded-full bg-[#C49799]/80 flex items-center justify-center text-center p-4 shadow-lg backdrop-blur-sm border border-white/20 hover:scale-105 transition-transform duration-300"
-                >
-                  <div className="text-white font-semibold text-sm">
-                    <div className="uppercase tracking-wider">BOTH SIDES</div>
-                    <div className="uppercase tracking-wider">OF THE TABLE</div>
-                  </div>
-                </motion.div>
-                
-                {/* Global Excellence Standard Circle */}
-                <motion.div 
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="absolute bottom-0 left-[50%] transform -translate-x-1/2 w-[200px] h-[200px] rounded-full bg-[#D0C99B]/80 flex items-center justify-center text-center p-4 shadow-lg backdrop-blur-sm border border-white/20 hover:scale-105 transition-transform duration-300"
-                >
-                  <div className="text-white font-semibold text-sm">
-                    <div className="uppercase tracking-wider">GLOBAL EXCELLENCE</div>
-                    <div className="uppercase tracking-wider">STANDARD</div>
-                  </div>
-                </motion.div>
+                {/* Venn Diagram Container */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                  {/* SVG-based Venn Diagram for precise control */}
+                  <svg width="320" height="320" viewBox="0 0 320 320" className="absolute inset-0">
+                    <defs>
+                      {/* Gradient definitions for each circle */}
+                      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#8BA89B" stopOpacity="0.9" />
+                        <stop offset="100%" stopColor="#8BA89B" stopOpacity="0.7" />
+                      </linearGradient>
+                      <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#C49799" stopOpacity="0.9" />
+                        <stop offset="100%" stopColor="#C49799" stopOpacity="0.7" />
+                      </linearGradient>
+                      <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#D0C99B" stopOpacity="0.9" />
+                        <stop offset="100%" stopColor="#D0C99B" stopOpacity="0.7" />
+                      </linearGradient>
+                    </defs>
+                    
+                    {/* First Circle - 360° COACHING PERSPECTIVE */}
+                    <circle cx="110" cy="130" r="85" fill="url(#grad1)" fillOpacity="0.8" style={{ mixBlendMode: 'multiply' }} />
+                    
+                    {/* Second Circle - BOTH SIDES OF THE TABLE */}
+                    <circle cx="210" cy="130" r="85" fill="url(#grad2)" fillOpacity="0.8" style={{ mixBlendMode: 'multiply' }} />
+                    
+                    {/* Third Circle - GLOBAL EXCELLENCE STANDARD */}
+                    <circle cx="160" cy="210" r="85" fill="url(#grad3)" fillOpacity="0.8" style={{ mixBlendMode: 'multiply' }} />
+                  </svg>
+                  
+                  {/* Main Circle Labels - Positioned inside each circle */}
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="absolute text-center w-[120px] left-[60px] top-[120px] z-20"
+                  >
+                    <div className="text-black font-semibold text-sm drop-shadow-md">
+                      <div className="uppercase tracking-wider"></div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="absolute text-center w-[120px] right-[60px] top-[120px] z-20"
+                  >
+                    <div className="text-black font-semibold text-sm drop-shadow-md">
+                      <div className="uppercase tracking-wider"></div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="absolute text-center w-[120px] bottom-[70px] left-[50%] transform -translate-x-1/2 z-20"
+                  >
+                    <div className="text-black font-semibold text-sm drop-shadow-md">
+                      <div className="uppercase tracking-wider"></div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Overlapping Areas Text - Positioned in each intersection */}
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.7, delay: 0.5 }}
+                    className="absolute text-center w-[80px] left-[50%] top-[90px] transform -translate-x-1/2 z-25"
+                  >
+                    <div className="text-white text-xs font-medium drop-shadow-md">
+                      <div className="uppercase">EXPERTISE</div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.7, delay: 0.5 }}
+                    className="absolute text-center w-[80px] left-[110px] top-[180px] transform z-25"
+                  >
+                    <div className="text-white text-xs font-medium drop-shadow-md">
+                      <div className="uppercase">METHODOLOGY</div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.7, delay: 0.5 }}
+                    className="absolute text-center w-[80px] right-[110px] top-[180px] transform z-25"
+                  >
+                    <div className="text-white text-xs font-medium drop-shadow-md">
+                      <div className="uppercase">STANDARDS</div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Center Overlap - All Three Circles */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="absolute w-[90px] h-[90px] rounded-full bg-white/20 backdrop-blur-sm z-30
+                              left-[50%] top-[50%] transform -translate-x-1/2 -translate-y-1/2 
+                              flex items-center justify-center border border-white/30"
+                  >
+                    <div className="text-white text-xs font-bold text-center drop-shadow-md">
+                      BEING
+                      <br />
+                      CONSULTANT
+                    </div>
+                  </motion.div>
+                </div>
               </div>
             </motion.div>
             
@@ -526,13 +603,11 @@ export default function CoachingPage() {
         <div className="flex flex-col md:flex-row items-start justify-between mb-12">
           <div className="relative">
             <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
-              {activeFilter === "group" ? "Group Programs" : "One on One Programs"}
+              One on One Programs
             </h2>
             <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
             <p className="text-gray-400 mt-4 max-w-xl">
-              {activeFilter === "group" 
-                ? "Learn with peers and save on costs" 
-                : "Focused coaching for specific needs"}
+              Focused coaching for specific needs
             </p>
           </div>
           <div className="flex items-center gap-2 mt-4 md:mt-0">
@@ -585,14 +660,6 @@ export default function CoachingPage() {
                 className="rounded-full"
               >
                 One-on-One
-              </Button>
-              <Button 
-                variant={activeFilter === "group" ? "default" : "outline"} 
-                size="sm" 
-                onClick={() => setActiveFilter("group")}
-                className="rounded-full"
-              >
-                Group Programs
               </Button>
             </div>
             <span className="text-sm text-gray-400 ml-2">
@@ -702,94 +769,7 @@ export default function CoachingPage() {
         </div>
       </section>
 
-      {/* Group Programs Section */}
-      {activeFilter !== "1on1" && (
-        <section className="mt-16">
-          <div className="flex flex-col md:flex-row items-start justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold">Group Programs</h2>
-              <p className="text-muted-foreground">Learn with peers and save on costs</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {coachingPrograms
-              .filter(program => program.category === "group")
-              .map((program) => (
-                <motion.div key={program.id} variants={itemVariants} className="group">
-                  <div className="overflow-hidden rounded-xl border bg-card h-full flex flex-col">
-                    <div className="p-5 flex flex-col h-full">
-                      <div className="flex flex-col justify-between items-start gap-2 mb-3">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <div className="bg-primary/10 p-1.5 rounded-full">
-                              <Users className="h-4 w-4 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-bold">{program.title}</h3>
-                          </div>
-                          <p className="text-muted-foreground text-xs">{program.shortDescription.substring(0, 60)}...</p>
-                        </div>
-                        <div className="flex flex-wrap gap-1 mt-2 w-full">
-                          {program.cohortSize && (
-                            <Badge variant="outline" className="bg-primary/5 text-xs">
-                              {program.cohortSize}
-                            </Badge>
-                          )}
-                          {program.timeline && (
-                            <Badge variant="outline" className="bg-primary/5 text-xs">
-                              {program.timeline}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="border-t border-b py-3 my-2 flex-grow">
-                        <div className="grid grid-cols-1 gap-1.5">
-                          {program.features?.slice(0, 4).map((feature, index) => (
-                            <div key={index} className="flex items-start gap-1.5">
-                              <CheckCircle className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
-                              <span className="text-xs">{feature}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col gap-3 mt-auto pt-3">
-                        <div>
-                          <p className="text-xs font-medium mb-1">Investment:</p>
-                          <div className="flex items-baseline gap-1.5">
-                            <span className="text-lg font-bold">{formatPrice(program.price)}</span>
-                            {program.originalPrice && (
-                              <span className="text-xs text-muted-foreground line-through">
-                                {formatPrice(program.originalPrice)}
-                              </span>
-                            )}
-                            {program.privateOption && (
-                              <span className="text-xs text-muted-foreground ml-1">
-                                / {formatPrice(program.privatePrice)} (private)
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          <Button variant="outline" className="rounded-full text-xs py-1 h-8 flex-1">
-                            View Details
-                          </Button>
-                          <Button 
-                            className="rounded-full bg-primary hover:bg-primary/90 text-xs py-1 h-8 flex-1"
-                          >
-                            Join Waitlist
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-          </div>
-        </section>
-      )}
+      {/* Group Programs Section has been removed */}
 
       {/* AI Coach Section - Modern Black and White Aesthetic */}
       <section className="py-16">
@@ -801,7 +781,7 @@ export default function CoachingPage() {
         >
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold relative inline-block">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">
+              <span className="text-white">
                 Your Personal AI Coach to Ace Case Interviews
               </span>
               <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
@@ -1165,19 +1145,19 @@ export default function CoachingPage() {
       <section className="mt-16">
         <div className="relative overflow-hidden rounded-3xl">
           {/* Background gradient and effects */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white to-[#E5EFF1]"></div>
-          <div className="absolute inset-0 bg-grid-[#245D66]/5 [mask-image:linear-gradient(0deg,transparent,rgba(36,93,102,0.05),transparent)]"></div>
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#E5EFF1] rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#E5EFF1] rounded-full blur-3xl"></div>
+          <div className="absolute inset-0 bg-white"></div>
+          <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.05),transparent)]"></div>
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-white rounded-full blur-3xl"></div>
           
           <div className="relative p-8 md:p-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <div className="space-y-6">
-                <Badge className="bg-[#245D66] hover:bg-[#1A444B] text-white border-none">
+                <Badge className="bg-white text-black border border-gray-200 hover:bg-gray-50">
                   Limited Time Offer
                 </Badge>
                 <h2 className="text-3xl md:text-4xl font-bold">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#245D66] to-[#1A444B] animate-gradient-x">
+                  <span className="text-black">
                     Ready to Transform Your Career?
                   </span>
                 </h2>
@@ -1185,38 +1165,38 @@ export default function CoachingPage() {
                   Choose the program that fits your needs and take the first step toward your dream consulting career. Special pricing available for a limited time.
                 </p>
                 <div className="flex flex-wrap gap-4 pt-2">
-                  <Button size="lg" className="bg-[#245D66] text-white hover:bg-[#1A444B] transition-all duration-300 group hover:-translate-y-[2px] shadow-lg hover:shadow-[#245D66]/10">
+                  <Button size="lg" className="bg-black text-white hover:bg-gray-800 transition-all duration-300 group hover:-translate-y-[2px] shadow-lg hover:shadow-black/10">
                     Browse All Programs
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
-                  <Button size="lg" variant="outline" className="border-[#245D66]/70 text-[#245D66] hover:bg-[#245D66]/5 transition-all duration-300">
+                  <Button size="lg" variant="outline" className="border-gray-300 text-black hover:bg-gray-50 transition-all duration-300">
                     Schedule a Call
                   </Button>
                 </div>
               </div>
               
-              <div className="space-y-4 bg-[#245D66]/5 backdrop-blur-sm p-6 rounded-xl border border-[#245D66]/10 shadow-lg hover:shadow-[#245D66]/10 transition-all duration-300">
-                <div className="text-xl font-bold" style={{color: 'rgb(36, 93, 102)'}}><span style={{opacity: 0.9}}>Why Choose Our Coaching?</span></div>
+              <div className="space-y-4 bg-white p-6 rounded-xl border border-gray-200 shadow-lg hover:shadow-gray-200/20 transition-all duration-300">
+                <div className="text-xl font-bold text-black">Why Choose Our Coaching?</div>
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
-                    <span className="text-[#245D66]/90">Expert coaches from top consulting firms</span>
+                    <CheckCircle className="h-5 w-5 mr-2 text-black" />
+                    <span className="text-gray-700">Expert coaches from top consulting firms</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
-                    <span className="text-[#245D66]/90">Proven track record with 1250+ placements</span>
+                    <CheckCircle className="h-5 w-5 mr-2 text-black" />
+                    <span className="text-gray-700">Proven track record with 1250+ placements</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
-                    <span className="text-[#245D66]/90">Personalized approach for your unique needs</span>
+                    <CheckCircle className="h-5 w-5 mr-2 text-black" />
+                    <span className="text-gray-700">Personalized approach for your unique needs</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
-                    <span className="text-[#245D66]/90">Flexible programs to fit your schedule</span>
+                    <CheckCircle className="h-5 w-5 mr-2 text-black" />
+                    <span className="text-gray-700">Flexible programs to fit your schedule</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 mr-2 text-[#245D66]" />
-                    <span className="text-[#245D66]/90">Money-back guarantee if not satisfied</span>
+                    <CheckCircle className="h-5 w-5 mr-2 text-black" />
+                    <span className="text-gray-700">Money-back guarantee if not satisfied</span>
                   </li>
                 </ul>
               </div>

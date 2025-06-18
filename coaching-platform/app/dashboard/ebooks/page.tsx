@@ -2,6 +2,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { collection, query as fsQuery, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
+import { getProductsByType } from "@/lib/firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -181,29 +184,66 @@ const allEbooks = [
   }
 ];
 
-// Categories for filtering
-const categories = [
-  "All",
-  "Strategy",
-  "Finance",
-  "Analytics",
-  "Communication",
-  "Interviews",
-  "Business Development",
-  "Career Development",
-  "Project Management"
+// Career stage filters (GRIT framework)
+const filters = [
+  "all",
+  "get clarity",
+  "ready the foundation",
+  "interview to win",
+  "thrive in consulting",
+  "strategize what's next"
 ];
 
 export default function EbooksPage() {
   // State for active tab and filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const [ebooks, setEbooks] = useState(allEbooks);
   const [filteredEbooks, setFilteredEbooks] = useState(allEbooks);
   const [sortBy, setSortBy] = useState("featured");
 
-  // Filter ebooks based on search query and category
+  // ---------- Initial fetch ----------
   useEffect(() => {
-    let filtered = allEbooks;
+    const fetchAll = async () => {
+      const res = await getProductsByType("Ebook")
+      if (res.success && res.data) {
+        setEbooks(res.data.map((doc: any) => ({
+          ...doc,
+          careerStage: (doc.careerStage || "").toLowerCase()
+        })))
+      }
+    }
+    fetchAll()
+  }, [])
+
+  // ---------- Refetch when filter changes ----------
+  useEffect(() => {
+    const fetchFiltered = async () => {
+      let docs: any[] = []
+      try {
+        if (selectedFilter === "all") {
+          const res = await getProductsByType("Ebook")
+          if (res.success && res.data) docs = res.data
+        } else {
+          const q = fsQuery(
+            collection(db, "products"),
+            where("type", "==", "Ebook"),
+            where("careerStage", "==", selectedFilter)
+          )
+          const snap = await getDocs(q)
+          docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        }
+        setEbooks(docs.map((doc: any) => ({ ...doc, careerStage: (doc.careerStage || "").toLowerCase() })))
+      } catch(err) {
+        console.error("Error fetching ebooks", err)
+      }
+    }
+    fetchFiltered()
+  }, [selectedFilter])
+
+  // Filter + search + sort client-side
+  useEffect(() => {
+    let filtered = ebooks;
     
     // Filter by search query
     if (searchQuery) {
@@ -214,10 +254,7 @@ export default function EbooksPage() {
       );
     }
     
-    // Filter by category
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter(ebook => ebook.category === selectedCategory);
-    }
+    // careerStage already filtered by Firestore, nothing additional
     
     // Sort ebooks
     if (sortBy === "rating") {
@@ -229,7 +266,7 @@ export default function EbooksPage() {
     }
     
     setFilteredEbooks(filtered);
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [searchQuery, ebooks, sortBy]);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -302,22 +339,22 @@ export default function EbooksPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 -mt-16 relative z-20">
         {/* Enhanced category filters */}
         <div className="flex flex-wrap items-center gap-3 mb-16 justify-center">
-          {categories.map((category) => (
+          {filters.map((filterItem) => (
             <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              className={`rounded-full px-6 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 ${selectedCategory === category 
+              key={filterItem}
+              variant={selectedFilter === filterItem ? "default" : "outline"}
+              className={`rounded-full px-6 py-3 text-sm font-medium transition-all duration-300 hover:scale-105 ${selectedFilter === filterItem 
                 ? 'bg-[#245D66] text-white hover:bg-[#1a474f] shadow-lg shadow-[#245D66]/25' 
                 : 'bg-transparent border-2 border-gray-700 text-gray-300 hover:border-[#245D66] hover:text-[#245D66] hover:bg-[#245D66]/5'}`}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => setSelectedFilter(filterItem)}
             >
-              {category}
+              {filterItem}
             </Button>
           ))}
         </div>
 
         {/* Featured E-books Section */}
-        {selectedCategory === "All" && searchQuery === "" && (
+        {selectedFilter === "All" && searchQuery === "" && (
           <section className="mb-20">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12">
               <div>
@@ -458,7 +495,7 @@ export default function EbooksPage() {
               <div className="flex items-center mb-4">
                 <div className="w-1 h-8 bg-[#245D66] rounded-full mr-4"></div>
                 <h2 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                  {selectedCategory === "All" ? "Complete Library" : `${selectedCategory} Resources`}
+                  {selectedFilter === "all" ? "Complete Library" : `${selectedFilter} Resources`}
                 </h2>
               </div>
               <p className="text-gray-400 text-lg">
@@ -493,7 +530,7 @@ export default function EbooksPage() {
               <Button 
                 onClick={() => {
                   setSearchQuery("");
-                  setSelectedCategory("All");
+                  setSelectedFilter("all");
                 }} 
                 className="bg-[#245D66] hover:bg-[#1a474f] text-white px-8 py-3 rounded-xl transition-all duration-300 hover:scale-105"
               >

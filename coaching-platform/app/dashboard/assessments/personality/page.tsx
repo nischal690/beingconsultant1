@@ -871,43 +871,63 @@ export default function PersonalityAssessment() {
         {currentStep === "results" && (
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 md:p-8 border border-white/20 animate-fade-in text-center w-full">
             {personalityType ? (
-              <>
-                <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#245D66] text-white mx-auto mb-6">
-                  <BarChart3 size={40} />
-                </div>
-                <h2 className="text-3xl font-bold mb-2">Your Personality Type: {personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].title}</h2>
-                <p className="text-xl text-[#245D66] font-semibold mb-6">{personalityType}</p>
-                <p className="text-white/80 mb-6 w-full mx-auto">{personalityType && personalityDescriptions[personalityType as PersonalityTypeKey].description}</p>
-                
-                <PersonalityTraits scores={scores} />
+              canDownload ? (
+                <>
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#245D66] text-white mx-auto mb-6">
+                    <BarChart3 size={40} />
+                  </div>
+                  <h2 className="text-3xl font-bold mb-2">
+                    Your Personality Type: {personalityDescriptions[personalityType as PersonalityTypeKey].title}
+                  </h2>
+                  <p className="text-xl text-[#245D66] font-semibold mb-6">{personalityType}</p>
+                  <p className="text-white/80 mb-6 w-full mx-auto">
+                    {personalityDescriptions[personalityType as PersonalityTypeKey].description}
+                  </p>
 
-                {/* Time remaining indicator */}
-                {completionTime && !canDownload && (
+                  <PersonalityTraits scores={scores} />
+
+                  <div className="flex flex-col sm:flex-row gap-4 mt-10">
+                    <Button
+                      onClick={handleRestart}
+                      variant="outline"
+                      className="flex-1 py-4"
+                    >
+                      <RefreshCw size={16} className="mr-2" />
+                      Retake Test
+                    </Button>
+                    <Button
+                      onClick={handleDownloadReport}
+                      className="flex-1 py-4 bg-[#245D66] hover:bg-[#245D66]/90"
+                    >
+                      <Download size={16} className="mr-2" />
+                      Download Results
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center bg-[#245D66] text-white mx-auto mb-6">
+                    <CheckCircle size={40} />
+                  </div>
+                  <h2 className="text-3xl font-bold mb-4">Thank you for completing the test!</h2>
+
                   <div className="mb-6 p-4 bg-white/5 rounded-lg border border-white/10">
-                    <p className="text-white/70 text-sm mb-1">Your detailed report will be available in:</p>
+                    <p className="text-white/70 text-sm mb-1">
+                      Your detailed report will be available in:
+                    </p>
                     <p className="text-xl font-semibold text-[#245D66]">{timeRemaining}</p>
                   </div>
-                )}
-                
-                <div className="flex flex-col sm:flex-row gap-4 mt-10">
+
                   <Button
                     onClick={handleRestart}
                     variant="outline"
-                    className="flex-1 py-4"
+                    className="mx-auto"
                   >
                     <RefreshCw size={16} className="mr-2" />
                     Retake Test
                   </Button>
-                  <Button 
-                    onClick={handleDownloadReport}
-                    disabled={!canDownload}
-                    className={`flex-1 py-4 ${canDownload ? 'bg-[#245D66] hover:bg-[#245D66]/90' : 'bg-gray-600 cursor-not-allowed'}`}
-                  >
-                    <Download size={16} className="mr-2" />
-                    {canDownload ? 'Download Results' : 'Report Preparing...'}
-                  </Button>
-                </div>
-              </>
+                </>
+              )
             ) : (
               <p>Loading results...</p>
             )}

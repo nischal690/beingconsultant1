@@ -628,6 +628,38 @@ export const getProductsByCategory = async (category: string, limit?: number) =>
   }
 };
 
+// Get products by type
+export const getProductsByType = async (type: string, limit?: number) => {
+  try {
+    console.log(`Attempting to fetch products with type: ${type}`);
+    const productsRef = collection(db, "products");
+    const constraints: QueryConstraint[] = [
+      where("type", "==", type)
+    ];
+
+    if (limit) {
+      constraints.push(limitQuery(limit));
+    }
+
+    const q = query(productsRef, ...constraints);
+    const querySnapshot = await getDocs(q);
+
+    const products: DocumentData[] = [];
+    querySnapshot.forEach((doc) => {
+      products.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    console.log(`[getProductsByType] Fetched ${products.length} products:`, products);
+    return { success: true, data: products };
+  } catch (error) {
+    console.error("Error getting products by type:", error);
+    return { success: false, error };
+  }
+};
+
 // Get a specific product by ID
 export const getProduct = async (productId: string) => {
   try {

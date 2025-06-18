@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import GritFramework from "@/components/grit-framework"
 import { BarChart, Calendar, Clock, FileText, MessageSquare, Star, TrendingUp, Users, X, Download, BookOpen, Play, Brain, CheckCircle, Sparkles } from "lucide-react"
 import Image from "next/image"
 import {
@@ -652,7 +653,7 @@ const DashboardPage = () => {
                       .map((program: CoachingProgram, index: number) => (
                         <div key={`session-${program.id}-${index}`} className="flex items-center justify-between border-b pb-4 hover:bg-black/5 p-2 rounded-lg transition-colors duration-200 hover:translate-x-1 transform">
                           <div className="space-y-1">
-                            <p className="text-sm font-medium leading-none">{program.programName}</p>
+                            <p className="text-sm font-medium">{program.programName}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">Coaching Session</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -793,6 +794,10 @@ const DashboardPage = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* THE GRIT FRAMEWORK Section */}
+        <GritFramework />
+       
 
         <div className="mt-8">
           <Card className="overflow-hidden bg-gradient-to-br from-white via-white to-[#F8FBFC] dark:from-black dark:via-[#0A1215] dark:to-[#0A1215] border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">

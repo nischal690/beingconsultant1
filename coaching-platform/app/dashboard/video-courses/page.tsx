@@ -44,6 +44,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
+import { getProductsByType } from "@/lib/firebase/firestore"
 
 // Define course interface
 interface Course {
@@ -153,12 +154,34 @@ export default function VideoCoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [filteredCourses, setFilteredCourses] = useState<Course[]>(mockCourses);
+  const [videoCourses, setVideoCourses] = useState<Course[]>([]);
   
   useEffect(() => {
     // Set loading state for animations
     setTimeout(() => {
       setIsLoaded(true);
     }, 100);
+
+    // Fetch video courses from Firestore
+    (async () => {
+      const res = await getProductsByType("Video Course");
+      if (res.success && res.data) {
+        // Cast Firestore product docs to Course interface shape (basic fields)
+        const fetched: Course[] = res.data.map((doc: any) => ({
+          id: doc.id,
+          title: doc.title || doc.productName || doc.name || "Untitled",
+          description: doc.description || "",
+          thumbnail: doc.thumbnail || doc.image || "",
+          duration: doc.duration || "",
+          level: (doc.level || "Beginner") as Course["level"],
+          category: doc.category || "Video Course",
+          instructor: doc.instructor || "",
+          rating: doc.rating || 0,
+          enrolled: false,
+        }));
+        setVideoCourses(fetched);
+      }
+    })();
 
     // Trigger staggered animations
     const staggerInterval = setInterval(() => {
@@ -189,10 +212,18 @@ export default function VideoCoursesPage() {
   }, [searchQuery]);
 
   return (
-    <div className={`space-y-8 opacity-0 transition-opacity duration-500 ${isLoaded ? 'opacity-100' : ''}`}>
+    <div className={`min-h-screen bg-gradient-to-br from-black via-gray-900 to-black transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#245D66]/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-[#245D66]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-0 right-1/3 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }} />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
       {/* Hero Section with Animated Background */}
       <section className={`relative transform transition-all duration-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-        <div className="relative overflow-hidden rounded-2xl bg-black p-8 text-white">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#245D66] via-[#2a6b75] to-[#245D66] p-12 text-white">
           {/* Animated background elements */}
           <div className="absolute -top-20 -left-20 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse-slow"></div>
           <div className="absolute top-40 right-20 w-56 h-56 bg-white/3 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
@@ -318,11 +349,43 @@ export default function VideoCoursesPage() {
         </section>
       )}
 
-      {/* Note: All Courses section has been removed as requested */}
+      {/* All Video Courses Section */}
+      {videoCourses.length > 0 && (
+        <section className={`mt-8 transform transition-all duration-500 delay-300 ${animationStage >= 3 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+          <h2 className="text-xl font-semibold mb-4">All Video Courses</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {videoCourses.map(course => (
+              <Card key={course.id} className="group overflow-hidden bg-black/80 text-white hover:bg-black/70 transition-colors duration-300">
+                <div className="relative h-40 w-full overflow-hidden">
+                  {course.thumbnail && (
+                    <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                  <Badge className="absolute top-2 left-2 bg-white/90 text-black">{course.level}</Badge>
+                </div>
+                <CardContent className="p-4 flex flex-col gap-2">
+                  <CardTitle className="text-lg font-semibold line-clamp-2 min-h-[48px]">{course.title}</CardTitle>
+                  <CardDescription className="text-sm text-white/70 line-clamp-2 min-h-[40px]">{course.description}</CardDescription>
+                  <div className="flex items-center justify-between text-xs text-white/60 mt-2">
+                    <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {course.duration || '--'}</span>
+                    <span className="flex items-center gap-1"><Star className="h-4 w-4 fill-current" /> {course.rating.toFixed(1)}</span>
+                  </div>
+                  <Button 
+                    className="w-full mt-4 bg-white text-black hover:bg-white/90"
+                    onClick={() => router.push(`/dashboard/video-courses/${course.id}`)}
+                  >
+                    <Play className="mr-2 h-4 w-4 fill-current" /> Start Learning
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Call to Action Section */}
       <section className={`transform transition-all duration-500 delay-400 ${animationStage >= 4 ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black/80 to-black/60 p-8 text-white backdrop-blur-md">
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-[#245D66]/90 via-[#2a6b75] to-[#245D66]/90 p-12 text-white backdrop-blur-md">
           {/* Animated background elements */}
           <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/5 rounded-full blur-3xl animate-pulse-slow"></div>
           <div className="absolute -bottom-40 -left-20 w-80 h-80 bg-white/3 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1.5s' }}></div>
@@ -380,7 +443,9 @@ export default function VideoCoursesPage() {
         .animate-shimmer {
           animation: shimmer 2s infinite;
         }
+      
       `}</style>
+      </div> {/* end inner container */}
     </div>
   )
 }

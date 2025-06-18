@@ -506,7 +506,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
           {/* Center navigation with dropdown menus - adjusted to be truly centered and responsive to sidebar state */}
           <nav className={`flex items-center space-x-1 absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ${sidebarState === "collapsed" ? "ml-[1rem]" : "ml-[3.5rem]"}`}>
             {/* Offering Dropdown */}
-            <div className="relative group"
+            <div className="relative group hidden"
                  onMouseEnter={() => {
                    if (dropdownTimeout) {
                      clearTimeout(dropdownTimeout);
@@ -615,7 +615,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
             </div>
 
             {/* Tools & Guides Dropdown */}
-            <div className="relative"
+            <div className="relative hidden"
                  onMouseEnter={() => {
                    if (dropdownTimeout) {
                      clearTimeout(dropdownTimeout);
@@ -736,7 +736,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
             </div>
 
             {/* Resources Dropdown */}
-            <div className="relative"
+            <div className="relative hidden"
                  onMouseEnter={() => {
                    if (dropdownTimeout) {
                      clearTimeout(dropdownTimeout);
@@ -881,7 +881,7 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
             </div>
 
             {/* Community Dropdown */}
-            <div className="relative"
+            <div className="relative hidden"
                  onMouseEnter={() => {
                    if (dropdownTimeout) {
                      clearTimeout(dropdownTimeout);
