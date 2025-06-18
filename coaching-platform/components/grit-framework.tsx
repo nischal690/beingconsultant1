@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Target, Building, Trophy, Rocket, ArrowRight, ExternalLink, BookOpen, Video } from 'lucide-react';
+import { ChevronDown, Target, Building, Trophy, Rocket, ArrowRight, ExternalLink, BookOpen, Video, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { useGritSection } from '@/hooks/useGritSection';
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,7 @@ const GritFramework = () => {
   const [expandedStages, setExpandedStages] = useState<{[key: string]: boolean}>({});
   const [products, setProducts] = useState<{[key: string]: Product[]}>({});
   const [loading, setLoading] = useState<{[key: string]: boolean}>({});
+  const { updateSelectedSection } = useGritSection();
 
   // Career stage mapping to Firestore careerStage field
   const careerStageMapping: {[key: string]: string} = {
@@ -50,10 +53,24 @@ const GritFramework = () => {
   };
 
   // Handle card expansion and fetch products
-  const handleCardExpand = (cardId: string) => {
+  const handleCardExpand = (cardId: string, cardTitle: string) => {
     console.log(`[GRIT Framework] Card ${cardId} clicked. Current expanded card: ${expandedCard}`);
-    const newExpandedCard = expandedCard === cardId ? null : cardId;
+    const isExpanding = expandedCard !== cardId;
+    const newExpandedCard = isExpanding ? cardId : null;
+    
     setExpandedCard(newExpandedCard);
+    
+    // Show toast notification and save to localStorage when expanding a GRIT section
+    if (isExpanding) {
+      updateSelectedSection(cardId, cardTitle);
+      toast.success(`${cardTitle} Selected`, {
+        description: `You've selected the ${cardTitle} section`,
+        icon: <CheckCircle className="w-5 h-5 text-green-500" />,
+        position: 'top-center',
+        duration: 3000,
+        className: 'group-[.toaster]:!bg-gray-900 group-[.toast]:!border-gray-800',
+      });
+    }
     
     if (newExpandedCard) {
       console.log(`[GRIT Framework] Expanding card ${newExpandedCard}, will fetch products`);
@@ -154,42 +171,141 @@ const GritFramework = () => {
     {
       id: 'R',
       title: 'Ready the Foundation',
-      description: 'Build a rock solid base of data, knowledge, and presence.',
+      description: 'Build a rock-solid profile and essential skills.',
       icon: Building,
-      details: 'Master fundamental consulting skills, frameworks, and develop executive presence.'
+      details: 'Master fundamental consulting skills, frameworks, and develop executive presence.',
+      stages: [
+        {
+          title: 'Study primers to build industry knowledge',
+          resources: []
+        },
+        {
+          title: 'Build business knowledge through business decoders',
+          resources: []
+        },
+        {
+          title: 'Develop core skills - mental math, data interpretation etc.',
+          resources: []
+        },
+        {
+          title: 'Write a Winning Consulting CV and CL',
+          resources: []
+        },
+        {
+          title: 'Review CV and CL with an expert',
+          resources: []
+        },
+        {
+          title: 'Master networking skills',
+          resources: []
+        },
+        {
+          title: 'Learn how to "CRACK" case interview',
+          resources: []
+        },
+        {
+          title: 'Create \'straight through\' fit interview answers',
+          resources: []
+        }
+      ]
     },
     {
       id: 'I',
       title: 'Interview to Win',
-      description: 'Nail the process. Land the offer. Negotiate powerfully.',
+      description: 'Nail the process, achieve skill mastery and land the offer',
       icon: Trophy,
-      details: 'Perfect your case interview technique, behavioral responses, and negotiation strategy.'
+      details: 'Perfect your case interview technique, behavioral responses, and negotiation strategy.',
+      stages: [
+        {
+          title: 'Master Case nuances',
+          resources: []
+        },
+        {
+          title: 'Practice case and fit with peers',
+          resources: []
+        },
+        {
+          title: 'Practice case and fit with AI Coach',
+          resources: []
+        },
+        {
+          title: 'Master psychological hacks to excel under pressure',
+          resources: []
+        },
+        {
+          title: 'Polish off the prep with mocks with expert Coach',
+          resources: []
+        },
+        {
+          title: 'Consult experts to achieve "Best negotiated offer"',
+          resources: []
+        }
+      ]
     },
     {
       id: 'T',
       title: 'Thrive in Consulting',
-      description: 'Start strong, accelerate faster, and stay grounded.',
+      description: 'Start strong, grow fast and stay on top',
       icon: Rocket,
-      details: 'Excel in your first 100 days, build key relationships, and establish your reputation.'
+      details: 'Excel in your first 100 days, build key relationships, and establish your reputation.',
+      stages: [
+        {
+          title: 'Watch expert masterclasses to build consulting mindset',
+          resources: []
+        },
+        {
+          title: 'Master most important Consulting PPTs and Excel Models',
+          resources: []
+        },
+        {
+          title: 'Know the "First 100 days in consulting" best practices',
+          resources: []
+        },
+        {
+          title: 'Work with expert coaches to "fast track" your career',
+          resources: []
+        },
+        {
+          title: 'Continuously upgrade to career skill masterclasses',
+          resources: []
+        },
+        {
+          title: 'Assess work-life balance, career happiness through assessments',
+          resources: []
+        },
+        {
+          title: 'Work on mental strength, resilience and play long',
+          resources: []
+        }
+      ]
     },
     {
       id: 'S',
-      title: 'Step into What\'s Next',
-      description: 'Exit with intention. Become beyond the title.',
+      title: 'Strategize what\'s next',
+      description: 'Design life beyond consulting with clarity and purpose',
       icon: ArrowRight,
-      details: 'Plan your post-consulting career with strategic exits and leadership transitions.'
+      details: 'Plan your post-consulting career with strategic exits and leadership transitions.',
+      stages: [
+        {
+          title: 'Identify right time and opportunity to exit consulting',
+          resources: []
+        },
+        {
+          title: 'Work with Coach to design a smooth transition to reinvent yourself',
+          resources: []
+        }
+      ]
     }
   ];
 
   return (
     <div className="mt-12 px-4">
       {/* Main Container */}
-      <div className="relative w-full">
-        {/* Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black rounded-3xl"></div>
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-32 bg-gradient-to-r from-transparent via-[#245D66]/20 to-transparent blur-3xl"></div>
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#245D66]/10 rounded-full blur-2xl"></div>
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-[#245D66]/10 rounded-full blur-2xl"></div>
+      <div className="relative w-full overflow-hidden bg-gradient-to-br from-white via-white to-[#F8FBFC] dark:from-black dark:via-[#0A1215] dark:to-[#0A1215] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#245D66] via-[#7BA7AE] to-[#245D66]"></div>
+        <div className="absolute -right-20 -top-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>
         
         {/* Content */}
         <div className="relative z-10 p-8 lg:p-12">
@@ -202,7 +318,7 @@ const GritFramework = () => {
               </div>
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
-              THE <span className="text-[#245D66]">GRIT</span> Framework
+              THE <span className="text-[#245D66]">GRITS</span> Framework
             </h2>
             <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
               For aspirants who want more than just consulting offers — they want mastery.
@@ -219,7 +335,7 @@ const GritFramework = () => {
                 <div
                   key={item.id}
                   className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-black/50 to-gray-900/50 backdrop-blur-sm border border-gray-800/50 hover:border-[#245D66]/50 transition-all duration-500 cursor-pointer"
-                  onClick={() => handleCardExpand(item.id)}
+                  onClick={() => handleCardExpand(item.id, item.title)}
                 >
                   {/* Hover Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-r from-[#245D66]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -230,10 +346,10 @@ const GritFramework = () => {
                       <div className="flex items-center space-x-4 flex-1">
                         {/* Letter Badge */}
                         <div className="relative">
-                          <div className="w-14 h-14 bg-gradient-to-br from-white to-gray-200 rounded-xl flex items-center justify-center shadow-lg">
-                            <span className="text-white font-bold text-xl">{item.id}</span>
+                          <div className="w-14 h-14 bg-transparent border border-[#245D66]/30 rounded-xl flex items-center justify-center">
+                            <span className="text-[#245D66] font-bold text-xl">{item.id}</span>
                           </div>
-                          <div className="absolute -inset-1 bg-gradient-to-br from-[#245D66]/20 to-transparent rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <div className="absolute -inset-1 bg-gradient-to-br from-[#245D66]/10 to-transparent rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         </div>
 
                         {/* Content */}
