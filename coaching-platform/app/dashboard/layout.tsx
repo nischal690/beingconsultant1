@@ -117,9 +117,14 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
         {/* Name logo - only visible when sidebar is expanded */}
         {!isCollapsed && (
           <div className="ml-3">
-            <div className="text-white font-semibold text-lg tracking-tight">
-              BeingConsultant
-            </div>
+            <Image 
+              src="/beingconsultantlogo.png" 
+              alt="Being Consultant" 
+              width={150} 
+              height={40} 
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </div>
         )}
       </div>
@@ -233,7 +238,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 <SidebarSeparator className="my-2 hidden group-data-[collapsible=icon]:block" />
                 <SidebarGroup>
                   <SidebarGroupLabel className="px-3 py-2 text-xs font-semibold text-muted-foreground">
-                    Offerings
+                    Coaching
                   </SidebarGroupLabel>
                   <SidebarGroupContent className="offerings-section space-y-1">
                     <SidebarMenu>
@@ -384,19 +389,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          asChild 
-                          isActive={pathname.includes("/dashboard/community/stories")} 
-                          className="hover-lift"
-                          tooltip="Stories"
-                        >
-                          <Link href="/dashboard/community/stories" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <MessageSquare className="h-5 w-5" />
-                            <span className="group-data-[collapsible=icon]:hidden">Stories</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
+
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           asChild 

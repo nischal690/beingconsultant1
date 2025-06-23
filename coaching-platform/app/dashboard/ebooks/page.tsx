@@ -4,8 +4,10 @@
 import React, { useState, useEffect } from "react";
 import { collection, query as fsQuery, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
+import { useProducts } from "@/context/products-context";
 import { getProductsByType } from "@/lib/firebase/firestore";
 import { Button } from "@/components/ui/button";
+import { useGritSection } from "@/hooks/useGritSection";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
@@ -36,6 +38,7 @@ const featuredEbooks = [
   {
     id: 1,
     title: "The Consultant's Playbook: Strategies for Success",
+    productName: "The Consultant's Playbook",
     author: "Dr. Sarah Mitchell",
     coverImage: "/images/ebooks/consultant-playbook.jpg",
     description: "A comprehensive guide to mastering the art of consulting with proven strategies from industry experts.",
@@ -52,6 +55,7 @@ const featuredEbooks = [
   {
     id: 2,
     title: "Case Interview Mastery: Frameworks and Techniques",
+    productName: "Case Interview Mastery",
     author: "Michael Reynolds",
     coverImage: "/images/ebooks/case-interview.jpg",
     description: "Master the case interview process with structured frameworks and practical techniques for problem-solving.",
@@ -68,6 +72,7 @@ const featuredEbooks = [
   {
     id: 3,
     title: "Client Communication Excellence",
+    productName: "Client Communication Excellence",
     author: "Jennifer Adams",
     coverImage: "/images/ebooks/client-communication.jpg",
     description: "Learn effective communication strategies to build strong client relationships and deliver exceptional results.",
@@ -89,6 +94,7 @@ const allEbooks = [
   {
     id: 4,
     title: "Financial Modeling for Consultants",
+    productName: "Financial Modeling for Consultants",
     author: "Robert Chen, CFA",
     coverImage: "/images/ebooks/financial-modeling.jpg",
     description: "A practical guide to building robust financial models for consulting projects and business analysis.",
@@ -105,6 +111,7 @@ const allEbooks = [
   {
     id: 5,
     title: "The Art of Business Development",
+    productName: "The Art of Business Development",
     author: "Thomas Wright",
     coverImage: "/images/ebooks/business-development.jpg",
     description: "Strategies for growing your consulting practice through effective business development techniques.",
@@ -121,6 +128,7 @@ const allEbooks = [
   {
     id: 6,
     title: "Data-Driven Consulting",
+    productName: "Data-Driven Consulting",
     author: "Dr. Emily Chen",
     coverImage: "/images/ebooks/data-driven.jpg",
     description: "Leverage data analytics to deliver more impactful consulting solutions and drive client success.",
@@ -137,6 +145,7 @@ const allEbooks = [
   {
     id: 7,
     title: "Consulting Proposal Templates",
+    productName: "Consulting Proposal Templates",
     author: "Mark Johnson",
     coverImage: "/images/ebooks/proposal-templates.jpg",
     description: "Ready-to-use proposal templates and frameworks to win more consulting projects.",
@@ -153,6 +162,7 @@ const allEbooks = [
   {
     id: 8,
     title: "Networking for Consultants",
+    productName: "Networking for Consultants",
     author: "Alexandra Torres",
     coverImage: "/images/ebooks/networking.jpg",
     description: "Build a powerful professional network to advance your consulting career and generate new opportunities.",
@@ -169,6 +179,7 @@ const allEbooks = [
   {
     id: 9,
     title: "Project Management for Consultants",
+    productName: "Project Management for Consultants",
     author: "David Wilson, PMP",
     coverImage: "/images/ebooks/project-management.jpg",
     description: "Essential project management methodologies and tools tailored for consulting engagements.",
@@ -187,59 +198,83 @@ const allEbooks = [
 // Career stage filters (GRIT framework)
 const filters = [
   "all",
-  "get clarity",
-  "ready the foundation",
-  "interview to win",
-  "thrive in consulting",
-  "strategize what's next"
+  "Get Clarity",
+  "Ready the Foundation",
+  "Interview to Win",
+  "Thrive in Consulting",
+  "Step into What's Next"
 ];
 
 export default function EbooksPage() {
   // State for active tab and filters
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+
+  // Load selected GRIT section
+  const { selectedSection } = useGritSection();
+
+  // Apply filter when selectedSection changes
+  useEffect(() => {
+    if (selectedSection && selectedSection.title && filters.includes(selectedSection.title)) {
+      setSelectedFilter(selectedSection.title);
+    }
+  }, [selectedSection]);
   const [ebooks, setEbooks] = useState(allEbooks);
   const [filteredEbooks, setFilteredEbooks] = useState(allEbooks);
   const [sortBy, setSortBy] = useState("featured");
 
-  // ---------- Initial fetch ----------
+  // ---------- Load from products cache ----------
+  const { products: cachedProducts, loading: productsCacheLoading } = useProducts();
+
   useEffect(() => {
-    const fetchAll = async () => {
-      const res = await getProductsByType("Ebook")
-      if (res.success && res.data) {
-        setEbooks(res.data.map((doc: any) => ({
-          ...doc,
-          careerStage: (doc.careerStage || "").toLowerCase()
-        })))
-      }
-    }
-    fetchAll()
-  }, [])
+    if (productsCacheLoading) return;
+
+    console.log("[EbooksPage] Products cache loaded, total products:", cachedProducts.length);
+
+    const docs = cachedProducts.filter((p: any) => {
+      const type = (p.type || "").toLowerCase();
+      return type === "ebooks/guides";
+    });
+
+    console.log("[EbooksPage] Filtered ebooks/guides:", docs.length, docs);
+
+    setEbooks(docs.map((doc: any) => ({
+      ...doc,
+      careerStage: (doc.careerStage || "").toLowerCase()
+    })));
+  }, [cachedProducts, productsCacheLoading]);
 
   // ---------- Refetch when filter changes ----------
   useEffect(() => {
-    const fetchFiltered = async () => {
-      let docs: any[] = []
-      try {
-        if (selectedFilter === "all") {
-          const res = await getProductsByType("Ebook")
-          if (res.success && res.data) docs = res.data
-        } else {
-          const q = fsQuery(
-            collection(db, "products"),
-            where("type", "==", "Ebook"),
-            where("careerStage", "==", selectedFilter)
-          )
-          const snap = await getDocs(q)
-          docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-        }
-        setEbooks(docs.map((doc: any) => ({ ...doc, careerStage: (doc.careerStage || "").toLowerCase() })))
-      } catch(err) {
-        console.error("Error fetching ebooks", err)
+    const fetchFiltered = () => {
+      if (productsCacheLoading) return;
+
+      console.log("[EbooksPage] Applying filter:", selectedFilter);
+
+      // First get all ebooks/guides products
+      let docs = cachedProducts.filter((p: any) => {
+        const type = (p.type || "").toLowerCase();
+        return type === "ebooks/guides";
+      });
+      
+      console.log("[EbooksPage] Total ebooks/guides before filtering:", docs.length);
+
+      // Only apply career stage filter if not "all"
+      if (selectedFilter !== "all") {
+        console.log("[EbooksPage] Filtering by career stage:", selectedFilter);
+        docs = docs.filter((doc: any) => {
+          const docStage = (doc.careerStage || "");
+          console.log("[EbooksPage] Comparing", docStage, "with", selectedFilter);
+          return docStage === selectedFilter;
+        });
       }
+
+      console.log("[EbooksPage] Docs after filter:", docs.length, docs);
+
+      setEbooks(docs.map((doc: any) => ({ ...doc, careerStage: (doc.careerStage || "").toLowerCase() })));
     }
     fetchFiltered()
-  }, [selectedFilter])
+  }, [selectedFilter, cachedProducts, productsCacheLoading])
 
   // Filter + search + sort client-side
   useEffect(() => {
@@ -382,7 +417,7 @@ export default function EbooksPage() {
               {featuredEbooks.map((ebook) => (
                 <div 
                   key={ebook.id} 
-                  className="group relative bg-gradient-to-b from-gray-900/80 to-black border-2 border-gray-800 rounded-3xl overflow-hidden transition-all duration-500 hover:border-[#245D66]/50 hover:shadow-2xl hover:shadow-[#245D66]/10 hover:-translate-y-2"
+                  className="group relative bg-white border border-gray-200 rounded-3xl overflow-hidden transition-all duration-500 hover:border-[#245D66]/30 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1"
                 >
                   {/* Enhanced cover with overlays */}
                   <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
@@ -435,18 +470,18 @@ export default function EbooksPage() {
                       </Badge>
                       <div className="flex items-center">
                         <Star className="h-4 w-4 text-[#245D66] mr-1 fill-[#245D66]" />
-                        <span className="text-sm font-semibold text-white">{ebook.rating}</span>
+                        <span className="text-sm font-semibold text-black">{ebook.rating}</span>
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold mb-2 line-clamp-2 group-hover:text-[#245D66] transition-colors duration-300">
-                      {ebook.title}
+                    <h3 className="text-xl font-bold mb-2 line-clamp-2 text-[#245D66] transition-colors duration-300">
+                      {ebook.productName || ebook.title}
                     </h3>
-                    <p className="text-sm text-gray-400 mb-4 flex items-center">
+                    <p className="text-sm text-gray-600 mb-4 flex items-center">
                       <Award className="w-3 h-3 mr-1" />
-                      By {ebook.author}
+                      By {ebook.author || "BeingConsultant"}
                     </p>
-                    <p className="text-sm text-gray-300 mb-6 line-clamp-3 leading-relaxed">
+                    <p className="text-sm text-gray-700 mb-6 line-clamp-3 leading-relaxed">
                       {ebook.description}
                     </p>
 
@@ -542,12 +577,13 @@ export default function EbooksPage() {
               {filteredEbooks.map((ebook) => (
                 <div 
                   key={ebook.id} 
-                  className="group relative bg-gradient-to-b from-gray-900/80 to-black border-2 border-gray-800 rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#245D66]/30 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1"
+                  className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#245D66]/30 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1"
                 >
                   {/* Cover with hover effects */}
                   <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <BookOpen className="h-16 w-16 text-gray-700 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                      <BookOpen className="h-16 w-16 text-gray-500 group-hover:scale-110 transition-transform duration-300 mb-3" />
+                      <h4 className="text-[#245D66] text-sm font-medium line-clamp-2 bg-white/90 px-3 py-1 rounded transition-colors duration-300">{ebook.productName || ebook.title}</h4>
                     </div>
                     
                     {/* Badges */}
@@ -568,10 +604,10 @@ export default function EbooksPage() {
                     {/* Quick actions */}
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="flex flex-col gap-2">
-                        <Button variant="outline" size="icon" className="w-8 h-8 rounded-full border border-white/30 text-white hover:bg-white hover:text-black">
+                        <Button variant="outline" size="icon" className="w-8 h-8 rounded-full border border-gray-300 text-gray-700 hover:bg-[#245D66] hover:text-white">
                           <Eye className="h-3 w-3" />
                         </Button>
-                        <Button variant="outline" size="icon" className="w-8 h-8 rounded-full border border-white/30 text-white hover:bg-white hover:text-black">
+                        <Button variant="outline" size="icon" className="w-8 h-8 rounded-full border border-gray-300 text-gray-700 hover:bg-[#245D66] hover:text-white">
                           <Bookmark className="h-3 w-3" />
                         </Button>
                       </div>
@@ -586,17 +622,17 @@ export default function EbooksPage() {
                       </Badge>
                       <div className="flex items-center">
                         <Star className="h-3 w-3 text-[#245D66] mr-1 fill-[#245D66]" />
-                        <span className="text-xs font-semibold text-white">{ebook.rating}</span>
+                        <span className="text-xs font-semibold text-black">{ebook.rating}</span>
                       </div>
                     </div>
 
-                    <h3 className="text-base font-bold mb-2 line-clamp-2 group-hover:text-[#245D66] transition-colors duration-300">
-                      {ebook.title}
+                    <h3 className="!text-[#245D66] text-base font-bold mb-2 line-clamp-2 transition-colors duration-300" style={{color: '#245D66'}}>
+                      {ebook.productName || ebook.title}
                     </h3>
-                    <p className="text-xs text-gray-400 mb-4">By {ebook.author}</p>
+                    <p className="text-xs text-gray-600 mb-4">By {ebook.author || "BeingConsultant"}</p>
 
                     {/* Mini stats */}
-                    <div className="flex items-center justify-between text-xs text-gray-400 mb-4">
+                    <div className="flex items-center justify-between text-xs text-gray-700 mb-4">
                       <div className="flex items-center">
                         <FileText className="h-3 w-3 mr-1" />
                         <span>{ebook.pages} pages</span>

@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/lib/firebase/auth-context"
 import { getUserProfile, getUserCoachingPrograms } from "@/lib/firebase/firestore"
 import { useRouter } from "next/navigation"
+import { useProducts } from "@/context/products-context"
 
 // Define interface for coaching program
 interface CoachingProgram {
@@ -50,11 +51,15 @@ const DashboardPage = () => {
   const [hasCoaching, setHasCoaching] = useState(false)
   const [upcomingSessions, setUpcomingSessions] = useState(0)
   const { user } = useAuth()
+  const { products } = useProducts()
   const router = useRouter()
 
   useEffect(() => {
     // Welcome modal is now disabled
     // No longer showing the welcome modal on load
+
+    // Log products cache for debugging
+    console.log('[Dashboard] Products cache:', products);
 
     // Set loading state for animations
     setTimeout(() => {
@@ -800,7 +805,7 @@ const DashboardPage = () => {
        
 
         <div className="mt-8">
-          <Card className="overflow-hidden bg-gradient-to-br from-white via-white to-[#F8FBFC] dark:from-black dark:via-[#0A1215] dark:to-[#0A1215] border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
+          <Card className="overflow-hidden bg-sidebar border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#245D66] via-[#7BA7AE] to-[#245D66]"></div>
             <div className="absolute -right-20 -top-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>
             <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>

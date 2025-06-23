@@ -21,6 +21,7 @@ import {
 import { collection, query as fsQuery, where, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase/config"
 import { useProducts } from "@/context/products-context"
+import { useGritSection } from "@/hooks/useGritSection"
 import { getProductsByType } from "@/lib/firebase/firestore"
 
 interface Masterclass {
@@ -46,6 +47,16 @@ export default function MasterclassPage() {
   const [selectedFilter, setSelectedFilter] = useState("all")
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
 
+  // Load selected GRIT section from localStorage
+  const { selectedSection } = useGritSection();
+
+  // Apply career stage filter when selectedSection changes
+  useEffect(() => {
+    if (selectedSection && selectedSection.title && filters.includes(selectedSection.title)) {
+      setSelectedFilter(selectedSection.title);
+    }
+  }, [selectedSection]);
+
   // Get products from global cache
   const { products: allProducts, loading: productsLoading } = useProducts()
 
@@ -64,10 +75,25 @@ export default function MasterclassPage() {
     console.log("[MasterclassPage] productsLoading:", productsLoading, "selectedFilter:", selectedFilter)
     if (productsLoading) return
 
-    let docs = allProducts.filter((p:any) => p.type === "Master Class")
+    // First get all masterclass products
+    let docs = allProducts.filter((p:any) => {
+      const type = (p.type || "").toLowerCase();
+      return type === "master class" || type === "masterclass";
+    })
+    
+    console.log("[MasterclassPage] Total masterclasses before filtering:", docs.length);
+    
+    // Only apply career stage filter if not "all"
     if (selectedFilter !== "all") {
-      docs = docs.filter((p:any) => (p.careerStage || "").toLowerCase() === selectedFilter)
+      console.log("[MasterclassPage] Filtering by career stage:", selectedFilter);
+      docs = docs.filter((doc: any) => {
+        const docStage = doc.careerStage || "";
+        console.log("[MasterclassPage] Comparing", docStage, "with", selectedFilter);
+        return docStage === selectedFilter;
+      });
     }
+    
+    console.log("[MasterclassPage] Docs after filter:", docs.length, docs);
 
     const mc: Masterclass[] = docs.map((doc:any) => ({
       id: doc.id,
@@ -229,17 +255,26 @@ export default function MasterclassPage() {
     fetchFiltered()
   }, [selectedFilter])
 
-  const filtered = masterclasses.filter(mc => {
-    const matchesSearch = mc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         mc.description.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesSearch
-  })
-  console.log("[MasterclassPage] filtered result", { selectedFilter, searchQuery, count: filtered.length, ids: filtered.map(m => m.id) })
+  // Use state for filtered results
+  const [filtered, setFiltered] = useState<Masterclass[]>(mockMasterclasses)
+  
+  // Update filtered results when masterclasses or search query changes
+  useEffect(() => {
+    const filteredResults = masterclasses.filter(mc => {
+      const matchesSearch = !searchQuery || 
+        mc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (mc.description && mc.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      return matchesSearch
+    })
+    
+    setFiltered(filteredResults)
+    console.log("[MasterclassPage] filtered result", { selectedFilter, searchQuery, count: filteredResults.length, ids: filteredResults.map(m => m.id) })
+  }, [masterclasses, searchQuery, selectedFilter])
 
   const featured = filtered.find(mc => mc.featured) || filtered[0]
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-black via-gray-900 to-black transition-opacity duration-1000 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
+    <div className={`min-h-screen bg-gradient-to-b from-sidebar-background to-sidebar-background/90 backdrop-blur-md transition-opacity duration-1000 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#245D66]/20 rounded-full blur-3xl animate-pulse" />
@@ -318,9 +353,9 @@ export default function MasterclassPage() {
               {filters.map(filter => (
                 <button
                   key={filter}
-                  onClick={() => setSelectedFilter(filter.toLowerCase())}
+                  onClick={() => setSelectedFilter(filter)}
                   className={`px-4 py-2 rounded-lg capitalize transition-all duration-300 ${
-                    selectedFilter === filter.toLowerCase()
+                    selectedFilter === filter
                       ? "bg-[#245D66] text-white shadow-lg"
                       : "bg-gray-800 text-gray-300 hover:bg-gray-700"
                   }`}
@@ -332,79 +367,7 @@ export default function MasterclassPage() {
           </div>
         </section>
 
-        {/* Featured Masterclass */}
-        {featured && (
-          <section className={`transform transition-all duration-1000 delay-400 ${animationStage >= 2 ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
-            <div className="flex items-center gap-3 mb-6">
-              <Sparkles className="h-6 w-6 text-yellow-400" />
-              <h2 className="text-2xl font-bold text-white">Featured Masterclass</h2>
-            </div>
-            
-            <div className="relative group overflow-hidden rounded-2xl bg-gradient-to-r from-black/80 to-gray-900/80 backdrop-blur-md border border-gray-800">
-              <div className="flex flex-col lg:flex-row">
-                {/* Image */}
-                <div className="relative lg:w-1/2 h-64 lg:h-auto overflow-hidden">
-                  <img 
-                    src={featured.thumbnail} 
-                    alt={featured.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/60 lg:to-transparent" />
-                  
-                  {/* Play button overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <div className="p-4 bg-[#245D66] rounded-full shadow-2xl transform scale-75 group-hover:scale-100 transition-transform">
-                      <Play className="h-8 w-8 text-white fill-current" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="lg:w-1/2 p-8 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="px-3 py-1 bg-yellow-400 text-black text-xs font-bold rounded-full">
-                      FEATURED
-                    </div>
-                    <div className="px-3 py-1 bg-[#245D66]/20 text-[#245D66] text-xs font-semibold rounded-full border border-[#245D66]/30">
-                      {featured.level}
-                    </div>
-                  </div>
-
-                  <h3 className="text-3xl font-bold text-white mb-4">{featured.title}</h3>
-                  <p className="text-gray-300 mb-6 leading-relaxed">{featured.description}</p>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Clock className="h-4 w-4" />
-                      <span className="text-sm">{featured.duration}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm">{featured.rating} Rating</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Users className="h-4 w-4" />
-                      <span className="text-sm">{featured.students?.toLocaleString()} Students</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Award className="h-4 w-4" />
-                      <span className="text-sm">Certificate</span>
-                    </div>
-                  </div>
-
-                  <button className="w-full bg-[#245D66] hover:bg-[#1e4d55] text-white py-4 rounded-xl font-semibold transition-all duration-300 hover:shadow-xl transform hover:-translate-y-0.5 group/btn">
-                    <span className="flex items-center justify-center">
-                      <Play className="mr-2 h-5 w-5 fill-current" />
-                      Start Learning
-                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Featured Masterclass section removed */}
 
         {/* All Masterclasses Grid */}
         {filtered.length > 0 && (
@@ -421,24 +384,24 @@ export default function MasterclassPage() {
               {filtered.map((mc, index) => (
                 <div
                   key={mc.id}
-                  className={`group relative overflow-hidden rounded-2xl bg-gradient-to-b from-gray-900 to-black border border-gray-800 hover:border-[#245D66]/50 transition-all duration-500 hover:shadow-2xl hover:shadow-[#245D66]/10 transform hover:-translate-y-2 ${
-                    animationStage >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
+                  className="group relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-[#245D66] transition-all duration-500 hover:shadow-2xl hover:shadow-[#245D66]/10 transform hover:-translate-y-2 opacity-100 translate-y-0"
                   style={{ transitionDelay: `${800 + index * 100}ms` }}
-                  onMouseEnter={() => setHoveredCard(mc.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
                 >
-                  {/* Image */}
-                  <div className="relative h-48 overflow-hidden">
+                  {/* Image with hover effect */}
+                  <div 
+                    className="relative h-48 overflow-hidden"
+                    onMouseEnter={() => setHoveredCard(mc.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
                     <img 
                       src={mc.thumbnail} 
                       alt={mc.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     
-                    {/* Hover overlay */}
-                    <div className={`absolute inset-0 bg-[#245D66]/90 flex items-center justify-center transition-all duration-500 ${
+                    {/* Hover overlay - only on image */}
+                    <div className={`absolute inset-0 z-5 bg-[#245D66]/90 flex items-center justify-center transition-all duration-300 ${
                       hoveredCard === mc.id ? "opacity-100" : "opacity-0"
                     }`}>
                       <div className="text-center">
@@ -463,17 +426,17 @@ export default function MasterclassPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-xl font-bold text-white line-clamp-2 min-h-[56px] group-hover:text-[#245D66] transition-colors">
+                  <div className="relative z-20 p-6 space-y-4 text-black">
+                    <h3 className="text-xl font-bold !text-[#245D66] line-clamp-2 min-h-[56px] transition-colors" style={{color: '#245D66'}}>
                       {mc.title}
                     </h3>
                     
-                    <p className="text-gray-400 text-sm line-clamp-2 min-h-[40px]">
+                    <p className="text-gray-600 text-sm line-clamp-2 min-h-[40px]">
                       {mc.description}
                     </p>
 
                     {/* Stats row */}
-                    <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-800">
+                    <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-200">
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -491,7 +454,7 @@ export default function MasterclassPage() {
                     </div>
 
                     {/* Action button */}
-                    <button className="w-full bg-gray-800 hover:bg-[#245D66] text-white py-3 rounded-xl font-semibold transition-all duration-300 group-hover:bg-[#245D66]">
+                    <button className="w-full bg-[#245D66] hover:bg-[#1a4a52] text-white py-3 rounded-xl font-semibold transition-all duration-300">
                       <span className="flex items-center justify-center">
                         {mc.enrolled ? (
                           <>

@@ -6,27 +6,39 @@ import { useGritSection } from '@/hooks/useGritSection';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useProducts } from '@/context/products-context';
 
 interface Product {
-  productName: any;
+  productName: string;
   id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  category: string;
+  description?: string;
+  price?: number;
+  currency?: string;
+  category?: string;
   careerStage?: string;
+  stage?: string;
   type: string;
   imageUrl?: string;
   slug?: string;
+  sequence?: number;
 }
 
 const GritFramework = () => {
+  const { products: allProducts, loading: productsCacheLoading } = useProducts();
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [expandedStages, setExpandedStages] = useState<{[key: string]: boolean}>({});
   const [products, setProducts] = useState<{[key: string]: Product[]}>({});
   const [loading, setLoading] = useState<{[key: string]: boolean}>({});
-  const { updateSelectedSection } = useGritSection();
+  const { selectedSection, updateSelectedSection } = useGritSection();
+
+  // Restore previously selected career stage on component mount
+  useEffect(() => {
+    if (selectedSection && !expandedCard) {
+      setExpandedCard(selectedSection.id);
+      // Pre-fetch products so that the list is ready without extra click
+      fetchProductsByCareerStage(selectedSection.id);
+    }
+  }, [selectedSection]);
 
   // Career stage mapping to Firestore careerStage field
   const careerStageMapping: {[key: string]: string} = {
@@ -44,12 +56,47 @@ const GritFramework = () => {
    * @param {string} stageId The ID of the career stage to fetch products for.
    */
   // Fetch products for a given career stage (Firebase integration removed)
-  const fetchProductsByCareerStage = async (stageId: string) => {
-    // Currently, no recommended resources are fetched. This placeholder ensures
-    // the UI remains functional without accessing Firebase.
-    if (!products[stageId]) {
-      setProducts(prev => ({ ...prev, [stageId]: [] }));
+  const fetchProductsByCareerStage = (stageId: string) => {
+    console.log(`[GRIT Framework] Fetching products for stage: ${stageId}`);
+    
+    if (products[stageId]) {
+      console.log(`[GRIT Framework] Products already cached for ${stageId}:`, products[stageId]);
+      return;
     }
+    
+    if (productsCacheLoading) {
+      console.log(`[GRIT Framework] Product cache still loading, will try again later`);
+      return;
+    }
+
+    // Map stage key to human-readable field stored in Firestore, fall back to stage key itself
+    const stageLabel = careerStageMapping[stageId] || stageId;
+    console.log(`[GRIT Framework] Mapped stage ID ${stageId} to label: ${stageLabel}`);
+    console.log(`[GRIT Framework] All products available:`, allProducts.length);
+    
+    // Log each product's careerStage and stage fields for debugging
+    console.log(`[GRIT Framework] Product fields sample:`, 
+      allProducts.slice(0, 3).map(p => ({ 
+        id: p.id, 
+        title: p.title,
+        careerStage: p.careerStage, 
+        stage: p.stage 
+      }))
+    );
+
+    const filtered = allProducts.filter((p: any) => {
+      // Some products use `careerStage`, others may use `stage`
+      const matches = p.careerStage === stageLabel || 
+                     p.stage === stageLabel || 
+                     p.careerStage === stageId || 
+                     p.stage === stageId;
+      return matches;
+    });
+
+    console.log(`[GRIT Framework] Filtered ${filtered.length} products for stage ${stageId}:`, 
+      filtered.map(p => ({ id: p.id, title: p.title })));
+
+    setProducts(prev => ({ ...prev, [stageId]: filtered }));
   };
 
   // Handle card expansion and fetch products
@@ -80,16 +127,80 @@ const GritFramework = () => {
     }
   };
 
-  // Handle stage expansion
-  const handleStageExpand = (stageKey: string) => {
+  // Handle stage expansion - only one stage open at a time
+  const handleStageExpand = (arg1: React.MouseEvent | string, arg2?: string) => {
+    // Support both signatures: (stageKey) and (event, stageKey)
+    const event = typeof arg1 !== 'string' ? arg1 : undefined;
+    const stageKey = typeof arg1 === 'string' ? arg1 : (arg2 as string);
+    event?.stopPropagation();
+
     console.log(`[GRIT Framework] Stage ${stageKey} clicked`);
-    setExpandedStages(prev => ({
-      ...prev,
-      [stageKey]: !prev[stageKey]
-    }));
     
-    // Here you would fetch resources for this specific stage
-    // fetchResourcesForStage(stageKey);
+    // Extract card ID from the stage key (format: 'G-stage-0')
+    const [cardId, _, stageIndex] = stageKey.split('-');
+    
+    // Toggle expanded state - close all other stages in this card
+    const newExpandedState = !expandedStages[stageKey];
+    
+    // Create new state object
+    const newExpandedStages = { ...expandedStages };
+    
+    // First, close all stages that belong to the same card
+    Object.keys(newExpandedStages).forEach(key => {
+      if (key.startsWith(cardId)) {
+        newExpandedStages[key] = false;
+      }
+    });
+    
+    // Then, set the clicked stage's state
+    if (newExpandedState) {
+      newExpandedStages[stageKey] = true;
+    }
+    
+    // Update state
+    setExpandedStages(newExpandedStages);
+    
+    // Find the card item and stage title
+    const cardItem = gritItems.find(item => item.id === cardId);
+    
+    // If expanding and we have the stage title, fetch products for this specific stage
+    if (newExpandedState && cardItem && cardItem.stages && cardItem.stages[parseInt(stageIndex)]) {
+      const stageTitle = cardItem.stages[parseInt(stageIndex)].title;
+      console.log(`[GRIT Framework] Expanding stage with title: "${stageTitle}"`);
+      fetchProductsByStageTitle(stageKey, stageTitle);
+    }
+  };
+
+  // Fetch products for a specific stage title
+  const fetchProductsByStageTitle = (stageKey: string, stageTitle: string) => {
+    console.log(`[GRIT Framework] Fetching products for stage title: "${stageTitle}"`);
+    
+    if (products[stageKey]) {
+      console.log(`[GRIT Framework] Products already cached for stage ${stageKey}:`, products[stageKey]);
+      return;
+    }
+    
+    if (productsCacheLoading) {
+      console.log(`[GRIT Framework] Product cache still loading, will try again later`);
+      return;
+    }
+
+    console.log(`[GRIT Framework] All products available:`, allProducts.length);
+    
+    // Filter products where stage field matches the exact stage title
+    const filtered = allProducts.filter((p: any) => {
+      // Check both exact match and case-insensitive match
+      const matches = 
+        p.stage === stageTitle || 
+        (p.stage && p.stage.toLowerCase() === stageTitle.toLowerCase());
+      return matches;
+    });
+
+    console.log(`[GRIT Framework] Found ${filtered.length} products matching stage title "${stageTitle}":`, 
+      filtered.map(p => ({ id: p.id, title: p.title })));
+
+    // Cast filtered to Product[] to satisfy TypeScript
+    setProducts(prev => ({ ...prev, [stageKey]: filtered as Product[] }));
   };
 
   // Format price for display
@@ -301,7 +412,7 @@ const GritFramework = () => {
   return (
     <div className="mt-12 px-4">
       {/* Main Container */}
-      <div className="relative w-full overflow-hidden bg-gradient-to-br from-white via-white to-[#F8FBFC] dark:from-black dark:via-[#0A1215] dark:to-[#0A1215] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="relative w-full overflow-hidden bg-transparent rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
         {/* Decorative Elements */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#245D66] via-[#7BA7AE] to-[#245D66]"></div>
         <div className="absolute -right-20 -top-20 w-40 h-40 bg-[#245D66]/5 rounded-full blur-3xl -z-10"></div>
@@ -397,7 +508,7 @@ const GritFramework = () => {
                                   {/* Stage Header - Clickable */}
                                   <div 
                                     className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-800/50 transition-colors"
-                                    onClick={() => handleStageExpand(stageKey)}
+                                    onClick={(e) => handleStageExpand(e, stageKey)}
                                   >
                                     <div className="flex items-center space-x-3">
                                       <span className="text-[#245D66] font-semibold shrink-0 bg-[#245D66]/10 px-2 py-1 rounded">Stage {idx + 1}</span>
@@ -417,36 +528,30 @@ const GritFramework = () => {
                                       <div className="py-3">
                                         <h5 className="text-sm font-medium text-gray-300 mb-2">Recommended Resources</h5>
                                         
-                                        {/* No Resources Message */}
-                                        {(!stage.resources || stage.resources.length === 0) && (
-                                          <p className="text-gray-400 text-xs italic">No resources available for this stage yet.</p>
-                                        )}
-                                        
-                                        {/* Resources List */}
-                                        {stage.resources && stage.resources.length > 0 && (
-                                          <div className="space-y-2">
-                                            {stage.resources.map((resource) => (
-                                              <div key={resource.id} className="flex items-start space-x-2 bg-gray-800/30 hover:bg-gray-800/50 rounded p-2 transition-colors">
-                                                <div className="h-8 w-8 rounded bg-[#245D66]/20 flex items-center justify-center shrink-0">
-                                                  {getProductIcon(resource.type)}
-                                                </div>
-                                                <div className="space-y-1 flex-1">
-                                                  <h6 className="text-white font-medium text-xs">{resource.title}</h6>
-                                                  <p className="text-gray-400 text-xs line-clamp-1">{resource.description}</p>
-                                                  <div className="flex items-center justify-between mt-1">
-                                                    <span className="text-[#245D66] text-xs font-medium">
-                                                      {formatPrice(resource.price, resource.currency)}
-                                                    </span>
-                                                    <Link href={`/dashboard/resources/${resource.id}`} passHref>
-                                                      <Button variant="ghost" size="sm" className="h-6 px-2 text-xs hover:bg-[#245D66]/20 hover:text-[#245D66]">
-                                                        View
-                                                      </Button>
-                                                    </Link>
+                                        {/* Products for this stage - Small White Rectangles */}
+                                        {products[stageKey] && products[stageKey].length > 0 ? (
+                                          <div className="grid grid-cols-2 gap-3 mt-2">
+                                            {products[stageKey].map((product) => (
+                                              <Link key={product.id} href={`/dashboard/resources/${product.id}`} className="block">
+                                                <div className="flex flex-col h-full bg-white rounded-md overflow-hidden transition-colors shadow-sm hover:shadow-md">
+                                                  {/* Content - Simplified Rectangle */}
+                                                  <div className="p-3">
+                                                    <div className="flex items-center mb-2">
+                                                      <div className="w-6 h-6 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-2">
+                                                        {getProductIcon(product.type)}
+                                                      </div>
+                                                      <span className="text-[#245D66] text-xs font-medium">
+                                                        {product.type}
+                                                      </span>
+                                                    </div>
+                                                    <h6 className="text-gray-800 font-medium text-xs mb-1 line-clamp-2">{product.productName}</h6>
                                                   </div>
                                                 </div>
-                                              </div>
+                                              </Link>
                                             ))}
                                           </div>
+                                        ) : (
+                                          <p className="text-gray-400 text-xs italic">No products available for this stage yet.</p>
                                         )}
                                       </div>
                                     </div>
@@ -457,57 +562,7 @@ const GritFramework = () => {
                           </div>
                         )}
                         
-                        {/* Products Section */}
-                        <div className="space-y-4">
-                          <h4 className="text-white font-medium text-lg">Recommended Resources</h4>
-                          
-                          {/* Loading State */}
-                          {loading[item.id] && (
-                            <div className="space-y-3">
-                              {[1, 2, 3].map((i) => (
-                                <div key={i} className="flex items-center space-x-3 bg-gray-800/30 rounded-lg p-3">
-                                  <Skeleton className="h-12 w-12 rounded-md bg-gray-700/50" />
-                                  <div className="space-y-2 flex-1">
-                                    <Skeleton className="h-4 w-3/4 bg-gray-700/50" />
-                                    <Skeleton className="h-3 w-1/2 bg-gray-700/50" />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          
-                          {/* No Products Message */}
-                          {!loading[item.id] && products[item.id] && products[item.id].length === 0 && (
-                            <p className="text-gray-400 text-sm italic">No resources available for this stage yet.</p>
-                          )}
-                          
-                          {/* Products List */}
-                          {!loading[item.id] && products[item.id] && products[item.id].length > 0 && (
-                            <div className="space-y-3">
-                              {products[item.id].map((product) => (
-                                <div key={product.id} className="flex items-start space-x-3 bg-gray-800/30 hover:bg-gray-800/50 rounded-lg p-3 transition-colors">
-                                  <div className="h-12 w-12 rounded-md bg-[#245D66]/20 flex items-center justify-center shrink-0">
-                                    {getProductIcon(product.type)}
-                                  </div>
-                                  <div className="space-y-1 flex-1">
-                                    <h5 className="text-white font-medium text-sm">{product.title}</h5>
-                                    <p className="text-gray-400 text-xs line-clamp-2">{product.description}</p>
-                                    <div className="flex items-center justify-between mt-2">
-                                      <span className="text-[#245D66] text-xs font-medium">
-                                        {formatPrice(product.price, product.currency)}
-                                      </span>
-                                      <Link href={`/dashboard/resources/${product.id}`} passHref>
-                                        <Button variant="ghost" size="sm" className="h-7 px-2 text-xs hover:bg-[#245D66]/20 hover:text-[#245D66]">
-                                          View Details
-                                        </Button>
-                                      </Link>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+
                       </div>
                     </div>
                   </div>
