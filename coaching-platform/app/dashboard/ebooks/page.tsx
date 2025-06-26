@@ -5,11 +5,14 @@ import React, { useState, useEffect } from "react";
 import { collection, query as fsQuery, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { useProducts } from "@/context/products-context";
-import { getProductsByType } from "@/lib/firebase/firestore";
+import { getProductsByType, getUserProfile } from "@/lib/firebase/firestore";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/firebase/auth-context";
 import { useGritSection } from "@/hooks/useGritSection";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useSearchParams } from "next/navigation";
 import { 
   BookOpen, 
   Search, 
@@ -30,7 +33,8 @@ import {
   Users,
   PlayCircle,
   ChevronRight,
-  Globe
+  Globe,
+  ShoppingCart
 } from "lucide-react";
 
 // Sample data for featured ebooks
@@ -50,7 +54,10 @@ const featuredEbooks = [
     downloadLink: "#",
     featured: true,
     new: false,
-    trending: true
+    trending: true,
+    price: 29.99,
+    enrolled: false,
+    includedInMembership: true
   },
   {
     id: 2,
@@ -67,7 +74,10 @@ const featuredEbooks = [
     downloadLink: "#",
     featured: true,
     new: true,
-    trending: false
+    trending: false,
+    price: 24.99,
+    enrolled: false,
+    includedInMembership: true
   },
   {
     id: 3,
@@ -84,7 +94,10 @@ const featuredEbooks = [
     downloadLink: "#",
     featured: true,
     new: false,
-    trending: false
+    trending: false,
+    price: 0,
+    enrolled: false,
+    includedInMembership: false
   }
 ];
 
@@ -106,7 +119,10 @@ const allEbooks = [
     downloadLink: "#",
     featured: false,
     new: false,
-    trending: false
+    trending: false,
+    price: 19.99,
+    enrolled: true,
+    includedInMembership: false
   },
   {
     id: 5,
@@ -123,7 +139,10 @@ const allEbooks = [
     downloadLink: "#",
     featured: false,
     new: true,
-    trending: false
+    trending: false,
+    price: 14.99,
+    enrolled: false,
+    includedInMembership: false
   },
   {
     id: 6,
@@ -140,7 +159,10 @@ const allEbooks = [
     downloadLink: "#",
     featured: false,
     new: false,
-    trending: true
+    trending: true,
+    price: 34.99,
+    enrolled: false,
+    includedInMembership: true
   },
   {
     id: 7,
@@ -157,7 +179,10 @@ const allEbooks = [
     downloadLink: "#",
     featured: false,
     new: false,
-    trending: false
+    trending: false,
+    price: null,
+    enrolled: false,
+    includedInMembership: false
   },
   {
     id: 8,
@@ -174,7 +199,10 @@ const allEbooks = [
     downloadLink: "#",
     featured: false,
     new: true,
-    trending: false
+    trending: false,
+    price: 0,
+    enrolled: false,
+    includedInMembership: false
   },
   {
     id: 9,
@@ -206,12 +234,74 @@ const filters = [
 ];
 
 export default function EbooksPage() {
+  // Get URL search params
+  const searchParams = useSearchParams();
+  const highlightedId = searchParams.get('id');
+  
   // State for active tab and filters
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [isMember, setIsMember] = useState(false);
+
+  // Get user from auth context
+  const { user } = useAuth();
 
   // Load selected GRIT section
   const { selectedSection } = useGritSection();
+  
+  // Fetch membership status when user changes
+  useEffect(() => {
+    async function fetchMembership() {
+      if (!user) {
+        setIsMember(false);
+        return;
+      }
+      try {
+        const res = await getUserProfile(user.uid);
+        if (res.success && res.data) {
+          setIsMember(!!res.data.isMember);
+        } else {
+          setIsMember(false);
+        }
+      } catch (err) {
+        console.error("Error fetching membership status", err);
+        setIsMember(false);
+      }
+    }
+    fetchMembership();
+  }, [user]);
+
+  // Add custom animation class to global styles
+  useEffect(() => {
+    // Add custom animation if it doesn't exist yet
+    if (!document.getElementById('custom-animations')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'custom-animations';
+      styleEl.innerHTML = `
+        @keyframes pulse-slow {
+          0%, 100% { box-shadow: 0 0 0 rgba(36, 93, 102, 0.3); border-color: rgba(36, 93, 102, 1); }
+          50% { box-shadow: 0 0 20px rgba(36, 93, 102, 0.6); border-color: rgba(36, 93, 102, 0.8); }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+  }, []);
+
+  // Scroll to highlighted ebook on mount if ID is present
+  useEffect(() => {
+    if (highlightedId) {
+      const element = document.getElementById(`ebook-${highlightedId}`);
+      if (element) {
+        // Add a slight delay to ensure the page is fully rendered
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    }
+  }, [highlightedId]);
 
   // Apply filter when selectedSection changes
   useEffect(() => {
@@ -240,7 +330,9 @@ export default function EbooksPage() {
 
     setEbooks(docs.map((doc: any) => ({
       ...doc,
-      careerStage: (doc.careerStage || "").toLowerCase()
+      careerStage: (doc.careerStage || "").toLowerCase(),
+      price: doc.price || 99,
+      includedInMembership: doc.includedInMembership || false
     })));
   }, [cachedProducts, productsCacheLoading]);
 
@@ -271,7 +363,12 @@ export default function EbooksPage() {
 
       console.log("[EbooksPage] Docs after filter:", docs.length, docs);
 
-      setEbooks(docs.map((doc: any) => ({ ...doc, careerStage: (doc.careerStage || "").toLowerCase() })));
+      setEbooks(docs.map((doc: any) => ({ 
+        ...doc, 
+        careerStage: (doc.careerStage || "").toLowerCase(),
+        price: doc.price || 99,
+        includedInMembership: doc.includedInMembership || false 
+      })));
     }
     fetchFiltered()
   }, [selectedFilter, cachedProducts, productsCacheLoading])
@@ -417,10 +514,13 @@ export default function EbooksPage() {
               {featuredEbooks.map((ebook) => (
                 <div 
                   key={ebook.id} 
-                  className="group relative bg-white border border-gray-200 rounded-3xl overflow-hidden transition-all duration-500 hover:border-[#245D66]/30 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1"
+                  className={`group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1 ${highlightedId === String(ebook.id) 
+                    ? 'border-[3px] border-[#245D66] scale-[1.03] shadow-lg shadow-[#245D66]/30 animate-pulse-slow' 
+                    : 'border border-gray-200 hover:border-[#245D66]/30'}`}
+                  id={`ebook-${ebook.id}`}
                 >
                   {/* Enhanced cover with overlays */}
-                  <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
+                  <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
                     <div className="absolute inset-0 flex items-center justify-center">
                       <BookOpen className="h-20 w-20 text-gray-700" />
                     </div>
@@ -577,26 +677,48 @@ export default function EbooksPage() {
               {filteredEbooks.map((ebook) => (
                 <div 
                   key={ebook.id} 
-                  className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden transition-all duration-500 hover:border-[#245D66]/30 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1"
+                  className={`group relative bg-white rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1 ${highlightedId === String(ebook.id) 
+                    ? 'border-[3px] border-[#245D66] scale-[1.03] shadow-lg shadow-[#245D66]/30 animate-pulse-slow' 
+                    : 'border border-gray-200 hover:border-[#245D66]/30'}`}
+                  id={`ebook-${ebook.id}`}
                 >
                   {/* Cover with hover effects */}
-                  <div className="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                      <BookOpen className="h-16 w-16 text-gray-500 group-hover:scale-110 transition-transform duration-300 mb-3" />
-                      <h4 className="text-[#245D66] text-sm font-medium line-clamp-2 bg-white/90 px-3 py-1 rounded transition-colors duration-300">{ebook.productName || ebook.title}</h4>
-                    </div>
-                    
+                  <div className="aspect-square relative overflow-hidden">
+                    {/* Cover image */}
+                    {ebook.coverImage ? (
+                      <Image
+                        src={ebook.coverImage}
+                        alt={ebook.productName || ebook.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-contain bg-gray-900 transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center p-4 text-center">
+                        <BookOpen className="h-16 w-16 text-gray-500 group-hover:scale-110 transition-transform duration-300 mb-3" />
+                        <h4 className="text-[#245D66] text-sm font-medium line-clamp-2 bg-white/90 px-3 py-1 rounded transition-colors duration-300">
+                          {ebook.productName || ebook.title}
+                        </h4>
+                      </div>
+                    )}
+
+                    {/* Overlay title for image */}
+                    {(ebook.thumbnail || ebook.coverImage) && (
+                      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/40 to-transparent">
+                        <h4 className="text-white text-xs font-medium line-clamp-2">
+                          {ebook.productName || ebook.title}
+                        </h4>
+                      </div>
+                    )}
+
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-1">
                       {ebook.new && (
-                        <Badge className="bg-[#245D66] text-white text-xs px-2 py-1 rounded-full">
-                          NEW
-                        </Badge>
+                        <Badge className="bg-[#245D66] text-white text-xs px-2 py-1 rounded-full">NEW</Badge>
                       )}
                       {ebook.trending && (
                         <Badge className="bg-white text-black text-xs px-2 py-1 rounded-full flex items-center">
-                          <TrendingUp className="w-2 h-2 mr-1" />
-                          HOT
+                          <TrendingUp className="w-2 h-2 mr-1" /> HOT
                         </Badge>
                       )}
                     </div>
@@ -629,7 +751,43 @@ export default function EbooksPage() {
                     <h3 className="!text-[#245D66] text-base font-bold mb-2 line-clamp-2 transition-colors duration-300" style={{color: '#245D66'}}>
                       {ebook.productName || ebook.title}
                     </h3>
-                    <p className="text-xs text-gray-600 mb-4">By {ebook.author || "BeingConsultant"}</p>
+                    <p className="text-xs text-gray-600 mb-2">By {ebook.author || "BeingConsultant"}</p>
+                    
+                    {/* Price display */}
+                    <div className="flex flex-col space-y-1 mb-2">
+                      {/* Price row */}
+                      <div className="flex items-center justify-between">
+                        {/* Show price only if not free AND (not a member OR not included in membership) */}
+                        {ebook.price > 0 && (!isMember || !ebook.includedInMembership) && (
+                          <span className="font-bold text-[#245D66] text-lg">
+                            ${ebook.price}
+                          </span>
+                        )}
+                        
+                        {/* Show free badge if price is 0 or null */}
+                        {(!ebook.price || ebook.price === 0) && (
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                            Free
+                          </span>
+                        )}
+                        
+                        {/* Show purchased badge if enrolled */}
+                        {ebook.enrolled && (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                            Purchased
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Membership status - show if included in membership */}
+                      {ebook.includedInMembership && (
+                        <div className="flex items-center">
+                          <span className="text-xs text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">
+                            <span className="mr-1">✓</span> Included in BC+ Membership
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Mini stats */}
                     <div className="flex items-center justify-between text-xs text-gray-700 mb-4">
@@ -647,10 +805,30 @@ export default function EbooksPage() {
                       </div>
                     </div>
                     
-                    {/* Download button */}
+                    {/* Download button - Show different text based on membership status */}
                     <Button className="w-full bg-[#245D66] hover:bg-[#1a474f] text-white py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-[#245D66]/20 text-sm group">
-                      <Download className="h-3 w-3 mr-2 group-hover:scale-110 transition-transform duration-300" />
-                      Download
+                      {/* Free products are accessible to everyone */}
+                      {(!ebook.price || ebook.price === 0) ? (
+                        <span className="flex items-center justify-center">
+                          <Download className="h-3 w-3 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                          Download Free
+                        </span>
+                      ) : ebook.enrolled ? (
+                        <span className="flex items-center justify-center">
+                          <Download className="h-3 w-3 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                          Download
+                        </span>
+                      ) : isMember && ebook.includedInMembership ? (
+                        <span className="flex items-center justify-center">
+                          <Download className="h-3 w-3 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                          Download Now
+                        </span>
+                      ) : (
+                        <span className="flex items-center justify-center">
+                          <ShoppingCart className="h-3 w-3 mr-2 group-hover:scale-110 transition-transform duration-300" />
+                          Buy Now
+                        </span>
+                      )}
                     </Button>
                   </div>
                 </div>
