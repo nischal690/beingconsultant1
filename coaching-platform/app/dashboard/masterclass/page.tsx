@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
+import { useSearchParams } from "next/navigation"
+import { 
   Search,
   Clock,
   Star,
@@ -16,13 +17,17 @@ import {
   BookOpen,
   Zap,
   Crown,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart
 } from "lucide-react"
 import { collection, query as fsQuery, where, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase/config"
 import { useProducts } from "@/context/products-context"
+import Image from "next/image"
 import { useGritSection } from "@/hooks/useGritSection"
 import { getProductsByType } from "@/lib/firebase/firestore"
+import { useAuth } from "@/lib/firebase/auth-context"
+import { getUserProfile } from "@/lib/firebase/firestore"
 
 interface Masterclass {
   id: string
@@ -38,14 +43,56 @@ interface Masterclass {
   level?: string
   category?: string
   careerStage?: string
+  price?: number
+  includedInMembership?: boolean
 }
 
 export default function MasterclassPage() {
+  // Get URL search params
+  const searchParams = useSearchParams()
+  const highlightedId = searchParams.get('id')
+  
   const [isLoaded, setIsLoaded] = useState(false)
   const [animationStage, setAnimationStage] = useState(0)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
+  const [isMember, setIsMember] = useState<boolean>(false)
+  
+  // Get user from auth context
+  const { user } = useAuth()
+
+  // Add custom animation class to global styles
+  useEffect(() => {
+    // Add custom animation if it doesn't exist yet
+    if (!document.getElementById('custom-animations')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'custom-animations';
+      styleEl.innerHTML = `
+        @keyframes pulse-slow {
+          0%, 100% { box-shadow: 0 0 0 rgba(36, 93, 102, 0.3); border-color: rgba(36, 93, 102, 1); }
+          50% { box-shadow: 0 0 20px rgba(36, 93, 102, 0.6); border-color: rgba(36, 93, 102, 0.8); }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+  }, []);
+
+  // Scroll to highlighted masterclass on mount if ID is present
+  useEffect(() => {
+    if (highlightedId) {
+      const element = document.getElementById(`masterclass-${highlightedId}`);
+      if (element) {
+        // Add a slight delay to ensure the page is fully rendered
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    }
+  }, [highlightedId]);
 
   // Load selected GRIT section from localStorage
   const { selectedSection } = useGritSection();
@@ -109,6 +156,8 @@ export default function MasterclassPage() {
       level: doc.level || undefined,
       category: doc.category || undefined,
       careerStage: (doc.careerStage || "").toLowerCase(),
+      price: doc.price || 99,
+      includedInMembership: doc.includedInMembership || false,
     }))
     console.log("[MasterclassPage] Updating state with", mc.length, "masterclasses")
     setMasterclasses(mc)
@@ -177,6 +226,28 @@ export default function MasterclassPage() {
 
   const [masterclasses, setMasterclasses] = useState<Masterclass[]>(mockMasterclasses)
 
+  // Fetch membership status
+  useEffect(() => {
+    async function fetchMembership() {
+      if (!user) {
+        setIsMember(false);
+        return;
+      }
+      try {
+        const res = await getUserProfile(user.uid);
+        if (res.success && res.data) {
+          setIsMember(!!res.data.isMember);
+        } else {
+          setIsMember(false);
+        }
+      } catch (err) {
+        console.error("Error fetching membership status", err);
+        setIsMember(false);
+      }
+    }
+    fetchMembership();
+  }, [user]);
+
   // ---------- Initial fetch (all masterclasses) ----------
   useEffect(() => {
     setIsLoaded(true)
@@ -197,7 +268,9 @@ export default function MasterclassPage() {
           students: doc.students || 0,
           level: doc.level || undefined,
           category: doc.category || undefined,
-          careerStage: (doc.careerStage || "").toLowerCase()
+          careerStage: (doc.careerStage || "").toLowerCase(),
+          price: doc.price || 99,
+          includedInMembership: doc.includedInMembership || false
         }))
         setMasterclasses(fetched)
       }
@@ -245,6 +318,8 @@ export default function MasterclassPage() {
           level: doc.level || undefined,
           category: doc.category || undefined,
           careerStage: (doc.careerStage || "").toLowerCase(),
+          price: doc.price || 99,
+          includedInMembership: doc.includedInMembership || false,
         }))
         console.log("[MasterclassPage] Updating state with", mc.length, "masterclasses")
     setMasterclasses(mc)
@@ -380,23 +455,30 @@ export default function MasterclassPage() {
               </div>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 auto-rows-fr md:grid-cols-2 lg:grid-cols-4">
               {filtered.map((mc, index) => (
                 <div
                   key={mc.id}
-                  className="group relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-[#245D66] transition-all duration-500 hover:shadow-2xl hover:shadow-[#245D66]/10 transform hover:-translate-y-2 opacity-100 translate-y-0"
+                  id={`masterclass-${mc.id}`}
+                  className={`group relative overflow-hidden rounded-3xl bg-white transition-all duration-500 hover:shadow-xl hover:shadow-[#245D66]/5 hover:-translate-y-1 opacity-100 translate-y-0 ${
+                    highlightedId === mc.id 
+                      ? 'border-[3px] border-[#245D66] scale-[1.03] shadow-lg shadow-[#245D66]/30 animate-pulse-slow' 
+                      : 'border border-gray-200 hover:border-[#245D66]/30'
+                  }`}
                   style={{ transitionDelay: `${800 + index * 100}ms` }}
                 >
                   {/* Image with hover effect */}
                   <div 
-                    className="relative h-48 overflow-hidden"
+                    className="aspect-square relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900"
                     onMouseEnter={() => setHoveredCard(mc.id)}
                     onMouseLeave={() => setHoveredCard(null)}
                   >
-                    <img 
-                      src={mc.thumbnail} 
+                    <Image
+                      src={mc.thumbnail}
                       alt={mc.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     
@@ -426,17 +508,51 @@ export default function MasterclassPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="relative z-20 p-6 space-y-4 text-black">
-                    <h3 className="text-xl font-bold !text-[#245D66] line-clamp-2 min-h-[56px] transition-colors" style={{color: '#245D66'}}>
+                  <div className="relative z-20 p-6 text-black">
+                    <h3 className="text-lg font-bold !text-[#245D66] line-clamp-2 mb-1 transition-colors" style={{color: '#245D66'}}>
                       {mc.title}
                     </h3>
                     
-                    <p className="text-gray-600 text-sm line-clamp-2 min-h-[40px]">
-                      {mc.description}
-                    </p>
-
+                    {/* Description - only show if needed */}
+                    {mc.description && mc.description.length > 0 && (
+                      <div className="hidden">
+                        <p className="text-gray-600 text-xs line-clamp-1">
+                          {mc.description}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Price display */}
+                    <div className="flex flex-col space-y-1 mt-2">
+                      {/* Price row */}
+                      <div className="flex items-center justify-between">
+                        {/* Show price only if not a member or not included in membership */}
+                        {mc.price > 0 && (!isMember || !mc.includedInMembership) && (
+                          <span className="font-bold text-[#245D66] text-lg">
+                            ${mc.price}
+                          </span>
+                        )}
+                        
+                        {/* Show purchased badge if enrolled */}
+                        {mc.enrolled && (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                            Purchased
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Membership status - show if included in membership */}
+                      {mc.includedInMembership && (
+                        <div className="flex items-center">
+                          <span className="text-xs text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">
+                            <span className="mr-1">✓</span> Included in BC+ Membership
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
                     {/* Stats row */}
-                    <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-200">
+                    <div className="flex items-center justify-between text-xs text-gray-500 pt-1 mt-1 border-t border-gray-200">
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -461,10 +577,15 @@ export default function MasterclassPage() {
                             <BookOpen className="mr-2 h-4 w-4" />
                             Continue Learning
                           </>
-                        ) : (
+                        ) : isMember && mc.includedInMembership ? (
                           <>
                             <Zap className="mr-2 h-4 w-4" />
                             Start Learning
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            Buy Now
                           </>
                         )}
                       </span>

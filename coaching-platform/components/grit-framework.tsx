@@ -530,25 +530,33 @@ const GritFramework = () => {
                                         
                                         {/* Products for this stage - Small White Rectangles */}
                                         {products[stageKey] && products[stageKey].length > 0 ? (
-                                          <div className="grid grid-cols-2 gap-3 mt-2">
-                                            {products[stageKey].map((product) => (
-                                              <Link key={product.id} href={`/dashboard/resources/${product.id}`} className="block">
-                                                <div className="flex flex-col h-full bg-white rounded-md overflow-hidden transition-colors shadow-sm hover:shadow-md">
-                                                  {/* Content - Simplified Rectangle */}
-                                                  <div className="p-3">
-                                                    <div className="flex items-center mb-2">
-                                                      <div className="w-6 h-6 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-2">
-                                                        {getProductIcon(product.type)}
+                                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+                                            {products[stageKey].map((product) => {
+                                              // Determine the correct route based on product type
+                                              const productType = product.type?.toLowerCase();
+                                              const href = productType === 'masterclass' 
+                                                ? `/dashboard/masterclass?id=${product.id}`
+                                                : `/dashboard/ebooks?id=${product.id}`;
+                                                
+                                              return (
+                                                <Link key={product.id} href={href} className="block">
+                                                  <div className="flex flex-col h-full bg-white rounded-md overflow-hidden transition-colors shadow-md hover:shadow-lg">
+                                                    {/* Content - Simplified Rectangle */}
+                                                    <div className="p-3">
+                                                      <div className="flex items-center mb-2">
+                                                        <div className="w-8 h-8 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-3">
+                                                          {getProductIcon(product.type)}
+                                                        </div>
+                                                        <span className="text-[#245D66] text-sm font-semibold">
+                                                          {product.type}
+                                                        </span>
                                                       </div>
-                                                      <span className="text-[#245D66] text-xs font-medium">
-                                                        {product.type}
-                                                      </span>
+                                                      <h6 className="text-gray-800 font-semibold text-sm mb-1 line-clamp-2">{product.productName}</h6>
                                                     </div>
-                                                    <h6 className="text-gray-800 font-medium text-xs mb-1 line-clamp-2">{product.productName}</h6>
                                                   </div>
-                                                </div>
-                                              </Link>
-                                            ))}
+                                                </Link>
+                                              );
+                                            })}
                                           </div>
                                         ) : (
                                           <p className="text-gray-400 text-xs italic">No products available for this stage yet.</p>

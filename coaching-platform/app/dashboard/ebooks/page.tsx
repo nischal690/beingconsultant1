@@ -11,6 +11,14 @@ import { useAuth } from "@/lib/firebase/auth-context";
 import { useGritSection } from "@/hooks/useGritSection";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "next/navigation";
 import { 
@@ -234,6 +242,16 @@ const filters = [
 ];
 
 export default function EbooksPage() {
+  // Handle payment method select
+  const handlePaymentMethodSelect = (method: 'razorpay' | 'stripe') => {
+    toast.success(`Processing payment via ${method}...`, { duration: 2000 });
+
+    setTimeout(() => {
+      setShowBuyDialog(false);
+      toast.success('Payment successful! E-book added to your library.', { duration: 5000 });
+    }, 2000);
+  };
+
   // Get URL search params
   const searchParams = useSearchParams();
   const highlightedId = searchParams.get('id');
@@ -242,6 +260,8 @@ export default function EbooksPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [isMember, setIsMember] = useState(false);
+  const [selectedEbook, setSelectedEbook] = useState<any | null>(null);
+  const [showBuyDialog, setShowBuyDialog] = useState(false);
 
   // Get user from auth context
   const { user } = useAuth();
@@ -372,6 +392,11 @@ export default function EbooksPage() {
     }
     fetchFiltered()
   }, [selectedFilter, cachedProducts, productsCacheLoading])
+
+  const handleBuyNow = (ebook: any) => {
+    setSelectedEbook(ebook);
+    setShowBuyDialog(true);
+  };
 
   // Filter + search + sort client-side
   useEffect(() => {
@@ -757,8 +782,8 @@ export default function EbooksPage() {
                     <div className="flex flex-col space-y-1 mb-2">
                       {/* Price row */}
                       <div className="flex items-center justify-between">
-                        {/* Show price only if not free AND (not a member OR not included in membership) */}
-                        {ebook.price > 0 && (!isMember || !ebook.includedInMembership) && (
+                        {/* Show price only if not free, not null/undefined, AND (not a member OR not included in membership) */}
+                        {ebook.price != null && ebook.price > 0 && (!isMember || !ebook.includedInMembership) && (
                           <span className="font-bold text-[#245D66] text-lg">
                             ${ebook.price}
                           </span>
@@ -806,7 +831,10 @@ export default function EbooksPage() {
                     </div>
                     
                     {/* Download button - Show different text based on membership status */}
-                    <Button className="w-full bg-[#245D66] hover:bg-[#1a474f] text-white py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-[#245D66]/20 text-sm group">
+                    <Button
+                      className="w-full bg-[#245D66] hover:bg-[#1a474f] text-white py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-[#245D66]/20 text-sm group"
+                      onClick={(e) => { e.stopPropagation(); handleBuyNow(ebook); }}
+                    >
                       {/* Free products are accessible to everyone */}
                       {(!ebook.price || ebook.price === 0) ? (
                         <span className="flex items-center justify-center">
@@ -871,6 +899,40 @@ export default function EbooksPage() {
         </section>
       </div>
       
+      {/* Buy dialog */}
+      {selectedEbook && (
+        <Dialog open={showBuyDialog} onOpenChange={setShowBuyDialog}>
+          <DialogContent className="relative w-full bg-black/95 border border-white/20 shadow-[0_0_25px_rgba(255,255,255,0.1)] text-white backdrop-blur-2xl overflow-hidden p-6 sm:max-w-4xl rounded-lg">
+            {/* Decorative elements */}
+            <div className="absolute -top-10 -left-10 w-72 h-72 bg-[#245D66]/30 rounded-full filter blur-3xl"></div>
+            <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-[#245D66]/30 rounded-full filter blur-3xl"></div>
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">Buy "{selectedEbook.title}"</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm mb-4">Select payment method to continue</p>
+            <div className="grid grid-cols-1 gap-3">
+              <Button
+                className="w-full bg-[#072654] hover:bg-[#0A3A7A] text-white"
+                onClick={() => handlePaymentMethodSelect('razorpay')}
+              >
+                Pay with Razorpay
+              </Button>
+              <Button
+                className="w-full bg-[#635BFF] hover:bg-[#8780FF] text-white"
+                onClick={() => handlePaymentMethodSelect('stripe')}
+              >
+                Pay with Stripe
+              </Button>
+            </div>
+            <DialogFooter className="flex flex-col sm:flex-row sm:justify-between border-t border-white/10 pt-4 mt-4">
+              <Button variant="outline" onClick={() => setShowBuyDialog(false)}>
+                Cancel
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Bottom spacing */}
       <div className="h-16"></div>
     </div>

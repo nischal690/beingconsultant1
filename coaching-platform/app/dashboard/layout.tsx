@@ -82,10 +82,11 @@ import {
   ArrowRightLeft,
   MoveRight,
   ArrowRight,
+  Crown,
 } from "lucide-react"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { useAuth } from "@/lib/firebase/auth-context"
-import { getUserProfile } from "@/lib/firebase/firestore"
+import { getUserProfile, timestampToDate } from "@/lib/firebase/firestore"
 import { useRouter } from "next/navigation"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
@@ -148,6 +149,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isHeaderVisible } = useHeader();
   const [sidebarState, setSidebarState] = useState<"expanded" | "collapsed">("collapsed");
   const router = useRouter()
+  const [isMember, setIsMember] = useState(false)
+  const [membershipExpiry, setMembershipExpiry] = useState<string | null>(null)
 
   // Define handleLogout function
   const handleLogout = async () => {
@@ -178,17 +181,52 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
     checkSidebarState();
     
-    // Set up an interval to check the cookie regularly
-    const cookieObserver = setInterval(checkSidebarState, 300);
-    
-    return () => {
-      clearInterval(cookieObserver);
-    };
-  }, []);
-  
+    window.addEventListener('resize', checkSidebarState)
+    return () => window.removeEventListener('resize', checkSidebarState)
+  }, [])
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Fetch membership status
+  useEffect(() => {
+    async function fetchMembership() {
+      if (!user) {
+        setIsMember(false);
+        return;
+      }
+      try {
+        const res = await getUserProfile(user.uid);
+        if (res.success && res.data) {
+          setIsMember(!!res.data.isMember);
+          if (res.data.membershipExpiry) {
+            const expiryVal: any = res.data.membershipExpiry;
+            let expiryText: string | null = null;
+            // Detect Firestore Timestamp (has seconds & nanoseconds)
+            if (typeof expiryVal === 'object' && 'seconds' in expiryVal && 'nanoseconds' in expiryVal) {
+              const d = timestampToDate(expiryVal);
+              expiryText = d.toLocaleDateString();
+            } else {
+              // For strings, keep as-is; for millis/ISO try Date
+              const parsed = new Date(expiryVal);
+              expiryText = isNaN(parsed.getTime()) ? String(expiryVal) : parsed.toLocaleDateString();
+            }
+            if (expiryText) {
+              setMembershipExpiry(expiryText);
+            }
+          }
+        } else {
+          setIsMember(false);
+        }
+      } catch (err) {
+        console.error("Error fetching membership status", err);
+        setIsMember(false);
+      }
+    }
+
+    fetchMembership();
+  }, [user])
 
   if (!isMounted) {
     return null
@@ -409,20 +447,42 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               </SidebarContent>
               <SidebarFooter className="border-t border-sidebar-border p-4">
                 <div className="flex flex-col space-y-4">
-                  <Link 
-                    href="/dashboard/membership"
-                    className="relative group overflow-hidden"
-                  >
-                    <Button 
-                      variant="default" 
-                      className="w-full justify-start gap-2 bg-primary hover:bg-primary/90 border-none text-white shadow-lg hover:shadow-xl transition-all duration-300 group-data-[collapsible=icon]:justify-center group-hover:scale-[1.02]"
-                      title="Become a Member"
+                  {isMember ? (
+                    <Link 
+                      href="/dashboard/membership/already"
+                      className="relative group overflow-hidden"
                     >
-                      <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
-                      <span className="group-data-[collapsible=icon]:hidden font-bold">Become a Member</span>
-                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full animate-shimmer"></span>
-                    </Button>
-                  </Link>
+                      <Button 
+                        variant="default" 
+                        className="w-full justify-start gap-2 bg-yellow-500 hover:bg-yellow-600 border-none text-black shadow-lg hover:shadow-xl transition-all duration-300 group-data-[collapsible=icon]:justify-center group-hover:scale-[1.02]"
+                        title="Already a Member"
+                      >
+                        <Crown className="h-4 w-4 text-black" />
+                        <div className="flex flex-col items-start group-data-[collapsible=icon]:hidden">
+                          <span className="font-bold text-xs">Already a Member</span>
+                          {membershipExpiry && (
+                            <span className="text-[10px] opacity-80">Expires: {membershipExpiry}</span>
+                          )}
+                        </div>
+                        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full animate-shimmer"></span>
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link 
+                      href="/dashboard/membership"
+                      className="relative group overflow-hidden"
+                    >
+                      <Button 
+                        variant="default" 
+                        className="w-full justify-start gap-2 bg-primary hover:bg-primary/90 border-none text-white shadow-lg hover:shadow-xl transition-all duration-300 group-data-[collapsible=icon]:justify-center group-hover:scale-[1.02]"
+                        title="Become a Member"
+                      >
+                        <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
+                        <span className="group-data-[collapsible=icon]:hidden font-bold">Become a Member</span>
+                        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full animate-shimmer"></span>
+                      </Button>
+                    </Link>
+                  )}
                   <Button 
                     variant="outline" 
                     className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"

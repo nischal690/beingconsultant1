@@ -1,42 +1,133 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Sparkles, Star, CheckCircle, Crown, ArrowRight, Zap, Shield, Users } from "lucide-react";
+import React, { useState, useEffect, MouseEvent } from "react";
+import { Sparkles, Star, CheckCircle, ArrowRight, Zap, Shield, Users, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MembershipDialog, MembershipPlan, Coupon } from "@/components/membership/membership-dialog";
+import { toast } from "sonner";
+import { useAuth } from "@/lib/firebase/auth-context";
+import { getUserProfile, timestampToDate } from "@/lib/firebase/firestore";
+import { useRouter } from "next/navigation";
 
 export default function MembershipPage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isMember, setIsMember] = useState<boolean | null>(null);
+  const [membershipExpiry, setMembershipExpiry] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Fetch membership status
+  useEffect(() => {
+    async function fetchMembership() {
+      if (!user) {
+        setIsMember(false);
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await getUserProfile(user.uid);
+        if (res.success && res.data) {
+          setIsMember(!!res.data.isMember);
+          if (res.data.membershipExpiry) {
+            const expiryVal: any = res.data.membershipExpiry;
+            let expiryText: string | null = null;
+            // Detect Firestore Timestamp (has seconds & nanoseconds)
+            if (typeof expiryVal === 'object' && 'seconds' in expiryVal && 'nanoseconds' in expiryVal) {
+              const d = timestampToDate(expiryVal);
+              expiryText = d ? d.toLocaleDateString() : null;
+            } else {
+              // For strings, keep as-is; for millis/ISO try Date
+              const parsed = new Date(expiryVal);
+              expiryText = isNaN(parsed.getTime()) ? String(expiryVal) : parsed.toLocaleDateString();
+            }
+            if (expiryText) {
+              setMembershipExpiry(expiryText);
+            }
+          }
+        } else {
+          setIsMember(false);
+        }
+      } catch (err) {
+        console.error("Error fetching membership status", err);
+        setIsMember(false);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchMembership();
+  }, [user]);
+  
+  // Debug the dialog state changes
+  useEffect(() => {
+    console.log('Dialog state changed:', dialogOpen);
+  }, [dialogOpen]);
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Redirect to a dedicated page if user is already a member (must run on every render cycle before early returns)
+  useEffect(() => {
+    if (isMember) {
+      router.replace('/dashboard/membership/already');
+    }
+  }, [isMember, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-sidebar text-sidebar-foreground">
+        Loading...
+      </div>
+    );
+  }
+
+  
+  if (isMember) {
+    return null; // Prevent rendering while redirecting
+  }
+
   return (
     <div className="min-h-screen bg-sidebar text-sidebar-foreground">
+      {/* Test Button - Positioned at the top of the page */}
+      <div className="fixed top-4 right-4 z-40">
+        <Button 
+          variant="destructive"
+          onClick={() => {
+            console.log('Test button clicked!');
+            setDialogOpen(true);
+          }}
+        >
+          TEST OPEN DIALOG
+        </Button>
+      </div>
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div 
-          className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl transition-all duration-1000 ease-out"
+          className="absolute w-96 h-96 rounded-full opacity-10 blur-3xl transition-all duration-1000 ease-out pointer-events-none"
           style={{
             background: 'radial-gradient(circle, #245D66 0%, transparent 70%)',
             left: mousePosition.x - 192,
             top: mousePosition.y - 192,
           }}
         />
-        <div className="absolute top-20 right-20 w-72 h-72 bg-[#245D66]/5 rounded-full blur-2xl animate-float" />
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-black/5 rounded-full blur-2xl animate-float-delayed" />
+        <div className="absolute top-20 right-20 w-72 h-72 bg-[#245D66]/5 rounded-full blur-2xl animate-float pointer-events-none" />
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-black/5 rounded-full blur-2xl animate-float-delayed pointer-events-none" />
       </div>
 
       <div className="relative z-10 flex flex-col gap-16 py-12 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         {/* Hero Section */}
         <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#245D66] via-[#1e4a4f] to-black text-white p-12 md:p-16">
           {/* Animated background elements */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -right-40 -top-40 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse-slow" />
             <div className="absolute -left-40 -bottom-40 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-slow" />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-20 animate-shimmer" />
@@ -65,6 +156,10 @@ export default function MembershipPage() {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <button 
                   className="group relative overflow-hidden bg-white text-[#245D66] font-bold px-10 py-5 rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-white/25"
+                  onClick={() => {
+                    console.log('Hero Join BC+ clicked');
+                    setDialogOpen(true);
+                  }}
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                 >
@@ -176,9 +271,12 @@ export default function MembershipPage() {
         </section>
 
         {/* Call to Action */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-black via-[#245D66] to-black text-white p-12 md:p-16 text-center">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-black via-[#245D66] to-black text-white p-12 md:p-16 text-center pointer-events-auto z-50" onClick={() => {
+          console.log('CTA section clicked');
+          setDialogOpen(true);
+        }}>
           <div
-            className="absolute inset-0 opacity-50"
+            className="absolute inset-0 opacity-50 pointer-events-none"
             style={{
               backgroundImage:
                 "url(\"data:image/svg+xml,%3Csvg%20width%3D'60'%20height%3D'60'%20viewBox%3D'0%200%2060%2060'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cg%20fill%3D'none'%20fill-rule%3D'evenodd'%3E%3Cg%20fill%3D'%23ffffff'%20fill-opacity%3D'0.05'%3E%3Ccircle%20cx%3D'30'%20cy%3D'30'%20r%3D'2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
@@ -195,19 +293,59 @@ export default function MembershipPage() {
               Ready to elevate your consulting journey?
             </h2>
             
-            <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
-              Join <span className="text-yellow-400 font-bold">BC+</span> today and unlock a world of exclusive benefits designed for ambitious consultants.
-            </p>
-            
-            <button className="group relative overflow-hidden bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold px-12 py-6 rounded-2xl hover:from-yellow-300 hover:to-yellow-400 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 hover:scale-105">
-              <span className="relative z-10 flex items-center text-xl">
-                <Crown className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
-                Become a BC+ Member
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </button>
+            <div className="mt-8 flex flex-col items-center">
+              <p className="text-lg text-gray-300 mb-6 text-center max-w-2xl">
+                Join <span className="text-yellow-400 font-bold">BC+</span> today and unlock a world of exclusive benefits designed for ambitious consultants.
+              </p>
+              
+              <div className="relative z-50" onClick={() => {
+                    console.log('CTA wrapper clicked');
+                    setDialogOpen(true);
+                  }}>
+                <Button 
+                  variant="default"
+                  onClick={() => {
+                    console.log('Join BC+ Now clicked!');
+                    setDialogOpen(true);
+                  }}
+                  className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-xl"
+                >
+                  Join BC+ Now
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
+      </div>
+
+      {/* Membership Dialog */}
+      <MembershipDialog 
+        open={dialogOpen} 
+        onOpenChange={(open) => {
+          console.log('Dialog onOpenChange called with:', open);
+          setDialogOpen(open);
+        }} 
+        onPlanSelect={(plan, method, appliedCoupon) => {
+          // Handle the payment process here
+          console.log('Selected plan:', plan);
+          console.log('Payment method:', method);
+          console.log('Applied coupon:', appliedCoupon);
+          
+          // Here you would typically redirect to payment gateway or process payment
+          // For now, just show a toast
+          toast.success(`Processing ${plan.title} payment with ${method}`);
+          
+          // Close dialog
+          setDialogOpen(false);
+          
+          // You would typically handle the actual payment process here
+          // This could involve redirecting to Razorpay/Stripe or calling an API
+        }}
+      />
+      
+      {/* Debug Information */}
+      <div className="fixed bottom-4 left-4 text-xs text-white/50">
+        Dialog state: {dialogOpen ? 'Open' : 'Closed'}
       </div>
 
       {/* Custom Styles */}
