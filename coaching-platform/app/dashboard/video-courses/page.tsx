@@ -15,7 +15,8 @@ import {
   Lock,
   ArrowUpRight,
   TrendingUp,
-  Sparkles
+  Sparkles,
+  Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -44,7 +45,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
-import { getProductsByType } from "@/lib/firebase/firestore"
+import { getProductsByType, getUserProfile } from "@/lib/firebase/firestore"
+import { useAuth } from "@/lib/firebase/auth-context"
 
 // Define course interface
 interface Course {
@@ -153,8 +155,12 @@ export default function VideoCoursesPage() {
   const [animationStage, setAnimationStage] = useState(0);
   // Search query state removed
   const featuredSectionRef = useRef<HTMLDivElement>(null);
+  const [isMember, setIsMember] = useState(false);
 
   const [filteredCourses, setFilteredCourses] = useState<Course[]>(mockCourses);
+  
+  // Get user from auth context
+  const { user } = useAuth();
 
   
   useEffect(() => {
@@ -162,8 +168,6 @@ export default function VideoCoursesPage() {
     setTimeout(() => {
       setIsLoaded(true);
     }, 100);
-
-
 
     // Trigger staggered animations
     const staggerInterval = setInterval(() => {
@@ -178,6 +182,29 @@ export default function VideoCoursesPage() {
       clearInterval(staggerInterval);
     };
   }, []);
+  
+  // Fetch membership status when user changes
+  useEffect(() => {
+    async function fetchMembership() {
+      if (!user) {
+        setIsMember(false);
+        return;
+      }
+      try {
+        const res = await getUserProfile(user.uid);
+        if (res.success && res.data) {
+          setIsMember(!!res.data.isMember);
+        } else {
+          setIsMember(false);
+        }
+      } catch (err) {
+        console.error("Error fetching membership status:", err);
+        setIsMember(false);
+      }
+    }
+    
+    fetchMembership();
+  }, [user]);
 
   // Set filtered courses directly from mock courses
   useEffect(() => {
@@ -270,10 +297,34 @@ export default function VideoCoursesPage() {
                   
                   <Button 
                     className="w-full mt-2 bg-white text-black hover:bg-white/90 group transition-all duration-300"
-                    onClick={() => course.title === "Jumpstart 100" ? router.push(`/dashboard/video-courses/${course.id}`) : {}}
+                    onClick={() => {
+                      if (course.title === "Jumpstart 100") {
+                        if (isMember) {
+                          router.push(`/dashboard/video-courses/${course.id}`);
+                        } else {
+                          router.push('/dashboard/membership');
+                        }
+                      }
+                    }}
                   >
-                    <Play className="mr-2 h-4 w-4 fill-current" />
-                    {course.title === "Jumpstart 100" ? "Start Course" : "Start Learning"}
+                    {course.title === "Jumpstart 100" ? (
+                      isMember ? (
+                        <>
+                          <Play className="mr-2 h-4 w-4 fill-current" />
+                          Start Course
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-2 h-4 w-4" />
+                          Upgrade to BC+
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <Play className="mr-2 h-4 w-4 fill-current" />
+                        Start Learning
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

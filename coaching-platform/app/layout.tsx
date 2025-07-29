@@ -7,9 +7,13 @@ import { Toaster } from 'sonner'
 import { StagewiseToolbar } from '@stagewise/toolbar-next'
 
 export const metadata: Metadata = {
-  title: 'Coaching Platform',
+  title: 'Being Consultant',
   description: 'Coaching platform for consultants',
   generator: 'v0.dev',
+  icons: {
+    icon: '/Favicon.png',
+    apple: '/Favicon.png',
+  },
 }
 
 // Stagewise configuration

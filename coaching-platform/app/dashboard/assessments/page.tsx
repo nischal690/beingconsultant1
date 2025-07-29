@@ -8,8 +8,11 @@ import {
   Activity,
   Dna,
   ArrowRight,
-  Brain
+  Brain,
+  Zap
 } from "lucide-react";
+import { useAuth } from "@/lib/firebase/auth-context";
+import { getUserProfile } from "@/lib/firebase/firestore";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -19,6 +22,10 @@ export default function AssessmentsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [scrolled, setScrolled] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [isMember, setIsMember] = useState(false);
+  
+  // Get user from auth context
+  const { user } = useAuth();
 
   // Handle scroll detection for nav effects
   useEffect(() => {
@@ -28,6 +35,29 @@ export default function AssessmentsPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  
+  // Fetch membership status when user changes
+  useEffect(() => {
+    async function fetchMembership() {
+      if (!user) {
+        setIsMember(false);
+        return;
+      }
+      try {
+        const res = await getUserProfile(user.uid);
+        if (res.success && res.data) {
+          setIsMember(!!res.data.isMember);
+        } else {
+          setIsMember(false);
+        }
+      } catch (err) {
+        console.error("Error fetching membership status:", err);
+        setIsMember(false);
+      }
+    }
+    
+    fetchMembership();
+  }, [user]);
 
   // Scroll to assessments list
   const handleScrollToList = () => {
@@ -160,21 +190,7 @@ export default function AssessmentsPage() {
             </button>
           </motion.div>
 
-          {/* Feature highlights */}
-          <div className="flex flex-wrap justify-center gap-0 mt-14">
-            <div className="flex items-center gap-2 text-white/60 bg-[#245D66]/10 backdrop-blur-md rounded-full px-4 py-2 border border-[#245D66]/20">
-              <Activity size={16} className="text-[#245D66]" />
-              <span>Personalized Reports</span>
-            </div>
-            <div className="flex items-center gap-2 text-white/60 bg-[#245D66]/10 backdrop-blur-md rounded-full px-4 py-2 border border-[#245D66]/20">
-              <Brain size={16} className="text-[#245D66]" />
-              <span>Science-Backed</span>
-            </div>
-            <div className="flex items-center gap-2 text-white/60 bg-[#245D66]/10 backdrop-blur-md rounded-full px-4 py-2 border border-[#245D66]/20">
-              <Dna size={16} className="text-[#245D66]" />
-              <span>AI Enhanced</span>
-            </div>
-          </div>
+          {/* Feature highlights removed as requested */}
         </motion.div>
 
         {/* Remove decorative elements for smoother transition */}
@@ -295,18 +311,51 @@ export default function AssessmentsPage() {
                     {/* Buttons */}
                     {assessment.available ? (
                       <div className="flex flex-col">
-                        <Link href={`/dashboard/assessments/${assessment.id}`}>
-                          <Button className={cn(
-                            "w-full rounded-xl py-6 font-semibold text-white transition-all bg-[#245D66] hover:shadow-lg",
-                            hoveredCard === assessment.id ? "shadow-lg shadow-[#245D66]/20" : ""
-                          )}>
+                        {assessment.id === "personality" ? (
+                          // For WIRED YOU assessment, check membership
+                          <Button 
+                            className={cn(
+                              "w-full rounded-xl py-6 font-semibold text-white transition-all bg-[#245D66] hover:shadow-lg",
+                              hoveredCard === assessment.id ? "shadow-lg shadow-[#245D66]/20" : ""
+                            )}
+                            onClick={() => {
+                              if (isMember) {
+                                // For members, navigate to the assessment
+                                window.location.href = `/dashboard/assessments/${assessment.id}`;
+                              } else {
+                                // For non-members, redirect to membership page
+                                window.location.href = '/dashboard/membership';
+                              }
+                            }}
+                          >
                             <span className="flex items-center gap-2">
-                              Start Assessment
-                              <ArrowRight size={18} className={hoveredCard === assessment.id ? "translate-x-1" : ""} />
+                              {isMember ? (
+                                <>
+                                  Start Assessment
+                                  <ArrowRight size={18} className={hoveredCard === assessment.id ? "translate-x-1" : ""} />
+                                </>
+                              ) : (
+                                <>
+                                  Upgrade to BC+
+                                  <Zap size={18} />
+                                </>
+                              )}
                             </span>
                           </Button>
-                        </Link>
-                        
+                        ) : (
+                          // For other assessments, use regular Link
+                          <Link href={`/dashboard/assessments/${assessment.id}`}>
+                            <Button className={cn(
+                              "w-full rounded-xl py-6 font-semibold text-white transition-all bg-[#245D66] hover:shadow-lg",
+                              hoveredCard === assessment.id ? "shadow-lg shadow-[#245D66]/20" : ""
+                            )}>
+                              <span className="flex items-center gap-2">
+                                Start Assessment
+                                <ArrowRight size={18} className={hoveredCard === assessment.id ? "translate-x-1" : ""} />
+                              </span>
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     ) : (
                       <Button disabled className="w-full rounded-xl py-6 font-semibold text-white transition-all bg-black/50 cursor-not-allowed">

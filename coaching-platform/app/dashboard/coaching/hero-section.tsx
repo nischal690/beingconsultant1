@@ -14,6 +14,18 @@ export default function HeroSection() {
           <h1 className="text-4xl md:text-5xl font-bold mb-10">About the <span className="italic">Gaurav</span> Advantage</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Coach Photo */}
+        <div className="flex justify-center">
+          <Image
+            src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Product%20Thumbnails%2Fcoachphoto.png?alt=media&token=1a7a3bf2-cd84-4010-b2ef-82b52646af56"
+            alt="Coach photo"
+            width={400}
+            height={400}
+            className="object-contain h-[300px] md:h-[350px] w-auto mb-6 lg:mb-8"
+            priority
+          />
+        </div>
+        
         {/* Diagram Image */}
         <div className="flex justify-center">
           <Image

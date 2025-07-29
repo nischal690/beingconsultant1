@@ -254,32 +254,32 @@ const UnlimitedCoachingPage = () => {
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
-                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    <div className="h-6 w-6 rounded-full bg-white flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-white" />
                     </div>
                     <span className="text-sm">Learn the ropes with ex-MBB coach hands on – not just watching recorded videos</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
-                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    <div className="h-6 w-6 rounded-full bg-white flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-white" />
                     </div>
                     <span className="text-sm">Ace the art & science behind cracking any case</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
-                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    <div className="h-6 w-6 rounded-full bg-white flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-white" />
                     </div>
                     <span className="text-sm">Master most frequently asked FIT questions</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
-                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    <div className="h-6 w-6 rounded-full bg-white flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-white" />
                     </div>
                     <span className="text-sm">Create killer CV that lands interviews</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-green-100 flex-shrink-0 flex items-center justify-center mt-0.5">
-                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    <div className="h-6 w-6 rounded-full bg-white flex-shrink-0 flex items-center justify-center mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-white" />
                     </div>
                     <span className="text-sm">Get continuous mentorship till you break into consulting!</span>
                   </li>

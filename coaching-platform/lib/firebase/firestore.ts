@@ -1162,3 +1162,148 @@ export const getJobs = async (featured?: boolean, limitCount?: number) => {
     return { jobs: [], error: `Failed to fetch jobs: ${error instanceof Error ? error.message : String(error)}` };
   }
 };
+
+// Resource access tracking operations
+export const trackResourceAccess = async (userId: string, resourceData: {
+  id: string;
+  title: string;
+  type: 'ebook' | 'video' | 'document' | 'assessment' | 'other';
+  action: 'view' | 'download' | 'access';
+  category?: string;
+  metadata?: Record<string, any>;
+}) => {
+  try {
+    console.log(`[trackResourceAccess] Tracking ${resourceData.action} for resource ${resourceData.id} by user ${userId}`);
+    
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) {
+      console.error(`[trackResourceAccess] User document not found: ${userId}`);
+      return { success: false, error: "User not found" };
+    }
+    
+    const userData = userSnap.data();
+    const currentResourceAccessed = userData.resourceaccessed || [];
+    
+    // Create the resource access record
+    const accessRecord = {
+      id: resourceData.id,
+      title: resourceData.title,
+      type: resourceData.type,
+      action: resourceData.action,
+      category: resourceData.category || 'general',
+      accessedAt: new Date().toISOString(),
+      timestamp: serverTimestamp(),
+      metadata: resourceData.metadata || {}
+    };
+    
+    // Check if this exact resource access already exists (same id and action)
+    const existingIndex = currentResourceAccessed.findIndex(
+      (item: any) => item.id === resourceData.id && item.action === resourceData.action
+    );
+    
+    let updatedResourceAccessed;
+    
+    if (existingIndex !== -1) {
+      // Update existing record - move to front and update timestamp
+      updatedResourceAccessed = [...currentResourceAccessed];
+      updatedResourceAccessed[existingIndex] = accessRecord;
+      // Move to front
+      const [updatedRecord] = updatedResourceAccessed.splice(existingIndex, 1);
+      updatedResourceAccessed.unshift(updatedRecord);
+    } else {
+      // Add new record to the front
+      updatedResourceAccessed = [accessRecord, ...currentResourceAccessed];
+    }
+    
+    // Keep only the most recent 50 records to prevent unlimited growth
+    if (updatedResourceAccessed.length > 50) {
+      updatedResourceAccessed = updatedResourceAccessed.slice(0, 50);
+    }
+    
+    // Update the user document
+    await updateDoc(userRef, {
+      resourceaccessed: updatedResourceAccessed,
+      updatedAt: serverTimestamp()
+    });
+    
+    console.log(`[trackResourceAccess] Successfully tracked ${resourceData.action} for resource ${resourceData.id}`);
+    return { success: true };
+  } catch (error) {
+    console.error("[trackResourceAccess] Error tracking resource access:", error);
+    return { success: false, error };
+  }
+};
+
+// Get recently accessed resources
+export const getRecentlyAccessedResources = async (userId: string, limit: number = 10) => {
+  try {
+    console.log(`[getRecentlyAccessedResources] Getting recent resources for user ${userId}`);
+    
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) {
+      console.error(`[getRecentlyAccessedResources] User document not found: ${userId}`);
+      return { success: false, error: "User not found" };
+    }
+    
+    const userData = userSnap.data();
+    const resourceAccessed = userData.resourceaccessed || [];
+    
+    // Sort by accessedAt timestamp (most recent first) and limit results
+    const recentResources = resourceAccessed
+      .sort((a: any, b: any) => {
+        const dateA = new Date(a.accessedAt || 0).getTime();
+        const dateB = new Date(b.accessedAt || 0).getTime();
+        return dateB - dateA;
+      })
+      .slice(0, limit);
+    
+    console.log(`[getRecentlyAccessedResources] Found ${recentResources.length} recent resources`);
+    return { success: true, data: recentResources };
+  } catch (error) {
+    console.error("[getRecentlyAccessedResources] Error getting recently accessed resources:", error);
+    return { success: false, error };
+  }
+};
+
+// Update existing product access time (for purchased products)
+export const updateProductAccessTime = async (userId: string, productId: string) => {
+  try {
+    console.log(`[updateProductAccessTime] Updating access time for product ${productId} by user ${userId}`);
+    
+    // Update in products subcollection
+    const productRef = doc(db, "users", userId, "products", productId);
+    const productSnap = await getDoc(productRef);
+    
+    if (productSnap.exists()) {
+      await updateDoc(productRef, {
+        lastAccessed: serverTimestamp()
+      });
+      console.log(`[updateProductAccessTime] Updated product access time for ${productId}`);
+    }
+    
+    // Also track in the main resourceaccessed array
+    const productData = productSnap.data();
+    if (productData) {
+      await trackResourceAccess(userId, {
+        id: productId,
+        title: productData.productTitle || productData.title || 'Unknown Product',
+        type: 'ebook', // Assuming most products are ebooks, can be made dynamic
+        action: 'access',
+        category: productData.productCategory || 'product',
+        metadata: {
+          price: productData.price,
+          currency: productData.currency
+        }
+      });
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("[updateProductAccessTime] Error updating product access time:", error);
+    return { success: false, error };
+  }
+};

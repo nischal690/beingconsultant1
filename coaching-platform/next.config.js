@@ -10,9 +10,13 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['images.unsplash.com', 'firebasestorage.googleapis.com', 'framerusercontent.com'],
+    unoptimized: true,
   },
   env: {
-   
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    NEXT_PUBLIC_RAZORPAY_KEY: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+    RAZORPAY_SECRET_KEY: process.env.RAZORPAY_SECRET_KEY,
   },
   async redirects() {
     return [

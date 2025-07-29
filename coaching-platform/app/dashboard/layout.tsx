@@ -53,6 +53,7 @@ import {
   ChevronDown,
   UsersRound,
   Bot,
+  CheckCircle,
   CalendarDays,
   CalendarPlus,
   CalendarClock,
@@ -91,6 +92,7 @@ import { useRouter } from "next/navigation"
 import { SettingsDialog } from "@/components/settings/settings-dialog"
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
 import { HeaderProvider, useHeader } from "@/lib/context/header-context"
+import { WhatsAppCommunityBanner } from "@/components/whatsapp-community-banner"
 
 // Function to format date in DD/MON/YYYY format
 function formatDateToDDMonYYYY(date: Date): string {
@@ -114,11 +116,11 @@ function SidebarLogo({ sidebarState }: { sidebarState: "expanded" | "collapsed" 
           <path fillRule="evenodd" clipRule="evenodd" d="M70.4129 123.487V12.5233L0.0859375 0.317322V135.693L70.4129 123.487ZM59.5171 20.2907L9.99114 12.5233V121.267L59.5171 113.5V73.5531H24.8489V62.4568H59.5171V20.2907Z" fill="url(#paint1_linear_12_122)"/>
           <defs>
             <linearGradient id="paint0_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#245D66"/>
+              <stop stopColor="white"/>
               <stop offset="1" stopColor="#245D66"/>
             </linearGradient>
             <linearGradient id="paint1_linear_12_122" x1="72.3939" y1="0.317322" x2="72.3939" y2="136.802" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#245D66"/>
+              <stop stopColor="white"/>
               <stop offset="1" stopColor="#245D66"/>
             </linearGradient>
           </defs>
@@ -248,10 +250,15 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     <ProtectedRoute>
       <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen w-full bg-black text-white">
-         {/* Dashboard header - conditionally rendered based on context */}
-         {!isPersonalityAssessment && isHeaderVisible && (
-           <DashboardHeader activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} sidebarState={sidebarState} />
-         )}
+          {/* Dashboard header - conditionally rendered based on context */}
+          {isHeaderVisible && (
+            <DashboardHeader 
+              activeDropdown={activeDropdown} 
+              setActiveDropdown={setActiveDropdown} 
+              sidebarState={sidebarState}
+            />
+          )}
+          <WhatsAppCommunityBanner />
           <div className="flex-1 flex w-full">
             {!isPersonalityAssessment && (
               <Sidebar 
@@ -310,7 +317,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Group Coaching"
                         >
                           <Link href="/dashboard/group-coaching" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Users className="h-5 w-5" />
+                            <Users className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Group Coaching</span>
                           </Link>
                         </SidebarMenuButton>
@@ -332,7 +339,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="AI Coach"
                         >
                           <Link href="https://aicoach.beingconsultant.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Bot className="h-5 w-5" />
+                            <Bot className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">AI Coach</span>
                           </Link>
                         </SidebarMenuButton>
@@ -356,7 +363,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Video Courses"
                         >
                           <Link href="/dashboard/video-courses" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Video className="h-5 w-5" />
+                            <Video className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Video Courses</span>
                           </Link>
                         </SidebarMenuButton>
@@ -369,7 +376,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Masterclass"
                         >
                           <Link href="/dashboard/masterclass" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <GraduationCap className="h-5 w-5" />
+                            <GraduationCap className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Masterclass</span>
                           </Link>
                         </SidebarMenuButton>
@@ -382,7 +389,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Ebooks/Guides"
                         >
                           <Link href="/dashboard/ebooks" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <BookOpen className="h-5 w-5" />
+                            <BookOpen className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Ebooks/Guides</span>
                           </Link>
                         </SidebarMenuButton>
@@ -395,7 +402,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Assessment"
                         >
                           <Link href="/dashboard/assessments" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <FileCheck className="h-5 w-5" />
+                            <FileCheck className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Assessment</span>
                           </Link>
                         </SidebarMenuButton>
@@ -418,7 +425,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Events"
                         >
                           <Link href="/dashboard/events" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <CalendarDays className="h-5 w-5" />
+                            <CalendarDays className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Events</span>
                           </Link>
                         </SidebarMenuButton>
@@ -432,7 +439,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                           tooltip="Job Board"
                         >
                           <Link href="/dashboard/job-board" className="flex items-center gap-3 rounded-lg p-3 text-base font-medium">
-                            <Briefcase className="h-5 w-5" />
+                            <Briefcase className="h-5 w-5 text-white" />
                             <span className="group-data-[collapsible=icon]:hidden">Job Board</span>
                           </Link>
                         </SidebarMenuButton>
@@ -453,7 +460,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                         className="w-full justify-start gap-2 bg-yellow-500 hover:bg-yellow-600 border-none text-black shadow-lg hover:shadow-xl transition-all duration-300 group-data-[collapsible=icon]:justify-center group-hover:scale-[1.02]"
                         title="Already a Member"
                       >
-                        <Crown className="h-4 w-4 text-black" />
+                        <CheckCircle className="h-4 w-4 text-white mt-0.5" />
                         <div className="flex flex-col items-start group-data-[collapsible=icon]:hidden">
                           <span className="font-bold text-xs">Already a Member</span>
                           {membershipExpiry && (
@@ -474,19 +481,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                         title="Become a Member"
                       >
                         <Sparkles className="h-4 w-4 text-yellow-300 animate-pulse" />
-                        <span className="group-data-[collapsible=icon]:hidden font-bold">Become a Member</span>
+                        <span className="group-data-[collapsible=icon]:hidden">Become a Member</span>
                         <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full animate-shimmer"></span>
                       </Button>
                     </Link>
                   )}
                   <Button 
-                    variant="outline" 
-                    className="w-full justify-start gap-2 text-destructive hover:text-destructive hover-lift group-data-[collapsible=icon]:justify-center"
+                    variant="ghost" 
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium text-white border border-white !border-white hover:bg-white/10 rounded-md transition-colors duration-200"
                     onClick={handleLogout}
-                    title="Log Out"
                   >
-                    <LogOut className="h-4 w-4" />
-                    <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
+                    <LogOut className="h-4 w-4 text-white" />
+                    <span className="group-data-[collapsible=icon]:hidden font-semibold text-white">Log out</span>
                   </Button>
                 </div>
               </SidebarFooter>
@@ -505,29 +511,28 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { activeDropdown: string | null, setActiveDropdown: (dropdown: string | null) => void, sidebarState: "expanded" | "collapsed" }) {
   const { user, logout } = useAuth()
   const router = useRouter()
-  const [firstName, setFirstName] = useState<string>("");
-  const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
-  
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (user && user.uid) {
-        try {
-          const result = await getUserProfile(user.uid);
-          if (result.success && result.data && result.data.firstName) {
-            setFirstName(result.data.firstName);
-          } else if (user.displayName) {
-            // Fallback to displayName if firstName is not in Firestore
-            const displayNameParts = user.displayName.split(' ');
-            setFirstName(displayNameParts[0]);
-          }
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-        }
-      }
-    };
+  const pathname = usePathname()
+  const { headerTitle } = useHeader()
+  const [userProfile, setUserProfile] = useState<any>(null)
+  const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null)
+
+  const fetchUserProfile = async () => {
+    if (!user?.uid) return
     
-    fetchUserProfile();
-  }, [user]);
+    try {
+      const result = await getUserProfile(user.uid)
+      if (result.success && result.data) {
+        setUserProfile(result.data)
+        console.log('User profile:', result.data)
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchUserProfile()
+  }, [user?.uid])
   
   const handleLogout = async () => {
     try {
@@ -536,6 +541,31 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
     } catch (error) {
       console.error('Error logging out:', error)
     }
+  }
+
+  // Get user's first name initial for avatar fallback
+  const getUserInitial = () => {
+    if (userProfile?.firstName) {
+      return userProfile.firstName.charAt(0).toUpperCase()
+    }
+    if (user?.displayName) {
+      return user.displayName.charAt(0).toUpperCase()
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase()
+    }
+    return "U"
+  }
+
+  // Get user's profile photo URL
+  const getProfilePhotoUrl = () => {
+    if (userProfile?.profilePhotoURL) {
+      return userProfile.profilePhotoURL
+    }
+    if (user?.photoURL) {
+      return user.photoURL
+    }
+    return null
   }
 
   return (
@@ -974,27 +1004,28 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
             </div>
           </nav>
           
-          {/* Right section with profile dropdown */}
+          {/* Right section with contact support and profile dropdown */}
           <div className="flex items-center gap-4 ml-auto">
-            <NotificationDropdown />
-            
-            <SettingsDialog 
-              trigger={
-                <Button variant="outline" size="icon" className="rounded-full bg-transparent border-white hover:bg-white hover:border-white transition-colors duration-200 header-icon-button">
-                  <Settings className="h-4 w-4 text-white [.header-icon-button:hover_&]:text-black transition-colors duration-200" />
-                  <span className="sr-only">Settings</span>
-                </Button>
-              } 
-            />
+            <div className="flex items-center gap-2">
+              <a href="mailto:support@beingconsultant.com" className="text-sm text-white hover:text-white transition-colors duration-200 flex items-center">
+                <Mail className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">support@beingconsultant.com</span>
+              </a>
+              <span className="hidden sm:inline text-white/50 mx-1">|</span>
+              <a href="https://wa.me/919108798798" target="_blank" rel="noopener noreferrer" className="text-sm text-white hover:text-[#25D366] transition-colors duration-200 flex items-center">
+                <MessageSquare className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">+91 91087 98798</span>
+              </a>
+            </div>
             
             <div className="profile-dropdown">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full bg-transparent hover:bg-white/10 transition-colors duration-200">
                     <Avatar className="h-9 w-9 border border-white">
-                      <AvatarImage src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/AjRKyR2dPa4q3GuHOle8Vz37jl0.jpg?alt=media&token=73072a47-91b6-47ab-bb50-948f02186228" alt={user?.displayName || "User"} />
+                      <AvatarImage src={getProfilePhotoUrl() || undefined} alt={userProfile?.firstName || user?.displayName || "User"} />
                       <AvatarFallback className="bg-primary/10 text-primary">
-                        {user?.displayName ? user.displayName.charAt(0).toUpperCase() : "U"}
+                        {getUserInitial()}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -1002,28 +1033,28 @@ function DashboardHeader({ activeDropdown, setActiveDropdown, sidebarState }: { 
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.displayName || "User"}</p>
+                      <p className="text-sm font-medium leading-none">
+                        {userProfile?.firstName && userProfile?.lastName 
+                          ? `${userProfile.firstName} ${userProfile.lastName}` 
+                          : user?.displayName || "User"}
+                      </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user?.email || "user@example.com"}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/profile')} className="hover:text-[#245D66] transition-colors duration-200">
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/profile')} className="hover:text-white transition-colors duration-200">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/order-history')} className="hover:text-[#245D66] transition-colors duration-200">
+                  <DropdownMenuItem onClick={() => router.push('/dashboard/order-history')} className="hover:text-white transition-colors duration-200">
                     <FileCheck className="mr-2 h-4 w-4" />
                     <span>Order History</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/dashboard/settings')} className="hover:text-[#245D66] transition-colors duration-200">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive hover:text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={handleLogout} className="text-white focus:text-white hover:text-white">
+                    <LogOut className="mr-2 h-4 w-4 text-white" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

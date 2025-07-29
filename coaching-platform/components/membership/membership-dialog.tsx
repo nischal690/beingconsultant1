@@ -41,32 +41,46 @@ interface MembershipDialogProps {
 const MEMBERSHIP_PLANS: MembershipPlan[] = [
   {
     id: "bc-plus-3-months",
-    title: "BC+ 3 Months",
+    title: "BC + 3 Months",
     duration: "3 months",
     price: 249,
     originalPrice: 299,
     discount: 25,
     features: [
-      "Access to all premium resources",
-      "Exclusive webinars and workshops",
-      "Community forum access",
-      "Discounts on coaching sessions",
-      "Priority support"
+      "1 on 1 Strategy Call with Gaurav to design your personalized Roadmap",
+      "Weekly \"Member only\" skill building workshop",
+      "1000+ handpicked Consulting cases from Top Firms",
+      "Full Break into Consulting Curriculum (CV, Case, Fit)",
+      "AI-Powered Video Case Coach for on-demand practice",
+      "Office hour with Gaurav (every week)",
+      "Jumpstart 100 - Learn the consulting mindset before Day 1",
+      "250+ PPT templates, 8+ Excel Models and real PE projects",
+      "Direct Whatsapp access to Top Consultants",
+      "10% Discount on Gaurav's 1 on 1 & Group Coaching",
+      "Value of the Content: $7500+",
+      "Value addition by Gaurav & other Mentors - Priceless"
     ]
   },
   {
     id: "bc-plus-6-months",
-    title: "BC+ 6 Months",
+    title: "BC + 6 Months",
     duration: "6 months",
     price: 399,
     originalPrice: 599,
     discount: 38,
     features: [
-      "All features from 3-month plan",
-      "Extended access period",
-      "Two free 1:1 coaching sessions",
-      "Resume review",
-      "Case interview preparation materials"
+      "1 on 1 Strategy Call with Gaurav to design your personalized Roadmap",
+      "Weekly \"Member only\" skill building workshop",
+      "1000+ handpicked Consulting cases from Top Firms",
+      "Full Break into Consulting Curriculum (CV, Case, Fit)",
+      "AI-Powered Video Case Coach for on-demand practice",
+      "Office hour with Gaurav (every week)",
+      "Jumpstart 100 - Learn the consulting mindset before Day 1",
+      "250+ PPT templates, 8+ Excel Models and real PE projects",
+      "Direct Whatsapp access to Top Consultants",
+      "10% Discount on Gaurav's 1 on 1 & Group Coaching",
+      "Value of the Content: $7500+",
+      "Value addition by Gaurav & other Mentors - Priceless"
     ]
   }
 ];
@@ -226,7 +240,7 @@ export function MembershipDialog({
           <div className="flex justify-between items-center">
             <div>
               <DialogTitle className="text-2xl font-bold">
-                Choose Your BC Plus Membership Plan
+                Choose Your BC + Membership Plan
               </DialogTitle>
               <DialogDescription className="text-white/70">
                 Select a plan that works best for you and unlock premium features
@@ -450,7 +464,7 @@ export function MembershipDialog({
           </Button>
           
           <div className="flex items-center text-white/60 text-xs">
-            <svg viewBox="0 0 24 24" className="h-4 w-4 mr-1 text-green-400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 24 24" className="h-4 w-4 mr-1 text-white" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             Secure payment processing

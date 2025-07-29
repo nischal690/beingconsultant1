@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { hasCompletedOnboarding, updateUserProfileWithOnboarding, getUserProfile } from "@/lib/firebase/firestore";
 import OnboardingForm, { OnboardingData } from "@/components/onboarding/OnboardingFormComponent";
@@ -11,6 +11,8 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextParam = searchParams.get('next');
   const [currentStep, setCurrentStep] = useState(1);
   const [existingUserData, setExistingUserData] = useState<Partial<OnboardingData> | null>(null);
 
@@ -53,9 +55,19 @@ export default function OnboardingPage() {
           
           setExistingUserData(existingData);
           
-          // If LinkedIn profile exists, redirect to dashboard
+          // Check if the user came from membership page and needs to be redirected back there
+          const fromMembership = nextParam === "/dashboard/membership";
+          
+          // If user came from membership but is not yet a member, redirect back to membership
+          if (fromMembership && !profileData.isMember) {
+            console.log("User came from membership but hasn't purchased yet, redirecting back to membership");
+            router.push("/dashboard/membership");
+            return;
+          }
+          
+          // If LinkedIn profile exists and onboarding is completed, redirect to dashboard
           if (profileData.linkedInProfile && profileData.onboardingCompleted) {
-            router.push("/dashboard");
+            router.push(nextParam || "/dashboard");
             return;
           }
         }
@@ -63,7 +75,7 @@ export default function OnboardingPage() {
         // Otherwise check if they've completed onboarding
         const completed = await hasCompletedOnboarding(user.uid);
         if (completed) {
-          router.push("/dashboard");
+          router.push(nextParam || "/dashboard");
         } else {
           setLoading(false);
         }
@@ -74,7 +86,7 @@ export default function OnboardingPage() {
     };
 
     checkOnboarding();
-  }, [user, router]);
+  }, [user, router, nextParam]);
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
     if (!user) return;
@@ -82,7 +94,7 @@ export default function OnboardingPage() {
     try {
       setLoading(true);
       await updateUserProfileWithOnboarding(user.uid, data);
-      router.push("/dashboard");
+      router.push(nextParam || "/dashboard");
     } catch (error) {
       console.error("Error saving onboarding data:", error);
       setLoading(false);

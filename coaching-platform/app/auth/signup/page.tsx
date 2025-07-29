@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,6 +31,8 @@ export default function SignupPage() {
   const [verificationSent, setVerificationSent] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const nextParam = searchParams.get('next')
   const { signUp, signInWithGoogle, signInWithApple, user, loading } = useAuth()
   
   // Check for existing authentication from shared cookies
@@ -52,22 +54,29 @@ export default function SignupPage() {
   // Check if user has completed LinkedIn profile and route accordingly
   const checkProfileAndRoute = async (userId: string) => {
     try {
+      // If next parameter is /dashboard/membership, redirect directly to membership page
+      if (nextParam === "/dashboard/membership") {
+        console.log("Redirecting new user directly to membership page")
+        router.push("/dashboard/membership")
+        return
+      }
+      
       const userProfileResult = await getUserProfile(userId)
       
       if (userProfileResult.success && 
           userProfileResult.data && 
           userProfileResult.data.linkedInProfile && 
           userProfileResult.data.linkedInProfile.trim() !== '') {
-        // LinkedIn profile exists, route to dashboard
-        router.push("/dashboard")
+        // LinkedIn profile exists, route accordingly
+        router.push(nextParam || "/dashboard")
       } else {
         // LinkedIn profile doesn't exist or is empty, route to onboarding
-        router.push("/onboarding")
+        router.push(`/onboarding${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ''}`)
       }
     } catch (error) {
       console.error("Error checking user profile:", error)
       // Default to onboarding in case of error
-      router.push("/onboarding")
+      router.push(`/onboarding${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ''}`)
     }
   }
 
@@ -191,11 +200,11 @@ export default function SignupPage() {
           router.push("/dashboard")
         } else {
           toast.success("Signed in with Google!")
-          router.push("/onboarding")
+          router.push(`/onboarding${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ''}`)
         }
       } else {
         toast.success("Signed in with Google!")
-        router.push("/onboarding")
+        router.push(`/onboarding${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ''}`)
       }
     } catch (error) {
       console.error("Google sign in error:", error)
@@ -240,11 +249,11 @@ export default function SignupPage() {
           router.push("/dashboard")
         } else {
           toast.success("Signed in with Apple!")
-          router.push("/onboarding")
+          router.push(`/onboarding${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ''}`)
         }
       } else {
         toast.success("Signed in with Apple!")
-        router.push("/onboarding")
+        router.push(`/onboarding${nextParam ? `?next=${encodeURIComponent(nextParam)}` : ''}`)
       }
     } catch (error) {
       console.error("Apple sign in error:", error)

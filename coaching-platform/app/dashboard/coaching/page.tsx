@@ -712,15 +712,23 @@ export default function CoachingPage() {
               transition={{ duration: 0.8 }}
               className="relative order-2 lg:order-1"
             >
-              <div className="flex justify-center">
-              <Image
-                src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Product%2F3circle.png?alt=media&token=95525ca4-f213-4707-99e4-b3853a08e9f9"
-                alt="Coaching Advantage Diagram"
-                width={400}
-                height={400}
-                className="object-contain h-[320px] w-auto"
-                priority
-              />
+              <div className="flex flex-col items-center justify-center">
+                {/* Coach Photo */}
+                <Image
+                  src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Product%20Thumbnails%2Fcoachphoto.png?alt=media&token=1a7a3bf2-cd84-4010-b2ef-82b52646af56"
+                  alt="Coach photo"
+                  width={400}
+                  height={400}
+                  className="object-contain h-[300px] md:h-[350px] w-auto mb-6 lg:mb-8"
+                />
+                <Image
+                  src="https://firebasestorage.googleapis.com/v0/b/beingconsultant-e5c75.firebasestorage.app/o/Product%2F3circle.png?alt=media&token=95525ca4-f213-4707-99e4-b3853a08e9f9"
+                  alt="Coaching Advantage Diagram"
+                  width={400}
+                  height={400}
+                  className="object-contain h-[320px] w-auto"
+                  priority
+                />
                 {/* Venn Diagram Container */}
                 <div className="relative w-full h-full flex items-center justify-center hidden">
                   {/* SVG-based Venn Diagram for precise control */}
@@ -1299,7 +1307,7 @@ export default function CoachingPage() {
             {/* Cohort Size */}
             {selectedProgramDetails?.cohortSize && (
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-[#245D66]" />
+                <Users className="h-5 w-5 text-white" />
                 <div>
                   <p className="text-sm font-medium text-white">Cohort Size</p>
                   <p className="text-sm text-white/70">{selectedProgramDetails.cohortSize}</p>
@@ -1310,7 +1318,7 @@ export default function CoachingPage() {
             {/* Timeline */}
             {selectedProgramDetails?.timeline && (
               <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-[#245D66]" />
+                <Clock className="h-5 w-5 text-white" />
                 <div>
                   <p className="text-sm font-medium text-white">Timeline</p>
                   <p className="text-sm text-white/70">{selectedProgramDetails.timeline}</p>
@@ -1335,7 +1343,7 @@ export default function CoachingPage() {
                 <ul className="space-y-2">
                   {selectedProgramDetails.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <CheckCircle className="h-4 w-4 text-[#245D66] mt-0.5" />
+                      <CheckCircle className="h-4 w-4 text-white mt-0.5" />
                       <span className="text-sm text-white/70">{feature}</span>
                     </li>
                   ))}
@@ -1345,7 +1353,7 @@ export default function CoachingPage() {
           </div>
 
           <DialogFooter className="mt-6">
-            <Button className="bg-[#245D66] text-white hover:bg-[#1A444B] w-full" onClick={() => setShowDetailsDialog(false)}>
+            <Button className="bg-primary text-white hover:bg-primary/90 w-full" onClick={() => setShowDetailsDialog(false)}>
               Close
             </Button>
           </DialogFooter>

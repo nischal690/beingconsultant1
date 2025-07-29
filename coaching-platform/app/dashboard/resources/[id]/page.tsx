@@ -25,6 +25,8 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/lib/firebase/auth-context"
+import { trackResourceAccess, updateProductAccessTime } from "@/lib/firebase/firestore"
 
 // Define the product type
 interface Product {
@@ -140,6 +142,7 @@ const products: Record<string, Product> = {
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { user } = useAuth()
   const [isLoaded, setIsLoaded] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
   const [isInCart, setIsInCart] = useState(false)

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { getUserProfile, timestampToDate, updateUserProfile } from "@/lib/firebase/firestore";
+import { sendBCPlusWelcomeEmail } from "@/lib/firebase/email";
 import { toast } from "sonner";
 
 // Function to format date in DD/MON/YYYY format
@@ -66,7 +67,7 @@ export default function AlreadyMemberPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-sidebar text-sidebar-foreground p-8 text-center">
       <Crown className="h-16 w-16 text-yellow-400 mb-4" />
-      <h1 className="text-3xl md:text-4xl font-bold mb-4">You’re already a BC Plus member!</h1>
+      <h1 className="text-3xl md:text-4xl font-bold mb-4">You’re already a BC + member!</h1>
       {expiry && <p className="mb-6 text-lg">Your membership expires on {expiry}</p>}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-xl w-full">
         <div className="flex gap-3 items-start">
@@ -142,6 +143,29 @@ export default function AlreadyMemberPage() {
                 membershipPlan: plan.id,
                 membershipExpiry: expiry.toISOString(),
               });
+              
+              // Send BC + welcome email for free membership extension
+              try {
+                console.log('Sending BC + welcome email for free membership extension to:', user.email);
+                // Get user's first name if available
+                let firstName = '';
+                if (user.displayName) {
+                  const nameParts = user.displayName.split(' ');
+                  firstName = nameParts[0] || '';
+                } else if (user.email) {
+                  firstName = user.email.split('@')[0].split('.')[0];
+                  firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+                }
+                
+                // Send welcome email
+                if (user.email) {
+                  await sendBCPlusWelcomeEmail(user.email, firstName);
+                  console.log('BC + welcome email sent successfully');
+                }
+              } catch (emailError) {
+                console.error('Error sending BC + welcome email:', emailError);
+                // Don't fail the entire process if email sending fails
+              }
               
               toast.success('Membership extended successfully!');
               setExpiry(formatDateToDDMonYYYY(expiry));

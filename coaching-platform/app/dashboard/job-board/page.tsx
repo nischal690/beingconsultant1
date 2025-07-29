@@ -157,48 +157,48 @@ export default function JobBoardPage() {
     };
     
     return (
-      <div className="group relative border border-white/10 hover:border-[#245D66]/50 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#245D66]/20 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-sm hover:scale-[1.02] transform">
+      <div className="group relative border border-white/10 hover:border-[#245D66]/50 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#245D66]/20 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-sm hover:scale-[1.02] transform h-full flex flex-col">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#245D66]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         
         {/* Status badges */}
-        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-1">
           {job.urgent && (
-            <div className="bg-white text-black text-xs font-bold px-3 py-1 rounded-full flex items-center animate-pulse">
+            <div className="bg-white text-black text-xs font-bold px-2 py-1 rounded-full flex items-center animate-pulse">
               <Zap className="w-3 h-3 mr-1" />
               URGENT
             </div>
           )}
           {job.featured && (
-            <div className="bg-[#245D66] text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center">
+            <div className="bg-[#245D66] text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center">
               <Star className="w-3 h-3 mr-1 fill-current" />
               Featured
             </div>
           )}
         </div>
         
-        <div className="relative p-8">
+        <div className="relative p-6 flex-1 flex flex-col">
           {/* Header */}
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/10 group-hover:border-[#245D66]/30 transition-colors duration-300">
-                  <Building className="h-8 w-8 text-white/80" />
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
+              <div className="relative flex-shrink-0">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/10 group-hover:border-[#245D66]/30 transition-colors duration-300">
+                  <Building className="h-6 w-6 text-white/80" />
                 </div>
                 {job.verified && (
                   <div className="absolute -bottom-1 -right-1 bg-[#245D66] rounded-full p-1">
-                    <CheckCircle className="w-4 h-4 text-white" />
+                    <CheckCircle className="w-3 h-3 text-white" />
                   </div>
                 )}
               </div>
-              <div>
-                <h3 className="text-2xl font-bold text-white group-hover:text-[#245D66] transition-colors duration-300 mb-1">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-bold text-white group-hover:text-[#245D66] transition-colors duration-300 mb-1 line-clamp-2">
                   {job.job_title}
                 </h3>
                 <div className="flex items-center space-x-2">
-                  <p className="text-white/70 font-medium">{job.company_name}</p>
+                  <p className="text-white/70 font-medium text-sm truncate">{job.company_name}</p>
                   {job.verified && (
-                    <Badge variant="outline" className="bg-[#245D66]/20 text-[#245D66] border-[#245D66]/30 text-xs">
+                    <Badge variant="outline" className="bg-[#245D66]/20 text-[#245D66] border-[#245D66]/30 text-xs flex-shrink-0">
                       Verified
                     </Badge>
                   )}
@@ -209,10 +209,10 @@ export default function JobBoardPage() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-10 w-10 rounded-full hover:bg-white/10 transition-all duration-300 hover:scale-110"
+              className="h-8 w-8 rounded-full hover:bg-white/10 transition-all duration-300 hover:scale-110 flex-shrink-0 ml-2"
               onClick={() => toggleSaveJob(job.ID || job.id)}
             >
-              <Heart className={`h-6 w-6 transition-all duration-300 ${
+              <Heart className={`h-5 w-5 transition-all duration-300 ${
                 savedJobs.has(job.ID || job.id) 
                   ? 'text-white fill-white' 
                   : 'text-white/60 hover:text-white'
@@ -220,68 +220,77 @@ export default function JobBoardPage() {
             </Button>
           </div>
           
-          {/* Job details grid */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="flex items-center text-white/70 bg-white/5 rounded-xl p-3 border border-white/10">
-              <MapPin className="h-5 w-5 mr-3 text-[#245D66]" />
-              <span className="font-medium">{job.location}</span>
+          {/* Job details - Compact grid */}
+          <div className="grid grid-cols-1 gap-3 mb-4 flex-1">
+            <div className="flex items-center text-white/70 bg-white/5 rounded-lg p-2 border border-white/10">
+              <MapPin className="h-4 w-4 mr-2 text-[#245D66] flex-shrink-0" />
+              <span className="font-medium text-sm truncate">{job.location}</span>
             </div>
-            <div className="flex items-center text-white/70 bg-white/5 rounded-xl p-3 border border-white/10">
-              <Clock className="h-5 w-5 mr-3 text-[#245D66]" />
-              <span className="font-medium">{formatDate(job.job_posted_on)}</span>
+            <div className="flex items-center text-white/70 bg-white/5 rounded-lg p-2 border border-white/10">
+              <Clock className="h-4 w-4 mr-2 text-[#245D66] flex-shrink-0" />
+              <span className="font-medium text-sm truncate">{formatDate(job.job_posted_on)}</span>
             </div>
-            <div className="flex items-center text-white/70 bg-white/5 rounded-xl p-3 border border-white/10">
-              <Users className="h-5 w-5 mr-3 text-[#245D66]" />
-              <span className="font-medium">{job.experience_required_in_yrs || "NA"}</span>
+            <div className="flex items-center text-white/70 bg-white/5 rounded-lg p-2 border border-white/10">
+              <Users className="h-4 w-4 mr-2 text-[#245D66] flex-shrink-0" />
+              <span className="font-medium text-sm">{job.experience_required_in_yrs || "NA"} yrs</span>
             </div>
-            <div className="flex items-center text-white/70 bg-white/5 rounded-xl p-3 border border-white/10">
-              <GraduationCap className="h-5 w-5 mr-3 text-[#245D66]" />
-              <span className="font-medium">{job.qualification || "Not specified"}</span>
+            <div className="flex items-center text-white/70 bg-white/5 rounded-lg p-2 border border-white/10">
+              <GraduationCap className="h-4 w-4 mr-2 text-[#245D66] flex-shrink-0" />
+              <span className="font-medium text-sm truncate">{job.country}</span>
             </div>
           </div>
           
-          {/* Description */}
-          <div className="mb-6">
-            <p className="text-white/80 leading-relaxed">
+          {/* Description - Compact */}
+          <div className="mb-4">
+            <p className="text-white/80 text-sm leading-relaxed line-clamp-3">
               {job.description || "No description available."}
             </p>
           </div>
           
-          {/* Requirements - if available */}
+          {/* Requirements - Compact display */}
           {job.requirements && Array.isArray(job.requirements) && job.requirements.length > 0 && (
-            <div className="mb-8">
-              <h4 className="text-white font-semibold mb-3 flex items-center">
-                <Award className="h-4 w-4 mr-2 text-[#245D66]" />
-                Key Requirements
+            <div className="mb-4">
+              <h4 className="text-white font-semibold mb-2 flex items-center text-sm">
+                <Award className="h-3 w-3 mr-1 text-[#245D66]" />
+                Requirements
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {job.requirements.map((req: any, index: number) => (
+              <div className="flex flex-wrap gap-1">
+                {job.requirements.slice(0, 3).map((req: any, index: number) => (
                   <Badge 
                     key={index} 
                     variant="outline" 
-                    className="bg-white/10 text-white/90 border-white/20 hover:bg-[#245D66]/20 hover:border-[#245D66]/50 transition-all duration-300 px-3 py-1"
+                    className="bg-white/10 text-white/90 border-white/20 hover:bg-[#245D66]/20 hover:border-[#245D66]/50 transition-all duration-300 px-2 py-1 text-xs"
                   >
                     {req}
                   </Badge>
                 ))}
+                {job.requirements.length > 3 && (
+                  <Badge 
+                    variant="outline" 
+                    className="bg-white/10 text-white/90 border-white/20 px-2 py-1 text-xs"
+                  >
+                    +{job.requirements.length - 3} more
+                  </Badge>
+                )}
               </div>
             </div>
           )}
           
-          {/* Action buttons */}
-          <div className="flex gap-3">
+          {/* Action buttons - Compact */}
+          <div className="flex gap-2 mt-auto">
             <Button 
-              className="flex-1 bg-[#245D66] hover:bg-[#1a474f] text-white py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-[#245D66]/30 hover:scale-105 font-semibold"
+              className="flex-1 bg-[#245D66] hover:bg-[#1a474f] text-white py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-[#245D66]/30 font-semibold text-sm"
               onClick={() => job.job_application_link && window.open(job.job_application_link, "_blank")}
             >
               Apply Now
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+              <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
             <Button 
               variant="outline" 
-              className="px-6 border-white/20 text-white hover:bg-white hover:text-black transition-all duration-300 rounded-xl"
+              size="icon"
+              className="border-white/20 text-white hover:bg-white hover:text-black transition-all duration-300 rounded-lg h-9 w-9"
             >
-              <Bookmark className="h-5 w-5" />
+              <Bookmark className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -365,7 +374,7 @@ export default function JobBoardPage() {
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-3">Company</label>
                 <select 
-                  className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-3 px-4 text-white backdrop-blur-sm focus:border-[#245D66] transition-colors duration-300"
+                  className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-3 px-4 text-white backdrop-blur-sm focus:border-white transition-colors duration-300"
                   value={selectedCompany}
                   onChange={(e) => setSelectedCompany(e.target.value)}
                   disabled={filterOptionsLoading}
@@ -382,7 +391,7 @@ export default function JobBoardPage() {
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-3">Country</label>
                 <select 
-                  className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-3 px-4 text-white backdrop-blur-sm focus:border-[#245D66] transition-colors duration-300"
+                  className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-3 px-4 text-white backdrop-blur-sm focus:border-white transition-colors duration-300"
                   value={selectedCountry}
                   onChange={(e) => setSelectedCountry(e.target.value)}
                   disabled={filterOptionsLoading}
@@ -399,7 +408,7 @@ export default function JobBoardPage() {
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-3">Location</label>
                 <select 
-                  className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-3 px-4 text-white backdrop-blur-sm focus:border-[#245D66] transition-colors duration-300"
+                  className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-3 px-4 text-white backdrop-blur-sm focus:border-white transition-colors duration-300"
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
                   disabled={filterOptionsLoading}
@@ -420,13 +429,13 @@ export default function JobBoardPage() {
         {/* Job listings section with heading */}
         <div className="mb-12">
           <h3 className="text-2xl font-bold mb-8 flex items-center">
-            <Briefcase className="mr-3 h-6 w-6 text-[#245D66]" />
+            <Briefcase className="mr-3 h-6 w-6 text-white" />
             Available Opportunities
           </h3>
           
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-16 h-16 border-4 border-t-[#245D66] border-white/20 rounded-full animate-spin mb-4"></div>
+              <div className="w-16 h-16 border-4 border-t-white border-white/20 rounded-full animate-spin mb-4"></div>
               <p className="text-white/70 text-lg">Loading jobs...</p>
             </div>
           ) : error ? (
@@ -436,30 +445,33 @@ export default function JobBoardPage() {
               </div>
               <Button 
                 onClick={() => window.location.reload()} 
-                className="bg-[#245D66] hover:bg-[#1a474f] text-white py-2 px-4 rounded-xl"
+                className="bg-primary hover:bg-primary/80 text-white py-2 px-4 rounded-xl"
               >
                 Try Again
               </Button>
             </div>
           ) : (
-            <div className="space-y-8">
+            <div>
               {allJobs.length === 0 ? (
                 <div className="text-center py-10">
                   <p className="text-white/70 text-lg">No jobs available at the moment.</p>
                 </div>
               ) : (
-                allJobs
-                  .filter(job => {
-                    // Apply filters
-                    const matchesCountry = selectedCountry === "All Countries" || job.country === selectedCountry;
-                    const matchesLocation = selectedLocation === "All Locations" || job.location === selectedLocation;
-                    const matchesCompany = selectedCompany === "All Companies" || job.company === selectedCompany;
-                    
-                    return matchesCountry && matchesLocation && matchesCompany;
-                  })
-                  .map((job) => (
-                    <JobCard key={job.id || job.ID} job={job} />
-                  ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {allJobs
+                    .filter(job => {
+                      // Apply filters
+                      const matchesCountry = selectedCountry === "All Countries" || job.country === selectedCountry;
+                      const matchesLocation = selectedLocation === "All Locations" || job.location === selectedLocation;
+                      const matchesCompany = selectedCompany === "All Companies" || job.company === selectedCompany;
+                      
+                      return matchesCountry && matchesLocation && matchesCompany;
+                    })
+                    .map((job) => (
+                      <JobCard key={job.id || job.ID} job={job} />
+                    ))
+                  }
+                </div>
               )}
             </div>
           )}

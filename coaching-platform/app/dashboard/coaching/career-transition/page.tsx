@@ -8,8 +8,8 @@ export default function CareerTransitionPage() {
         <div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left Section */}
           <div className="flex flex-col items-start space-y-8">
-            <div className="flex items-center space-x-2 text-green-200 text-sm font-medium">
-              <FaMagic className="text-green-400" />
+            <div className="flex items-center space-x-2 text-white text-sm font-medium">
+              <FaMagic className="text-white" />
               <span>Digital Career Transition Coach</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
@@ -51,7 +51,7 @@ export default function CareerTransitionPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
             {/* Exit Planning & Readiness */}
             <div className="flex flex-col items-center">
-              <span className="text-green-300 text-4xl mb-4">
+              <span className="text-white text-4xl mb-4">
                 {/* Palm Tree Icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 30V14M16 14c-3.866 0-7-3.134-7-7M16 14c3.866 0 7-3.134 7-7M16 14C7.163 14 2 8.837 2 8.837S8.837 2 16 2c7.163 0 14 6.837 14 6.837S24.837 14 16 14z" /></svg>
               </span>
@@ -62,7 +62,7 @@ export default function CareerTransitionPage() {
             </div>
             {/* Career Coaching */}
             <div className="flex flex-col items-center">
-              <span className="text-green-300 text-4xl mb-4">
+              <span className="text-white text-4xl mb-4">
                 {/* Building Icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 28V6a2 2 0 012-2h16a2 2 0 012 2v22M6 28h20M10 28V14m4 14V18m4 10V10m4 18V6" /></svg>
               </span>
@@ -73,7 +73,7 @@ export default function CareerTransitionPage() {
             </div>
             {/* Career Transition */}
             <div className="flex flex-col items-center">
-              <span className="text-green-300 text-4xl mb-4">
+              <span className="text-white text-4xl mb-4">
                 {/* Arrow Icon */}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" stroke="currentColor" className="w-12 h-12"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M24 8l4 4-4 4M28 12H12a8 8 0 100 16h8" /></svg>
               </span>
@@ -89,16 +89,16 @@ export default function CareerTransitionPage() {
               <div className="flex-1">
                 <ul className="space-y-4 text-left">
                   <li className="flex items-center text-black font-semibold text-base">
-                    <span className="mr-2 text-green-600">●</span> Personalised Session to Suit your needs
+                    <span className="mr-2 text-white">●</span> Personalised Session to Suit your needs
                   </li>
                   <li className="flex items-center text-black font-semibold text-base">
-                    <span className="mr-2 text-green-600">●</span> Career Growth, Appraisal
+                    <span className="mr-2 text-white">●</span> Career Growth, Appraisal
                   </li>
                   <li className="flex items-center text-black font-semibold text-base">
-                    <span className="mr-2 text-green-600">●</span> Career Transition, Exit
+                    <span className="mr-2 text-white">●</span> Career Transition, Exit
                   </li>
                   <li className="flex items-center text-black font-semibold text-base">
-                    <span className="mr-2 text-green-600">●</span> Specific Professional Scenarios
+                    <span className="mr-2 text-white">●</span> Specific Professional Scenarios
                   </li>
                 </ul>
               </div>
@@ -139,9 +139,9 @@ export default function CareerTransitionPage() {
             {/* Redesigned testimonial cards */}
             {[...Array(2)].flatMap((_, idx) => [
               <div key={`t1-${idx}`} className="min-w-[220px] max-w-[220px] h-[380px] bg-black/60 border border-white/10 shadow-2xl rounded-2xl flex flex-col justify-between backdrop-blur-xl hover:border-white/30 transition-all duration-300 p-6 group/card relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
                 <div>
-                  <div className="flex text-green-400 mb-4">
+                  <div className="flex text-white mb-4">
                     {[...Array(5)].map((_, i) => (
                       <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -158,9 +158,9 @@ export default function CareerTransitionPage() {
                 </div>
               </div>,
               <div key={`t2-${idx}`} className="min-w-[220px] max-w-[220px] h-[380px] bg-black/60 border border-white/10 shadow-2xl rounded-2xl flex flex-col justify-between backdrop-blur-xl hover:border-white/30 transition-all duration-300 p-6 group/card relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
                 <div>
-                  <div className="flex text-green-400 mb-4">
+                  <div className="flex text-white mb-4">
                     {[...Array(5)].map((_, i) => (
                       <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -177,9 +177,9 @@ export default function CareerTransitionPage() {
                 </div>
               </div>,
               <div key={`t3-${idx}`} className="min-w-[220px] max-w-[220px] h-[380px] bg-black/60 border border-white/10 shadow-2xl rounded-2xl flex flex-col justify-between backdrop-blur-xl hover:border-white/30 transition-all duration-300 p-6 group/card relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
                 <div>
-                  <div className="flex text-green-400 mb-4">
+                  <div className="flex text-white mb-4">
                     {[...Array(5)].map((_, i) => (
                       <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -196,9 +196,9 @@ export default function CareerTransitionPage() {
                 </div>
               </div>,
               <div key={`t4-${idx}`} className="min-w-[220px] max-w-[220px] h-[380px] bg-black/60 border border-white/10 shadow-2xl rounded-2xl flex flex-col justify-between backdrop-blur-xl hover:border-white/30 transition-all duration-300 p-6 group/card relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
                 <div>
-                  <div className="flex text-green-400 mb-4">
+                  <div className="flex text-white mb-4">
                     {[...Array(5)].map((_, i) => (
                       <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -215,9 +215,9 @@ export default function CareerTransitionPage() {
                 </div>
               </div>,
               <div key={`t5-${idx}`} className="min-w-[220px] max-w-[220px] h-[380px] bg-black/60 border border-white/10 shadow-2xl rounded-2xl flex flex-col justify-between backdrop-blur-xl hover:border-white/30 transition-all duration-300 p-6 group/card relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-400/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500" />
                 <div>
-                  <div className="flex text-green-400 mb-4">
+                  <div className="flex text-white mb-4">
                     {[...Array(5)].map((_, i) => (
                       <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />

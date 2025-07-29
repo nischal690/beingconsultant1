@@ -24,7 +24,7 @@ interface LocalProduct extends Product {
 
 const GritFramework = () => {
   const { products: allProducts, loading: productsCacheLoading } = useProducts();
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [expandedCards, setExpandedCards] = useState<string[]>([]);
   const [expandedStages, setExpandedStages] = useState<{[key: string]: boolean}>({});
   const [products, setProducts] = useState<{[key: string]: LocalProduct[]}>({});
   const [loading, setLoading] = useState<{[key: string]: boolean}>({});
@@ -32,12 +32,12 @@ const GritFramework = () => {
 
   // Restore previously selected career module on component mount
   useEffect(() => {
-    if (selectedSection && !expandedCard) {
-      setExpandedCard(selectedSection.id);
+    if (selectedSection && expandedCards.length === 0) {
+      setExpandedCards([selectedSection.id]);
       // Pre-fetch products so that the list is ready without extra click
       fetchProductsByCareerModule(selectedSection.id);
     }
-  }, [selectedSection]);
+  }, [selectedSection, expandedCards]);
 
   // Career module mapping to Firestore careerStage field
   const careerStageMapping: {[key: string]: string} = {
@@ -100,20 +100,29 @@ const GritFramework = () => {
 
   // Handle card expansion and fetch products
   const handleCardExpand = (cardId: string, cardTitle: string) => {
-    console.log(`[GRIT Framework] Card ${cardId} clicked. Current expanded card: ${expandedCard}`);
-    const isExpanding = expandedCard !== cardId;
-    const newExpandedCard = isExpanding ? cardId : null;
-    
-    setExpandedCard(newExpandedCard);
-    
-    // Save to localStorage when expanding a GRIT section (toast notification removed)
-    if (isExpanding) {
-      updateSelectedSection(cardId, cardTitle);
+    console.log(`[GRIT Framework] Card ${cardId} clicked. Current expanded cards: ${expandedCards}`);
+  
+    // Check if this card is already expanded
+    const isCurrentlyExpanded = expandedCards.includes(cardId);
+  
+    // Toggle the expanded state for this card
+    let newExpandedCards;
+    if (isCurrentlyExpanded) {
+      // Remove this card from expanded cards
+      newExpandedCards = expandedCards.filter(id => id !== cardId);
+    } else {
+      // Add this card to expanded cards
+      newExpandedCards = [...expandedCards, cardId];
     }
-    
-    if (newExpandedCard) {
-      console.log(`[GRIT Framework] Expanding card ${newExpandedCard}, will fetch products`);
-      fetchProductsByCareerModule(newExpandedCard);
+  
+    // Set the new expanded cards
+    setExpandedCards(newExpandedCards);
+  
+    // Save to localStorage when expanding a GRIT section
+    if (!isCurrentlyExpanded) {
+      updateSelectedSection(cardId, cardTitle);
+      console.log(`[GRIT Framework] Expanding card ${cardId}, will fetch products`);
+      fetchProductsByCareerModule(cardId);
     } else {
       console.log(`[GRIT Framework] Collapsing card ${cardId}, no products will be fetched`);
     }
@@ -574,7 +583,7 @@ const GritFramework = () => {
           <div className="space-y-4">
             {gritItems.map((item, index) => {
               const Icon = item.icon;
-              const isExpanded = expandedCard === item.id;
+              const isExpanded = expandedCards.includes(item.id);
               
               return (
                 <div
@@ -623,7 +632,7 @@ const GritFramework = () => {
 
                     {/* Expanded Content */}
                     <div className={`overflow-hidden transition-all duration-500 ${
-                      isExpanded ? 'max-h-[800px] mt-6' : 'max-h-0'
+                      isExpanded ? 'mt-6' : 'max-h-0'
                     }`}>
                       <div className="pt-4 border-t border-gray-800/50">
                         <p className="text-gray-400 text-sm leading-relaxed italic mb-6">
@@ -632,7 +641,7 @@ const GritFramework = () => {
 
                         {/* Stage List for items that have stages */}
                         {item.stages && item.stages.length > 0 && (
-                          <div className="space-y-4 mb-8">
+                          <div className="space-y-4 mb-8 pr-2">
                             {item.stages.map((stage, idx) => {
                               const stageKey = `${item.id}-stage-${idx}`;
                               const isStageExpanded = expandedStages[stageKey];
@@ -656,7 +665,7 @@ const GritFramework = () => {
                                   </div>
                                   
                                   {/* Stage Expanded Content */}
-                                  <div className={`overflow-hidden transition-all duration-300 ${isStageExpanded ? 'max-h-[500px]' : 'max-h-0'}`}>
+                                  <div className={`overflow-hidden transition-all duration-300 ${isStageExpanded ? '' : 'max-h-0'}`}>
                                     <div className="p-3 pt-0 border-t border-gray-700/30">
                                       {/* Resources for this stage */}
                                       <div className="py-3">
@@ -682,10 +691,10 @@ const GritFramework = () => {
                                                   <div className="flex flex-col h-full bg-white rounded-md overflow-hidden transition-colors shadow-md hover:shadow-lg">
                                                     <div className="p-3">
                                                       <div className="flex items-center mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3">
                                                           {getProductIcon('coaching')}
                                                         </div>
-                                                        <span className="text-[#245D66] text-sm font-semibold">
+                                                        <span className="text-white text-sm font-semibold">
                                                           One-on-One Coaching
                                                         </span>
                                                       </div>
@@ -707,10 +716,10 @@ const GritFramework = () => {
                                                   <div className="flex flex-col h-full bg-white rounded-md overflow-hidden transition-colors shadow-md hover:shadow-lg">
                                                     <div className="p-3">
                                                       <div className="flex items-center mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3">
                                                           {getProductIcon('video')}
                                                         </div>
-                                                        <span className="text-[#245D66] text-sm font-semibold">
+                                                        <span className="text-white text-sm font-semibold">
                                                           AI Case Coach
                                                         </span>
                                                       </div>
@@ -729,10 +738,10 @@ const GritFramework = () => {
                                                   <div className="flex flex-col h-full bg-white rounded-md overflow-hidden transition-colors shadow-md hover:shadow-lg">
                                                     <div className="p-3">
                                                       <div className="flex items-center mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3">
                                                           {getProductIcon('video')}
                                                         </div>
-                                                        <span className="text-[#245D66] text-sm font-semibold">
+                                                        <span className="text-white text-sm font-semibold">
                                                           Podcast
                                                         </span>
                                                       </div>
@@ -775,10 +784,10 @@ const GritFramework = () => {
                                                     {/* Content - Simplified Rectangle */}
                                                     <div className="p-3">
                                                       <div className="flex items-center mb-2">
-                                                        <div className="w-8 h-8 rounded-full bg-[#245D66]/10 flex items-center justify-center mr-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3">
                                                           {getProductIcon(product.type)}
                                                         </div>
-                                                        <span className="text-[#245D66] text-sm font-semibold">
+                                                        <span className="text-white text-sm font-semibold">
                                                           {product.type}
                                                         </span>
                                                       </div>
@@ -807,7 +816,7 @@ const GritFramework = () => {
                   {/* Progress Indicator */}
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800/50">
                     <div 
-                      className="h-full bg-gradient-to-r from-[#245D66] to-[#245D66]/70 transition-all duration-700"
+                      className="h-full bg-gradient-to-r from-white to-white/70 transition-all duration-700"
                       style={{ width: `${((index + 1) / gritItems.length) * 100}%` }}
                     ></div>
                   </div>

@@ -634,9 +634,7 @@ export default function MasterclassPage() {
                           ENROLLED
                         </div>
                       )}
-                      <div className="px-2 py-1 bg-black/50 text-white text-xs font-semibold rounded backdrop-blur-sm">
-                        {mc.level}
-                      </div>
+
                     </div>
                   </div>
 
@@ -655,11 +653,20 @@ export default function MasterclassPage() {
                       </div>
                     )}
                     
-                    {/* Membership status - show if included in membership */}
-                    {mc.includedInMembership && (
-                      <div className="flex items-center mb-2">
-                        <span className="text-xs text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">
-                          <span className="mr-1">✓</span> Included in BC Plus Membership
+                    {/* Membership status - show if included in membership and NOT free */}
+                    {mc.includedInMembership && mc.isFree !== true && (
+                      <div className="flex items-center justify-center mb-2">
+                        <span className="w-full text-center text-xs text-green-600 flex items-center justify-center bg-green-50 px-2 py-1 rounded-full">
+                          <span className="mr-1">✓</span> Included in BC + Membership
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Free resource indicator */}
+                    {mc.isFree === true && (
+                      <div className="flex items-center justify-center mb-2">
+                        <span className="w-full text-center text-xs text-blue-600 flex items-center justify-center bg-blue-50 px-2 py-1 rounded-full">
+                          <Zap className="mr-1 h-3 w-3" /> Access Our Free Resource
                         </span>
                       </div>
                     )}

@@ -9,6 +9,7 @@ import { MembershipDialog, MembershipPlan, Coupon } from "@/components/membershi
 import { toast } from "sonner";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { getUserProfile, timestampToDate, updateUserProfile } from "@/lib/firebase/firestore";
+import { sendBCPlusWelcomeEmail } from "@/lib/firebase/email";
 import { useRouter } from "next/navigation";
 
 export default function MembershipPage() {
@@ -77,6 +78,18 @@ export default function MembershipPage() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Track if the user came directly from signup
+  const [fromSignup, setFromSignup] = useState(false);
+  
+  // Check if the user came directly from signup
+  useEffect(() => {
+    const referrer = document.referrer;
+    if (referrer && referrer.includes('/auth/signup')) {
+      setFromSignup(true);
+      console.log('User came directly from signup');
+    }
+  }, []);
+
   // Redirect to a dedicated page if user is already a member (must run on every render cycle before early returns)
   useEffect(() => {
     if (isMember) {
@@ -117,90 +130,88 @@ export default function MembershipPage() {
 
       <div className="relative z-10 flex flex-col gap-16 py-12 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
         {/* Hero Section */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#245D66] via-[#1e4a4f] to-black text-white p-12 md:p-16">
-          {/* Animated background elements */}
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#245D66] via-[#1e4a4f] to-black text-white p-12 md:p-16">
+          {/* Subtle background elements */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -right-40 -top-40 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-pulse-slow" />
-            <div className="absolute -left-40 -bottom-40 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse-slow" />
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-20 animate-shimmer" />
+            <div className="absolute -right-20 -top-20 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
+            <div className="absolute -left-20 -bottom-20 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
           </div>
 
           <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 max-w-2xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="relative">
-                  <Crown className="h-10 w-10 text-yellow-400 animate-bounce-slow" />
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-ping" />
-                </div>
-                <span className="text-sm font-bold uppercase tracking-wider text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full border border-yellow-400/20">
+              <div className="flex items-center gap-3 mb-8">
+                <Crown className="h-8 w-8 text-[#245D66]" />
+                <span className="text-sm font-semibold uppercase tracking-wider text-[#245D66] bg-[#245D66]/10 px-4 py-2 rounded-lg border border-[#245D66]/20">
                   Premium Access
                 </span>
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Become a <span className="text-yellow-400 animate-pulse">BC+</span> Member
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white">
+                Become a <span className="text-[#245D66]">BC +</span> Member
               </h1>
               
-              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
+              <p className="text-xl text-white/90 mb-10 leading-relaxed max-w-xl">
                 Unlock premium support, exclusive discounts, and free access to 20+ high-value products designed to accelerate your consulting career.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row gap-4 mb-12">
                 <button 
-                  className="group relative overflow-hidden bg-white text-[#245D66] font-bold px-10 py-5 rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-white/25"
+                  className="bg-white text-[#245D66] font-semibold px-8 py-4 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-lg"
                   onClick={() => {
-                    console.log('Hero Join BC+ clicked');
+                    console.log('Hero Join BC + clicked');
                     setDialogOpen(true);
                   }}
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
                 >
-                  <span className="relative z-10 flex items-center text-lg">
-                    <Sparkles className={`mr-3 h-6 w-6 text-yellow-500 transition-transform ${isHovered ? 'rotate-12 scale-110' : ''}`} />
-                    Join BC+ Now
-                    <ArrowRight className={`ml-3 h-5 w-5 transition-transform ${isHovered ? 'translate-x-1' : ''}`} />
+                  <span className="flex items-center text-lg">
+                    Join BC + Now
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-50 via-white to-yellow-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
                 </button>
                 
-                <button className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-8 py-5 rounded-2xl transition-all duration-300 font-semibold text-lg backdrop-blur-sm">
+                <button 
+                  className="border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 px-8 py-4 rounded-xl transition-all duration-200 font-medium text-lg"
+                  onClick={() => window.open('https://www.beingconsultant.com/become-a-member', '_blank')}
+                >
                   Learn More
                 </button>
               </div>
 
               {/* Stats */}
-              <div className="flex gap-8 text-center">
-                <div>
-                  <div className="text-3xl font-bold text-yellow-400">20+</div>
-                  <div className="text-sm text-white/70">Free Products</div>
+              <div className="grid grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-[#245D66] mb-1">20+</div>
+                  <div className="text-sm text-white/70 font-medium">Free Products</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-yellow-400">10%</div>
-                  <div className="text-sm text-white/70">Coaching Discount</div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-[#245D66] mb-1">10%</div>
+                  <div className="text-sm text-white/70 font-medium">Coaching Discount</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-yellow-400">24/7</div>
-                  <div className="text-sm text-white/70">Premium Support</div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-[#245D66] mb-1">24/7</div>
+                  <div className="text-sm text-white/70 font-medium">Premium Support</div>
                 </div>
               </div>
             </div>
 
-            {/* 3D Card Mockup */}
+            {/* Professional Card */}
             <div className="flex-1 max-w-lg">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-[#245D66] rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500 transform rotate-3" />
-                <div className="relative bg-black/20 backdrop-filter backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 transform -rotate-3 group-hover:rotate-0 transition-transform duration-500">
+              <div className="relative">
+                <div className="bg-black/30 backdrop-filter backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
                   <div className="flex items-center justify-between mb-6">
-                    <Crown className="h-8 w-8 text-yellow-400" />
-                    <span className="text-sm font-bold text-white bg-[#245D66]/30 px-3 py-1 rounded-full">BC+</span>
+                    <Crown className="h-8 w-8 text-[#245D66]" />
+                    <span className="text-sm font-semibold text-white bg-[#245D66]/50 px-3 py-1 rounded-lg">BC +</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Premium Member</h3>
-                  <p className="text-white/90 mb-6">Access to exclusive benefits and premium features</p>
-                  <div className="space-y-3">
-                    {['Premium Support', 'Coaching Discounts', 'Free Products'].map((feature, i) => (
+                  <h3 className="text-2xl font-semibold text-white mb-3">Premium Membership</h3>
+                  <p className="text-white/80 mb-6 leading-relaxed">Access to exclusive benefits and premium features designed for consulting professionals</p>
+                  <div className="space-y-4">
+                    {[
+                      { icon: Shield, text: 'Priority Support' },
+                      { icon: Zap, text: '10% Coaching Discount' },
+                      { icon: Users, text: '20+ Free Resources' }
+                    ].map((feature, i) => (
                       <div key={i} className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <span className="text-white">{feature}</span>
+                        <feature.icon className="h-5 w-5 text-[#245D66]" />
+                        <span className="text-white font-medium">{feature.text}</span>
                       </div>
                     ))}
                   </div>
@@ -287,7 +298,7 @@ export default function MembershipPage() {
             
             <div className="mt-8 flex flex-col items-center">
               <p className="text-lg text-gray-300 mb-6 text-center max-w-2xl">
-                Join <span className="text-yellow-400 font-bold">BC+</span> today and unlock a world of exclusive benefits designed for ambitious consultants.
+                Join <span className="text-yellow-400 font-bold">BC +</span> today and unlock a world of exclusive benefits designed for ambitious consultants.
               </p>
               
               <div className="relative z-50" onClick={() => {
@@ -297,12 +308,12 @@ export default function MembershipPage() {
                 <Button 
                   variant="default"
                   onClick={() => {
-                    console.log('Join BC+ Now clicked!');
+                    console.log('Join BC + Now clicked!');
                     setDialogOpen(true);
                   }}
                   className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-xl"
                 >
-                  Join BC+ Now
+                  Join BC + Now
                 </Button>
               </div>
             </div>
@@ -333,28 +344,62 @@ export default function MembershipPage() {
 
           try {
             if (method === 'free') {
-            if (!user) {
-              toast.error('You must be logged in');
+              if (!user) {
+                toast.error('You must be logged in');
+                return;
+              }
+              // Calculate expiry based on duration
+              const now = new Date();
+              let monthsToAdd = 3;
+              if (plan.duration.includes('6')) monthsToAdd = 6;
+              const expiry = new Date(now);
+              expiry.setMonth(expiry.getMonth() + monthsToAdd);
+              
+              await updateUserProfile(user.uid, {
+                isMember: true,
+                membershipPlan: plan.id,
+                membershipExpiry: expiry.toISOString(),
+              });
+              
+              // Send BC + welcome email for free membership
+              try {
+                console.log('Sending BC + welcome email for free membership to:', user.email);
+                // Get user's first name if available
+                let firstName = '';
+                if (user.displayName) {
+                  const nameParts = user.displayName.split(' ');
+                  firstName = nameParts[0] || '';
+                } else if (user.email) {
+                  firstName = user.email.split('@')[0].split('.')[0];
+                  firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+                }
+                
+                // Send welcome email
+                if (user.email) {
+                  await sendBCPlusWelcomeEmail(user.email, firstName);
+                  console.log('BC + welcome email sent successfully');
+                }
+              } catch (emailError) {
+                console.error('Error sending BC + welcome email:', emailError);
+                // Don't fail the entire process if email sending fails
+              }
+              
+              toast.success('Membership activated!');
+              setIsMember(true);
+              
+              // If user came directly from signup, redirect to onboarding
+              if (fromSignup) {
+                console.log('Redirecting new member to onboarding');
+                router.replace('/onboarding');
+                return;
+              }
+              
+              // Otherwise redirect to the membership success page
+              router.replace('/dashboard/membership/already');
               return;
             }
-            // Calculate expiry based on duration
-            const now = new Date();
-            let monthsToAdd = 3;
-            if (plan.duration.includes('6')) monthsToAdd = 6;
-            const expiry = new Date(now);
-            expiry.setMonth(expiry.getMonth() + monthsToAdd);
-            await updateUserProfile(user.uid, {
-              isMember: true,
-              membershipPlan: plan.id,
-              membershipExpiry: expiry.toISOString(),
-            });
-            toast.success('Membership activated!');
-            setIsMember(true);
-            router.replace('/dashboard/membership/already');
-            return;
-          }
-
-          if (method === 'razorpay') {
+            
+            if (method === 'razorpay') {
               toast.info('Redirecting to Razorpay payment page…');
               // Build URL with query parameters
               const params = new URLSearchParams({

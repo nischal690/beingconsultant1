@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/firebase/auth-context"
+import { getUserTransactions, getUserProducts, getUserCoachingPrograms } from "@/lib/firebase/firestore"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,7 +20,8 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  HelpCircle
+  HelpCircle,
+  Loader2
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -31,9 +33,32 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+// Types for order data
+interface OrderItem {
+  id: string
+  date: string
+  product: string
+  amount: number
+  currency: string
+  status: string
+  paymentMethod: string
+  invoice: string
+  type: 'transaction'
+  originalData?: any
+}
+
 // Helper function to format dates
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
+const formatDate = (dateString: string | Date | any) => {
+  let date: Date
+  if (typeof dateString === 'string') {
+    date = new Date(dateString)
+  } else if (dateString && typeof dateString === 'object' && 'toDate' in dateString) {
+    // Handle Firestore Timestamp
+    date = dateString.toDate()
+  } else {
+    date = new Date(dateString)
+  }
+  
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
@@ -42,11 +67,11 @@ const formatDate = (dateString: string) => {
 }
 
 // Helper function to format currency
-const formatCurrency = (amount: number) => {
+const formatCurrency = (amount: number, currency: string = 'USD') => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: currency.toUpperCase() === 'JPY' ? 0 : 2
   }).format(amount)
 }
 
@@ -88,55 +113,57 @@ export default function OrderHistoryPage() {
   const [filterStatus, setFilterStatus] = useState("all")
   const [currentMonth, setCurrentMonth] = useState("March")
   const [sortOrder, setSortOrder] = useState("newest")
+  const [orders, setOrders] = useState<OrderItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
-  // Mock data for the order history
-  const orders = [
-    { 
-      id: "ORD-2024-0001", 
-      date: "2024-03-20", 
-      product: "Career Coaching - Premium Package", 
-      amount: 499.99, 
-      status: "Completed",
-      paymentMethod: "Credit Card",
-      invoice: "INV-2024-0001"
-    },
-    { 
-      id: "ORD-2024-0002", 
-      date: "2024-03-15", 
-      product: "Resume Review Service", 
-      amount: 99.99, 
-      status: "Completed",
-      paymentMethod: "PayPal",
-      invoice: "INV-2024-0002"
-    },
-    { 
-      id: "ORD-2024-0003", 
-      date: "2024-03-10", 
-      product: "Mock Interview Session", 
-      amount: 149.99, 
-      status: "Processing",
-      paymentMethod: "Credit Card",
-      invoice: "INV-2024-0003"
-    },
-    { 
-      id: "ORD-2024-0004", 
-      date: "2024-03-05", 
-      product: "Case Study Workshop", 
-      amount: 199.99, 
-      status: "Pending",
-      paymentMethod: "Bank Transfer",
-      invoice: "INV-2024-0004"
-    },
-    { 
-      id: "ORD-2024-0005", 
-      date: "2024-02-28", 
-      product: "LinkedIn Profile Optimization", 
-      amount: 79.99, 
-      status: "Cancelled",
-      paymentMethod: "Credit Card",
-      invoice: "INV-2024-0005"
+  // Fetch order history from Firebase
+  useEffect(() => {
+    const fetchOrderHistory = async () => {
+      if (!user?.uid) return
+      
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch transactions from Firebase
+        const transactionsResult = await getUserTransactions(user.uid, 100) // Get up to 100 transactions
+        
+        if (transactionsResult.success && transactionsResult.data) {
+          // Transform transaction data to OrderItem format
+          const transformedOrders: OrderItem[] = transactionsResult.data.map((transaction: any) => ({
+            id: transaction.transactionId || transaction.id || 'N/A',
+            date: transaction.timestamp || transaction.createdAt || new Date().toISOString(),
+            product: transaction.productTitle || 'Unknown Product',
+            amount: transaction.amount || 0,
+            currency: transaction.currency || 'USD',
+            status: transaction.status === 'successful' ? 'Completed' : 
+                   transaction.status === 'failed' ? 'Failed' : 
+                   transaction.status || 'Processing',
+            paymentMethod: transaction.paymentMethod === 'razorpay' ? 'Razorpay' :
+                          transaction.paymentMethod === 'stripe' ? 'Stripe' :
+                          transaction.paymentMethod === 'free' ? 'Free' :
+                          transaction.paymentMethod || 'Unknown',
+            invoice: `INV-${transaction.transactionId?.slice(-8) || 'UNKNOWN'}`,
+            type: 'transaction' as const,
+            originalData: transaction
+          }))
+          
+          setOrders(transformedOrders)
+        } else {
+          console.error('Failed to fetch transactions:', transactionsResult.error)
+          setError('Failed to load order history')
+        }
+      } catch (err) {
+        console.error('Error fetching order history:', err)
+        setError('An error occurred while loading your order history')
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+    
+    fetchOrderHistory()
+  }, [user?.uid])
 
   // Filter orders based on search query and status filter
   const filteredOrders = orders.filter(order => {
@@ -159,22 +186,12 @@ export default function OrderHistoryPage() {
     return sortOrder === "newest" ? dateB - dateA : dateA - dateB
   })
 
-  // Download invoice function (mock)
-  const handleDownloadInvoice = (invoiceId: string) => {
-    toast.success(`Invoice ${invoiceId} download started`)
-  }
 
-  // View order details function
-  const handleViewOrderDetails = (orderId: string) => {
-    toast.info(`Viewing details for order ${orderId}`)
-    // In a real app, this would navigate to an order details page
-    // router.push(`/dashboard/order-history/${orderId}`)
-  }
 
   return (
     <div className="container py-5 bg-black text-white min-h-screen">
       {/* Back button and status */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center mb-6">
         <button 
           onClick={() => router.back()} 
           className="flex items-center text-gray-300 hover:text-white transition-colors"
@@ -182,12 +199,6 @@ export default function OrderHistoryPage() {
           <ChevronLeft className="mr-1" size={20} />
           <span className="text-lg font-medium">Order History</span>
         </button>
-        <div className="flex items-center gap-3">
-          <span>{currentMonth}, 2024</span>
-          <button className="ml-2 text-gray-300 hover:text-white">
-            <Calendar size={18} />
-          </button>
-        </div>
       </div>
       
       {/* Filters and search */}
@@ -240,7 +251,30 @@ export default function OrderHistoryPage() {
       
       {/* Orders list */}
       <div className="space-y-4">
-        {sortedOrders.length > 0 ? (
+        {loading ? (
+          <Card className="bg-zinc-900 border border-zinc-800 shadow-xl p-8 text-center">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <Loader2 className="h-8 w-8 text-gray-500 animate-spin" />
+              <h3 className="text-xl font-medium">Loading your order history...</h3>
+              <p className="text-gray-400">Please wait while we fetch your orders</p>
+            </div>
+          </Card>
+        ) : error ? (
+          <Card className="bg-zinc-900 border border-zinc-800 shadow-xl p-8 text-center">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <AlertCircle className="h-12 w-12 text-red-500" />
+              <h3 className="text-xl font-medium text-red-400">Error Loading Orders</h3>
+              <p className="text-gray-400 max-w-md">{error}</p>
+              <Button 
+                onClick={() => window.location.reload()} 
+                variant="outline" 
+                className="mt-4"
+              >
+                Try Again
+              </Button>
+            </div>
+          </Card>
+        ) : sortedOrders.length > 0 ? (
           sortedOrders.map((order) => (
             <Card key={order.id} className="bg-zinc-900 border border-zinc-800 shadow-xl overflow-hidden hover:border-zinc-700 transition-all duration-200">
               <CardContent className="p-0">
@@ -252,42 +286,16 @@ export default function OrderHistoryPage() {
                         <OrderStatus status={order.status} />
                       </div>
                       <div className="flex items-center text-sm text-gray-400">
-                        <span className="mr-4">Order ID: {order.id}</span>
+                        <span className="mr-4">Transaction ID: {order.id}</span>
                         <span>Date: {formatDate(order.date)}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <div className="text-lg font-semibold">{formatCurrency(order.amount)}</div>
+                        <div className="text-lg font-semibold">{formatCurrency(order.amount, order.currency)}</div>
                         <div className="text-sm text-gray-400">{order.paymentMethod}</div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="border-t border-zinc-800 bg-zinc-950/50 p-3 flex justify-between items-center">
-                  <div className="text-sm text-gray-400">
-                    Invoice: {order.invoice}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-gray-300 hover:text-white"
-                      onClick={() => handleViewOrderDetails(order.id)}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      <span>View Details</span>
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border-zinc-700 hover:border-zinc-600"
-                      onClick={() => handleDownloadInvoice(order.invoice)}
-                    >
-                      <Download className="h-4 w-4 mr-1" />
-                      <span>Invoice</span>
-                    </Button>
                   </div>
                 </div>
               </CardContent>

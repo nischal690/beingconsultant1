@@ -416,19 +416,19 @@ const LandConsultingOfferPage = () => {
             {/* Key benefits in simplified layout */}
             <div className="flex flex-wrap gap-3 mb-6">
               <div className="inline-flex items-center rounded-full bg-white/90 dark:bg-gray-800/90 px-3 py-1.5 text-sm shadow-sm border border-primary/10">
-                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-white" />
                 <span>Case + FIT + CV Readiness</span>
               </div>
               <div className="inline-flex items-center rounded-full bg-white/90 dark:bg-gray-800/90 px-3 py-1.5 text-sm shadow-sm border border-primary/10">
-                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-white" />
                 <span>Ace Case Interviews</span>
               </div>
               <div className="inline-flex items-center rounded-full bg-white/90 dark:bg-gray-800/90 px-3 py-1.5 text-sm shadow-sm border border-primary/10">
-                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-white" />
                 <span>Master FIT Interviews</span>
               </div>
               <div className="inline-flex items-center rounded-full bg-white/90 dark:bg-gray-800/90 px-3 py-1.5 text-sm shadow-sm border border-primary/10">
-                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                <CheckCircle className="mr-1.5 h-3.5 w-3.5 text-white" />
                 <span>Continuous Mentorship</span>
               </div>
             </div>

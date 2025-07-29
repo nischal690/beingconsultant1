@@ -88,6 +88,11 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear validation errors when user types
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const prevStep = () => {
@@ -110,8 +115,51 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
     onComplete(formData);
   };
 
+  // State for validation errors
+  const [errors, setErrors] = useState<{
+    name?: string;
+    phone?: string;
+    linkedInProfile?: string;
+  }>({});
+
   // This function handles the next button click
   const handleNextClick = () => {
+    // For step 1, validate required fields
+    if (step === 1) {
+      const newErrors: {name?: string; phone?: string} = {};
+      
+      if (!formData.name.trim()) {
+        newErrors.name = 'Full name is required';
+      }
+      
+      if (!formData.phone.trim()) {
+        newErrors.phone = 'Phone number is required';
+      }
+      
+      setErrors(newErrors);
+      
+      // If there are errors, don't proceed
+      if (Object.keys(newErrors).length > 0) {
+        return;
+      }
+    }
+    
+    // For step 2, validate LinkedIn profile
+    if (step === 2) {
+      const newErrors: {linkedInProfile?: string} = {};
+      
+      if (!formData.linkedInProfile.trim()) {
+        newErrors.linkedInProfile = 'LinkedIn profile URL is required';
+      }
+      
+      setErrors(newErrors);
+      
+      // If there are errors, don't proceed
+      if (Object.keys(newErrors).length > 0) {
+        return;
+      }
+    }
+    
     if (step < totalSteps) {
       console.log(`Moving from step ${step} to step ${step + 1}`);
       setStep(step + 1);
@@ -189,6 +237,7 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
               {step === 1 && (
                 <>
                   <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">Basic Information</h2>
+                  <p className="text-white/70 text-sm mb-4">Fields marked with * are required</p>
                   <div className="space-y-4">
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-5 w-5 text-white/60" />
@@ -199,9 +248,16 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder="Your full name"
-                        className="pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm"
+                        placeholder="Your full name *"
+                        required
+                        className={cn(
+                          "pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm",
+                          errors.name && "border-red-500 focus:border-red-500"
+                        )}
                       />
+                      {errors.name && (
+                        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                      )}
                     </div>
                     <div className="relative">
                       <Phone className="absolute left-3 top-3 h-5 w-5 text-white/60" />
@@ -209,9 +265,16 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="Phone number"
-                        className="pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm"
+                        placeholder="Phone number *"
+                        required
+                        className={cn(
+                          "pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm",
+                          errors.phone && "border-red-500 focus:border-red-500"
+                        )}
                       />
+                      {errors.phone && (
+                        <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                      )}
                     </div>
                   </div>
                 </>
@@ -220,6 +283,7 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
               {step === 2 && (
                 <>
                   <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300 animate-gradient-x">Professional Profile</h2>
+                  <p className="text-white/70 text-sm mb-4">Fields marked with * are required</p>
                   <div className="space-y-4">
                     <div className="relative">
                       <Linkedin className="absolute left-3 top-3 h-5 w-5 text-white/60" />
@@ -231,9 +295,16 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
                         name="linkedInProfile"
                         value={formData.linkedInProfile}
                         onChange={handleChange}
-                        placeholder="LinkedIn profile URL"
-                        className="pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm"
+                        placeholder="LinkedIn profile URL *"
+                        required
+                        className={cn(
+                          "pl-10 bg-white/5 border-white/10 focus:border-white/30 text-white w-full rounded-lg h-12 transition-all duration-200 focus:shadow-[0_0_15px_rgba(255,255,255,0.15)] backdrop-blur-sm",
+                          errors.linkedInProfile && "border-red-500 focus:border-red-500"
+                        )}
                       />
+                      {errors.linkedInProfile && (
+                        <p className="text-red-500 text-xs mt-1">{errors.linkedInProfile}</p>
+                      )}
                     </div>
                     <div className="relative">
                       <Briefcase className="absolute left-3 top-3 h-5 w-5 text-white/60" />
@@ -383,9 +454,9 @@ export default function OnboardingForm({ onComplete, onStepChange, allowSkipToEn
               )}
             </div>
             
-            {/* Middle - Skip button for steps 2-5 */}
+            {/* Middle - Skip button for steps 3-5 (removed for step 2 since LinkedIn is mandatory) */}
             <div>
-              {step > 1 && step < totalSteps && (
+              {step > 1 && step < totalSteps && step !== 2 && (
                 <Button 
                   variant="outline" 
                   onClick={skipStep}

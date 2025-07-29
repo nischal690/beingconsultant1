@@ -5,7 +5,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import GritFramework from "@/components/grit-framework"
-import { BarChart, Calendar, Clock, FileText, MessageSquare, Star, TrendingUp, Users, X, Download, BookOpen, Play, Brain, CheckCircle, Sparkles } from "lucide-react"
+import { 
+  BarChart, 
+  Calendar, 
+  ChevronRight, 
+  Clock, 
+  FileText, 
+  MessageSquare, 
+  Star, 
+  TrendingUp, 
+  Users, 
+  X, 
+  Download, 
+  BookOpen, 
+  Play, 
+  Brain, 
+  CheckCircle, 
+  Sparkles 
+} from "lucide-react"
 import Image from "next/image"
 import {
   Dialog,
@@ -16,7 +33,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { useAuth } from "@/lib/firebase/auth-context"
-import { getUserProfile, getUserCoachingPrograms } from "@/lib/firebase/firestore"
+import { getUserProfile, getUserCoachingPrograms, getRecentlyAccessedResources } from "@/lib/firebase/firestore"
 import { useRouter } from "next/navigation"
 import { useProducts } from "@/context/products-context"
 
@@ -55,6 +72,8 @@ const DashboardPage = () => {
   const [toolkitResourcesUsed, setToolkitResourcesUsed] = useState(0)
   const [availableCoachingSessions, setAvailableCoachingSessions] = useState(0)
   const [usedCoachingSessions, setUsedCoachingSessions] = useState(0)
+  const [recentlyAccessedResources, setRecentlyAccessedResources] = useState<any[]>([])
+  const [isLoadingRecentResources, setIsLoadingRecentResources] = useState(true)
   const { user } = useAuth()
   const { products } = useProducts()
   const router = useRouter()
@@ -135,11 +154,15 @@ const DashboardPage = () => {
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data()
             
-            // Check if resourceaccessed field exists and count items
+            // Check if resourceaccessed field exists and count unique resource IDs
             let resourcesCount = 0
             if (userData.resourceaccessed && Array.isArray(userData.resourceaccessed)) {
-              resourcesCount = userData.resourceaccessed.length
-              console.log('[Dashboard] Found resourceaccessed items:', resourcesCount)
+              // Create a Set to track unique IDs
+              const uniqueResourceIds = new Set(
+                userData.resourceaccessed.map(resource => resource.id)
+              );
+              resourcesCount = uniqueResourceIds.size;
+              console.log('[Dashboard] Found unique resourceaccessed items:', resourcesCount)
               console.log('[Dashboard] Resources data:', userData.resourceaccessed)
             }
             
@@ -235,6 +258,31 @@ const DashboardPage = () => {
         } catch (error) {
           console.error("Error fetching user profile:", error)
         }
+      }
+    }
+
+    // Fetch recently accessed resources
+    const fetchRecentlyAccessedResources = async () => {
+      if (user) {
+        setIsLoadingRecentResources(true)
+        try {
+          console.log('[Dashboard] Fetching recently accessed resources...')
+          const recentResourcesResult = await getRecentlyAccessedResources(user.uid, 5)
+          if (recentResourcesResult.success) {
+            setRecentlyAccessedResources(recentResourcesResult.data || [])
+            console.log('[Dashboard] Recently accessed resources loaded:', recentResourcesResult.data)
+          } else {
+            console.error('[Dashboard] Failed to fetch recently accessed resources:', recentResourcesResult.error)
+            setRecentlyAccessedResources([])
+          }
+        } catch (error) {
+          console.error('[Dashboard] Error fetching recently accessed resources:', error)
+          setRecentlyAccessedResources([])
+        } finally {
+          setIsLoadingRecentResources(false)
+        }
+      } else {
+        setIsLoadingRecentResources(false)
       }
     }
 
@@ -473,6 +521,7 @@ const DashboardPage = () => {
     fetchCoachingPrograms()
     fetchAiSessionsData()
     fetchToolkitResourcesData()
+    fetchRecentlyAccessedResources()
 
     return () => {
       // timer for welcome modal has been removed
@@ -563,6 +612,11 @@ const DashboardPage = () => {
                     sessionMessage.includes("Book your first coaching session") || 
                     sessionMessage.includes("Schedule your first coaching session") ? (
                       <span className="font-medium text-black dark:text-white relative inline-block">{sessionMessage}</span>
+                    ) : sessionMessage === "No sessions scheduled yet" ? (
+                      <>
+                        Here's what's happening with your consulting journey today.{" "}
+                        <span className="font-medium text-black dark:text-white ml-1 relative inline-block py-2">{sessionMessage}</span>
+                      </>
                     ) : (
                       <>
                         Here's what's happening with your consulting journey today.{" "}
@@ -780,7 +834,7 @@ const DashboardPage = () => {
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-600 mb-6">Practice with our AI to improve your consulting skills and confidence.</p>
-                <Button variant="outline" className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-[#245D66] dark:text-[#245D66]" onClick={() => window.location.href = 'https://app.consultify-ai.com/'}>
+                <Button variant="outline" className="w-full bg-transparent dark:bg-transparent border-[#245D66]/20 dark:border-[#245D66]/20 hover:bg-[#245D66]/10 dark:hover:bg-[#245D66]/10 text-white dark:text-white" onClick={() => window.location.href = 'https://aicoach.beingconsultant.com/auth'}>
                   Start Practice
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="ml-2 h-4 w-4">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1063,16 +1117,103 @@ const DashboardPage = () => {
                 <CardDescription>Continue where you left off</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66]/20 to-[#245D66]/10">
-                    <BookOpen className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
+                {isLoadingRecentResources ? (
+                  <div className="text-center py-8">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66]/20 to-[#245D66]/10">
+                      <BookOpen className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE] animate-pulse" />
+                    </div>
+                    <h3 className="text-lg font-medium mt-4">Loading...</h3>
+                    <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80 mt-2 max-w-md mx-auto">
+                      Fetching your recently accessed resources...
+                    </p>
                   </div>
-                  <h3 className="text-lg font-medium mt-4">No resources yet</h3>
-                  <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80 mt-2 max-w-md mx-auto">
-                    You haven't accessed any resources yet. Browse our toolkits to enhance your consulting skills.
-                  </p>
-                  {/* "Browse Toolkits" button removed as requested */}
-                </div>
+                ) : recentlyAccessedResources.length > 0 ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#245D66]/10">
+                          <Clock className="h-4 w-4 text-[#245D66] dark:text-[#7BA7AE]" />
+                        </div>
+                        <h3 className="text-md font-medium">Continue where you left off</h3>
+                      </div>
+                    </div>
+                    
+                    {recentlyAccessedResources.map((resource, index) => (
+                      <div 
+                        key={`${resource.id}-${resource.action}-${index}`}
+                        className="flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-[#245D66]/5 to-transparent hover:from-[#245D66]/10 transition-all duration-200 cursor-pointer group hover:shadow-md hover:-translate-y-0.5"
+                        onClick={() => {
+                          // Navigate to resource based on its type
+                          if (resource.type === 'masterclass') {
+                            router.push(`/dashboard/masterclass?id=${resource.id}`)
+                          } else if (resource.type === 'ebook') {
+                            router.push(`/dashboard/ebooks/${resource.id}`)
+                          } else if (resource.category === 'product') {
+                            router.push(`/dashboard/resources/${resource.id}`)
+                          }
+                        }}
+                      >
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66]/20 to-[#245D66]/10 group-hover:from-[#245D66]/30 group-hover:to-[#245D66]/20 transition-all duration-300">
+                          {resource.type === 'ebook' ? (
+                            <BookOpen className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] group-hover:scale-110 transition-transform duration-300" />
+                          ) : resource.type === 'masterclass' ? (
+                            <Star className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] group-hover:scale-110 transition-transform duration-300" />
+                          ) : resource.type === 'video' ? (
+                            <Play className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] group-hover:scale-110 transition-transform duration-300" />
+                          ) : resource.type === 'assessment' ? (
+                            <Brain className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] group-hover:scale-110 transition-transform duration-300" />
+                          ) : resource.action === 'download' ? (
+                            <Download className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] group-hover:scale-110 transition-transform duration-300" />
+                          ) : (
+                            <FileText className="h-5 w-5 text-[#245D66] dark:text-[#7BA7AE] group-hover:scale-110 transition-transform duration-300" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm truncate group-hover:text-[#245D66] dark:group-hover:text-[#7BA7AE] transition-colors">
+                            {resource.title || resource.name}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-[#245D66]/60 dark:text-[#7BA7AE]/60 capitalize">
+                              {resource.action === 'access' ? 'Accessed' : resource.action === 'download' ? 'Downloaded' : 'Viewed'}
+                            </span>
+                            <span className="text-xs text-[#245D66]/40 dark:text-[#7BA7AE]/40">•</span>
+                            <span className="text-xs text-[#245D66]/60 dark:text-[#7BA7AE]/60">
+                              {resource.accessedDate ? new Date(resource.accessedDate).toLocaleDateString() : 
+                               resource.accessedAt ? new Date(resource.accessedAt).toLocaleDateString() : 'Recently'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-[#245D66]/10 text-[#245D66]/80 dark:text-[#7BA7AE]/80 capitalize opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            {resource.type || 'Resource'}
+                          </span>
+                          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <ChevronRight className="h-4 w-4 text-[#245D66]/60 dark:text-[#7BA7AE]/60" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#245D66]/20 to-[#245D66]/10">
+                      <BookOpen className="h-6 w-6 text-[#245D66] dark:text-[#7BA7AE]" />
+                    </div>
+                    <h3 className="text-lg font-medium mt-4">No resources yet</h3>
+                    <p className="text-sm text-[#245D66]/80 dark:text-[#7BA7AE]/80 mt-2 max-w-md mx-auto">
+                      You haven't accessed any resources yet. Browse our toolkits to enhance your consulting skills.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-4 border-[#245D66]/20 text-[#245D66] dark:text-[#7BA7AE] hover:bg-[#245D66]/10"
+                      onClick={() => router.push('/dashboard/resources')}
+                    >
+                      Browse Resources
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import { Clock, Star, Users, BookOpen, Play, Download, Eye, FileText } from "lucide-react"
 import { VideoPlayerDialog } from "./video-player-dialog"
+import { useProducts } from "@/context/products-context"
 
 interface LearningDialogProps {
   masterclass: any
@@ -18,6 +19,8 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
   // State for video player dialog
   const [videoPlayerOpen, setVideoPlayerOpen] = useState(false)
   const [currentVideo, setCurrentVideo] = useState({ url: '', title: '' })
+  const { products } = useProducts()
+  const [productDescription, setProductDescription] = useState<string | undefined>(masterclass?.productDescription || masterclass?.description)
   
   // When dialog opens, scroll to top of page
   const handleOpenChange = (open: boolean) => {
@@ -32,6 +35,43 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
     setCurrentVideo({ url, title })
     setVideoPlayerOpen(true)
   }
+  
+  // Effect to get product description from masterclass or products cache
+  useEffect(() => {
+    console.log('LearningDialog - masterclass:', masterclass);
+    console.log('LearningDialog - masterclass.productDescription:', masterclass?.productDescription);
+    
+    // First check if the masterclass itself has a productDescription
+    if (masterclass?.productDescription) {
+      console.log('LearningDialog - using masterclass productDescription directly');
+      setProductDescription(masterclass.productDescription);
+      return;
+    }
+    
+    // If not, try to find it in the products cache
+    if (masterclass && products.length > 0) {
+      console.log('LearningDialog - searching in products cache');
+      const cachedProduct = products.find(
+        (p) => p.productName === masterclass.productName || p.title === masterclass.title || p.id === masterclass.id
+      );
+      
+      console.log('LearningDialog - found cached product:', cachedProduct);
+      
+      if (cachedProduct?.productDescription) {
+        console.log('LearningDialog - using productDescription from cache');
+        setProductDescription(cachedProduct.productDescription);
+      } else if (cachedProduct?.description) {
+        console.log('LearningDialog - using description from cache');
+        setProductDescription(cachedProduct.description);
+      } else {
+        console.log('LearningDialog - using masterclass description');
+        setProductDescription(masterclass.description);
+      }
+    } else {
+      console.log('LearningDialog - fallback to masterclass description');
+      setProductDescription(masterclass?.description);
+    }
+  }, [masterclass, products]);
 
   if (!masterclass) return null
 
@@ -46,21 +86,21 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
       />
       
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-4xl w-[90vw] max-h-[85vh] overflow-y-auto bg-white dark:bg-gray-900 p-0 rounded-xl border border-gray-200 dark:border-gray-800 shadow-xl z-50">
+        <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-5xl w-[95vw] max-h-[85vh] overflow-y-auto bg-black p-0 rounded-xl border border-gray-800 shadow-xl z-50">
         <DialogTitle className="sr-only">{masterclass.title || 'Masterclass Learning Resources'}</DialogTitle>
         {/* Decorative elements */}
         <div className="absolute -z-10 top-0 right-0 w-[300px] h-[300px] bg-[#245D66]/10 rounded-full blur-3xl"></div>
         <div className="absolute -z-10 bottom-0 left-0 w-[300px] h-[300px] bg-[#245D66]/10 rounded-full blur-3xl"></div>
         
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-          <h2 className="text-2xl font-bold text-[#245D66]">{masterclass.title}</h2>
-          <p className="text-gray-500 dark:text-gray-400">Start your learning journey</p>
+        <div className="px-6 py-6 border-b border-gray-700">
+          <h2 className="text-2xl font-bold text-white">{masterclass.productName || masterclass.title}</h2>
+          <p className="text-gray-400">Start your learning journey</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 pt-6">
           {/* Left column: Cover image */}
-          <div className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
+          <div className="relative aspect-square rounded-lg overflow-hidden border border-gray-700 shadow-md">
             {masterclass.thumbnail ? (
               <Image
                 src={masterclass.thumbnail}
@@ -90,8 +130,8 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
           
           {/* Right column: Description and metadata */}
           <div className="md:col-span-2 flex flex-col">
-            {/* Metadata */}
-            <div className="flex flex-wrap gap-2 mb-4">
+            {/* Metadata removed */}
+            <div className="hidden">
               {masterclass.category && (
                 <Badge variant="outline" className="bg-[#245D66]/10 text-[#245D66] border-[#245D66]/20">
                   {masterclass.category}
@@ -127,7 +167,16 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
             {/* Description */}
             <div className="mb-6">
               {/* 'About this masterclass' heading removed for cleaner UI */}
-              <p className="text-gray-700 dark:text-gray-300">{masterclass.description}</p>
+              {productDescription ? (
+                <div 
+                  className="text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: productDescription }}
+                />
+              ) : (
+                <p className="text-gray-300">
+                  {masterclass.description || 'No description available'}
+                </p>
+              )}
             </div>
             
             {/* Learning resources */}
@@ -143,29 +192,25 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
                     const videoName = `${masterclass.title} ${masterclass.productlinks.length > 1 ? `Part ${index + 1}` : ''}`;
                     
                     return (
-                      <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
-                        <div className="flex items-start gap-4 mb-3">
+                      <div key={index} className="bg-gray-900 rounded-lg p-4 mb-4 border border-gray-700">
+                        <div className="flex items-start gap-4">
                           <div className="bg-[#245D66]/10 p-3 rounded-lg">
                             <Play className="h-6 w-6 text-[#245D66]" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                            <h4 className="font-medium text-white">
                               {videoName}
                             </h4>
-                            {/* File path display removed for cleaner UI */}
                           </div>
-                        </div>
-                        
-                        <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mt-4 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <div className="text-center p-6">
-                            <Play className="h-12 w-12 text-[#245D66] mx-auto mb-3 animate-pulse" />
-                            <h4 className="text-lg font-medium mb-2">{videoName}</h4>
+                          <div className="flex gap-2">
                             <Button 
-                              className="bg-[#245D66] hover:bg-[#1a474f] text-white"
+                              size="sm"
+                              className="border-[#245D66] text-[#245D66] hover:bg-[#245D66]/10"
+                              variant="outline"
                               onClick={() => handlePlayVideo(link, videoName)}
                             >
-                              <Play className="h-4 w-4 mr-2" />
-                              Start Learning
+                              <Eye className="h-3 w-3 mr-1" />
+                              View
                             </Button>
                           </div>
                         </div>
@@ -176,16 +221,16 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
                 })
               ) : (
                 // Fallback if no videos are available
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+                <div className="bg-gray-900 rounded-lg p-4 mb-4 border border-gray-700">
                   <div className="flex items-start gap-4 mb-3">
                     <div className="bg-[#245D66]/10 p-3 rounded-lg">
                       <Play className="h-6 w-6 text-[#245D66]" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                      <h4 className="font-medium text-white">
                         {masterclass.title} Video
                       </h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Full masterclass video</p>
+                      <p className="text-sm text-gray-400">Full masterclass video</p>
                     </div>
                   </div>
                   
@@ -209,16 +254,16 @@ export function LearningDialog({ masterclass, open, onOpenChange }: LearningDial
               {masterclass.resources && masterclass.resources.length > 0 && (
                 <div className="space-y-3">
                   {masterclass.resources.map((resource: any, index: number) => (
-                    <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                    <div key={index} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
                       <div className="flex items-start gap-4">
                         <div className="bg-[#245D66]/10 p-3 rounded-lg">
                           <FileText className="h-6 w-6 text-[#245D66]" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                          <h4 className="font-medium text-white">
                             {resource.title || `Resource ${index + 1}`}
                           </h4>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-[200px]">
+                          <p className="text-sm text-gray-400 truncate max-w-[200px]">
                             {resource.description || 'Supplementary material'}
                           </p>
                         </div>

@@ -41,7 +41,8 @@ import {
   ArrowRight,
   Bookmark,
   Heart,
-  Zap
+  Zap,
+  CheckCircle
 } from "lucide-react";
 
 // Define the Ebook interface
@@ -593,9 +594,9 @@ export default function EbooksPage() {
   const router = useRouter();
 
   const handleBuyNow = (ebook: any) => {
-    // Don't allow free members to buy BC Plus membership products
+    // Don't allow free members to buy BC + membership products
     if (!isMember && ebook.includedInMembership) {
-      toast.info('This resource is only available with BC Plus Membership. Please upgrade to access.', { 
+      toast.info('This resource is only available with BC + Membership. Please upgrade to access.', { 
         duration: 5000,
         action: {
           label: 'Upgrade',
@@ -957,8 +958,8 @@ export default function EbooksPage() {
                       {/* Membership status - show if included in membership */}
                       {ebook.includedInMembership && (
                         <div className="flex items-center">
-                          <span className="text-xs text-green-600 flex items-center bg-green-50 px-2 py-1 rounded-full">
-                            <span className="mr-1">✓</span> Included in BC Plus Membership
+                          <span className="w-full text-center text-xs text-green-600 flex items-center justify-center bg-green-50 px-2 py-1 rounded-full">
+                            <span className="mr-1">✓</span> Included in BC + Membership
                           </span>
                         </div>
                       )}
@@ -991,9 +992,9 @@ export default function EbooksPage() {
                             return;
                           }
 
-                          // 2. The ebook requires BC Plus membership but the user is not a member – prompt upgrade.
+                          // 2. The ebook requires BC + membership but the user is not a member – prompt upgrade.
                           if (!isMember && ebook.includedInMembership) {
-                            toast.info('This resource is only available with BC Plus Membership. Please upgrade to access.', {
+                            toast.info('This resource is only available with BC + Membership. Please upgrade to access.', {
                               duration: 5000,
                               action: {
                                 label: 'Upgrade',
@@ -1056,23 +1057,37 @@ export default function EbooksPage() {
             <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-white/5 rounded-full mix-blend-overlay filter blur-3xl"></div>
             
             <div className="relative z-10 max-w-3xl mx-auto text-center">
-              <Sparkles className="h-10 w-10 text-white/80 mx-auto mb-6" />
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                Get Notified About New Resources
+              <Crown className="h-10 w-10 text-yellow-400 mx-auto mb-6" />
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">
+                Become a BC+ Member
               </h2>
               <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                Subscribe to our newsletter to receive updates when new e-books and resources are added to our collection.
+                Get unlimited access to all premium e-books and resources with BC+ membership. Elevate your consulting career today.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="bg-black/50 border-2 border-gray-800 focus:border-white rounded-xl text-white backdrop-blur-lg flex-grow py-6 [&:not(:placeholder-shown)]:bg-black [&:not(:placeholder-shown)]:text-white"
-                />
-                <Button className="bg-white text-black hover:bg-gray-200 transition-all duration-300 rounded-xl py-6 px-8 font-semibold">
-                  Subscribe
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-black transition-all duration-300 rounded-xl py-6 px-8 font-semibold flex items-center gap-2"
+                  onClick={() => router.push('/dashboard/membership')}
+                >
+                  Upgrade to BC+ <ArrowRight className="h-4 w-4" />
                 </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-2 border-gray-700 hover:border-gray-500 hover:bg-black/50 text-white transition-all duration-300 rounded-xl py-6 px-8 font-semibold"
+                  onClick={() => router.push('/dashboard/membership')}
+                >
+                  Learn More
+                </Button>
+              </div>
+              
+              <div className="flex items-center justify-center gap-2 mt-6">
+                <CheckCircle className="h-4 w-4 text-yellow-400" />
+                <span className="text-sm text-gray-400">Premium resources</span>
+                <CheckCircle className="h-4 w-4 text-yellow-400 ml-4" />
+                <span className="text-sm text-gray-400">Exclusive content</span>
+                <CheckCircle className="h-4 w-4 text-yellow-400 ml-4" />
+                <span className="text-sm text-gray-400">Priority support</span>
               </div>
             </div>
           </div>

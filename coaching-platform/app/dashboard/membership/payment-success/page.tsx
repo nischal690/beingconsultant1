@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/firebase/auth-context";
 import { getUserProfile, timestampToDate, updateUserProfile } from "@/lib/firebase/firestore";
+import { sendBCPlusWelcomeEmail } from "@/lib/firebase/email";
 import { toast } from "sonner";
 
 // Function to format date in DD/MON/YYYY format
@@ -86,6 +87,33 @@ export default function PaymentSuccessPage() {
           membershipExpiry: expiry.toISOString(),
         });
         
+        // Send BC + welcome email
+        try {
+          // Check if this is a new member or an extension
+          const isNewMember = !userProfile.success || !userProfile.data || !userProfile.data.isMember;
+          
+          if (isNewMember) {
+            console.log('Sending BC + welcome email to new member:', user.email);
+            // Get user's first name if available
+            let firstName = '';
+            if (user.displayName) {
+              const nameParts = user.displayName.split(' ');
+              firstName = nameParts[0] || '';
+            }
+            
+            // Send welcome email
+            if (user.email) {
+              await sendBCPlusWelcomeEmail(user.email, firstName);
+              console.log('BC + welcome email sent successfully');
+            }
+          } else {
+            console.log('Membership extension - no welcome email needed');
+          }
+        } catch (emailError) {
+          console.error('Error sending BC + welcome email:', emailError);
+          // Don't fail the entire process if email sending fails
+        }
+        
         setExpiry(formatDateToDDMonYYYY(expiry));
         toast.success('Membership extended successfully!');
       } catch (error) {
@@ -131,7 +159,7 @@ export default function PaymentSuccessPage() {
         </div>
         
         <h1 className="text-3xl md:text-4xl font-bold mb-4">Payment Successful!</h1>
-        <p className="mb-6 text-lg">Your BC Plus membership has been extended.</p>
+        <p className="mb-6 text-lg">Your BC + membership has been extended.</p>
         
         {expiry && (
           <div className="bg-yellow-500/10 p-4 rounded-lg mb-6">

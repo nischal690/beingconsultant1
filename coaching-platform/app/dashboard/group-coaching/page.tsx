@@ -57,7 +57,7 @@ function TestimonialCard({ quote, author, role }: { quote: string, author: strin
         </div>
         <p className="italic text-white/60">{quote}</p>
         <div className="flex items-center gap-3 pt-2">
-          <div className="h-8 w-8 rounded-full bg-[#245D66]/20 flex items-center justify-center text-[#245D66] font-medium">{author.charAt(0)}</div>
+          <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center text-white font-medium">{author.charAt(0)}</div>
           <div>
             <p className="font-medium text-white">{author}</p>
             <p className="text-xs text-white/60">{role}</p>
@@ -715,12 +715,12 @@ Learn, collaborate, and grow with the best.
                         <p className="text-white/60 text-xs">{program.shortDescription.substring(0, 60)}...</p>
                       </div>
                       {program.sessionLength && (
-                        <Badge className="bg-[#245D66] text-white border-none text-xs">
+                        <Badge className="bg-[#245D66] text-white border-none text-[10px] whitespace-nowrap">
                           {program.sessionLength}
                         </Badge>
                       )}
                       {program.cohortSize && program.category === "group" && (
-                         <Badge className="bg-[#245D66] text-white border-none text-xs">
+                         <Badge className="bg-[#245D66] text-white border-none text-[10px] whitespace-nowrap">
                           {program.cohortSize}
                         </Badge>
                       )}
@@ -951,7 +951,7 @@ Learn, collaborate, and grow with the best.
               <AccordionItem value="item-1" className="border-b border-white/10 pb-4">
                 <AccordionTrigger className="flex items-center gap-3 text-white hover:no-underline hover:text-[#245D66]">
                   <div className="bg-[#245D66]/10 p-2 rounded-lg">
-                    <Users className="h-5 w-5 text-[#245D66]" />
+                    <Users className="h-5 w-5 text-white" />
                   </div>
                   <span className="text-lg font-medium">How does group coaching compare to one-on-one coaching?</span>
                 </AccordionTrigger>
@@ -987,7 +987,7 @@ Learn, collaborate, and grow with the best.
               <AccordionItem value="item-3" className="border-b border-white/10 pb-4">
                 <AccordionTrigger className="flex items-center gap-3 text-white hover:no-underline hover:text-[#245D66]">
                   <div className="bg-[#245D66]/10 p-2 rounded-lg">
-                    <Clock className="h-5 w-5 text-[#245D66]" />
+                    <Clock className="h-5 w-5 text-white" />
                   </div>
                   <span className="text-lg font-medium">What happens if I miss a session?</span>
                 </AccordionTrigger>
@@ -1079,7 +1079,7 @@ Learn, collaborate, and grow with the best.
               {/* Cohort Size */}
               {selectedProgramDetails?.cohortSize && (
                 <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-[#245D66]" />
+                  <Users className="h-5 w-5 text-white" />
                   <div>
                     <p className="text-sm font-medium text-white">Cohort Size</p>
                     <p className="text-sm text-white/70">{selectedProgramDetails.cohortSize}</p>
@@ -1090,7 +1090,7 @@ Learn, collaborate, and grow with the best.
               {/* Timeline */}
               {selectedProgramDetails?.timeline && (
                 <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-[#245D66]" />
+                  <Clock className="h-5 w-5 text-white" />
                   <div>
                     <p className="text-sm font-medium text-white">Timeline</p>
                     <p className="text-sm text-white/70">{selectedProgramDetails.timeline}</p>
@@ -1113,7 +1113,7 @@ Learn, collaborate, and grow with the best.
                   <ul className="space-y-2">
                     {selectedProgramDetails.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <CheckCircle className="h-4 w-4 text-[#245D66] mt-0.5" />
+                        <CheckCircle className="h-4 w-4 text-white mt-0.5" />
                         <span className="text-sm text-white/70">{feature}</span>
                       </li>
                     ))}
@@ -1125,7 +1125,7 @@ Learn, collaborate, and grow with the best.
           
           <DialogFooter className="mt-6">
             <Button 
-              className="bg-[#245D66] text-white hover:bg-[#1A444B] w-full"
+              className="bg-primary text-white hover:bg-primary/80 w-full"
               onClick={() => setShowDetailsDialog(false)}
             >
               Close
